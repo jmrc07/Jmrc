@@ -1,0 +1,2931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Duty Tracker v2.4 – Final Calculations Fix</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+:root {
+  --bg: #f8fafc;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --surface: #ffffff;
+  --surface-alt: #eef2ff;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --text-primary: #0f172a;
+  --text-muted: #64748b;
+  --special-bg: #ede9fe;
+  --special-bg-active: #ddd6fe;
+  --special-text: #4c1d95;
+
+  --rest-bg: #e5e7eb;
+  --rest-text: #374151;
+}
+
+/* Global */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+}
+.app-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0.75rem 0.75rem 5.5rem;
+}
+
+/* Screens */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* Premium profile card */
+.profile-card {
+  position: relative;
+  margin-top: 0.75rem;
+  padding: 1.1rem 1.1rem 0.9rem;
+  border-radius: 1.25rem;
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 40%, #3b82f6 100%);
+  box-shadow: 0 16px 40px rgba(37, 99, 235, 0.5);
+  color: #eff6ff;
+  overflow: hidden;
+}
+.profile-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(255,255,255,0.25), transparent 55%);
+  pointer-events: none;
+}
+.profile-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1;
+}
+.profile-left {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.profile-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  background: rgba(15,23,42,0.15);
+  border: 1px solid rgba(191,219,254,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #eff6ff;
+  background-size: cover;
+  background-position: center;
+}
+.profile-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+.profile-sub {
+  margin: 0;
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+.profile-datetime {
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-align: right;
+}
+.profile-footer {
+  position: relative;
+  margin-top: 0.7rem;
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.35rem;
+  z-index: 1;
+}
+.profile-footer span { white-space: nowrap; }
+
+#profileExtraWrapper {
+  margin-top: 0.35rem;
+}
+#profileMoreBtn {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(191,219,254,0.7);
+  background: rgba(15,23,42,0.12);
+  color: #e5edff;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+#profileExtra {
+  margin-top: 0.25rem;
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+
+/* Generic card */
+.card {
+  margin-top: 1rem;
+  padding: 0.9rem;
+  background: var(--surface);
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 10px rgba(15,23,42,0.06);
+}
+.card-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.35rem;
+}
+.card-title {
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+.card-sub {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* Month row */
+.home-month-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.7rem;
+  padding: 0 0.1rem;
+}
+.home-month-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.home-month-select {
+  font-size: 0.78rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.6rem;
+  border: 1px solid var(--border-strong);
+  background: #fff;
+}
+
+/* Date list container */
+.timeline-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Full-width tiles */
+.timeline-chip {
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.9rem;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(15,23,42,0.10);
+  font-size: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  cursor: pointer;
+  transition: box-shadow 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.timeline-chip-top {
+  font-size: 0.8rem;
+  font-weight: 600;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.timeline-chip-bottom {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+.timeline-chip.today-chip {
+  background: #e0edff;
+  box-shadow: 0 0 0 2px rgba(37,99,235,0.20);
+}
+.today-label-text {
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+}
+.today-icon {
+  font-size: 0.9rem;
+}
+.timeline-chip.future-chip {
+  background: #fff7ce;
+}
+.timeline-chip.has-duty {
+  background: #dcfce7;
+}
+.timeline-chip.has-duty .timeline-chip-bottom {
+  color: #166534;
+  font-weight: 600;
+}
+.timeline-chip.rest-chip {
+  background: var(--rest-bg);
+  color: var(--rest-text);
+}
+.timeline-chip.active {
+  box-shadow: 0 0 0 2px rgba(37,99,235,0.35);
+}
+.date-expand {
+  margin-top: 0.4rem;
+}
+
+/* Expand block */
+.expand-block {
+  font-size: 0.8rem;
+  border-top: 1px dashed var(--border-strong);
+  padding-top: 0.35rem;
+  background: #ffffff !important;
+  border-radius: 0.65rem;
+  padding: 0.6rem 0.7rem;
+  position: relative;
+}
+.edit-btn {
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  padding: 0.25rem 0.6rem;
+  border-radius: 14px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+}
+
+/* REST buttons */
+.rest-actions {
+  margin-top: 0.45rem;
+  display:flex;
+  justify-content:flex-end;
+  gap:0.4rem;
+}
+.rest-btn {
+  border:none;
+  border-radius:999px;
+  font-size:0.72rem;
+  padding:0.25rem 0.6rem;
+  cursor:pointer;
+}
+.rest-btn-rs {
+  background:#facc15;
+  color:#1f2937;
+}
+.rest-btn-rc {
+  background:#fb923c;
+  color:#1f2937;
+}
+
+/* FAB */
+.fab {
+  position: fixed;
+  right: 18px;
+  bottom: 80px;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-size: 1.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.6);
+  cursor: pointer;
+  z-index: 50;
+}
+
+/* Overlay + sheets */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,0.45);
+  display: none;
+  z-index: 80;
+}
+.sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-width: 720px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  padding: 0.9rem 0.9rem 1rem;
+  box-shadow: 0 -10px 30px rgba(15,23,42,0.5);
+  display: none;
+  z-index: 81;
+}
+#logSheet {
+  min-height: 65vh;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+#dutyTableSheet {
+  top: 0; bottom: 0;
+  border-radius: 0;
+  padding-top: 0.9rem;
+}
+#restSheet,
+#paySheet {
+  max-height: 70vh;
+  z-index: 82;
+}
+.sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--border-strong);
+  border-radius: 999px;
+  margin: 0 auto 0.5rem;
+}
+.sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+.sheet-title {
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+.sheet-close {
+  border: none;
+  background: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+/* Fields */
+.field { margin-top: 0.6rem; }
+.label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+  display: block;
+}
+.input {
+  width: 100%;
+  padding: 0.55rem 0.6rem;
+  border-radius: 0.6rem;
+  border: 1px solid var(--border-strong);
+  font-size: 0.88rem;
+}
+
+/* Duty field header with special toggle */
+.duty-field-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.special-toggle-btn {
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: #f3f4ff;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.6rem;
+  cursor: pointer;
+  color: var(--special-text);
+}
+
+/* Date chips in sheet */
+.date-chip-row {
+  display: flex;
+  gap: 0.35rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 0.15rem;
+}
+.date-chip-row::-webkit-scrollbar { display: none; }
+.date-chip {
+  flex-shrink: 0;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(15,23,42,0.10);
+  font-size: 0.78rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.date-chip-label {
+  font-weight: 600;
+  margin-right: 0.2rem;
+}
+.date-chip-secondary {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+.date-chip.active {
+  background: var(--primary);
+  color: #fff;
+}
+.date-chip.active .date-chip-secondary {
+  color: rgba(255,255,255,0.8);
+}
+
+/* Duty & train rows */
+.duty-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.duty-row {
+  display: flex;
+  gap: 0.3rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.duty-row::-webkit-scrollbar { display: none; }
+.duty-btn {
+  flex-shrink: 0;
+  min-width: 40px;
+  padding: 0.3rem 0.4rem;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(15,23,42,0.10);
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-align: center;
+}
+.duty-btn.active {
+  background: #dbeafe;
+  box-shadow: 0 1px 6px rgba(37,99,235,0.5);
+}
+.train-row {
+  display: flex;
+  gap: 0.3rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.train-row::-webkit-scrollbar { display: none; }
+.train-btn {
+  flex-shrink: 0;
+  min-width: 34px;
+  padding: 0.3rem 0.35rem;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(15,23,42,0.10);
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-align: center;
+}
+.train-btn.active {
+  background: #dbeafe;
+  box-shadow: 0 1px 6px rgba(37,99,235,0.5);
+}
+
+/* Special duty chips */
+.special-duty-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+.special-duty-btn {
+  flex-shrink: 0;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  border: none;
+  background: var(--special-bg);
+  color: var(--special-text);
+  font-size: 0.78rem;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(76,29,149,0.18);
+}
+.special-duty-btn.active {
+  background: var(--special-bg-active);
+  box-shadow: 0 1px 6px rgba(76,29,149,0.35);
+}
+
+/* Shift sheet buttons - Styling reused for inline (IMPROVEMENT 7) */
+.shift-btn {
+  margin-top: 0.45rem;
+}
+
+/* Primary button */
+.btn-primary {
+  width: 100%;
+  margin-top: 0.6rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: 0.7rem;
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* History */
+.history-list {
+  margin-top: 0.5rem;
+  padding-bottom: 4.8rem;
+}
+.history-item {
+  margin-top: 0.4rem;
+  padding: 0.7rem 0.75rem;
+  background: var(--surface);
+  border-radius: 0.8rem;
+  border: 1px solid var(--border);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+.history-item.active {
+  border-color: var(--primary);
+  background: #ffffff;
+}
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.15rem;
+  font-weight: 600;
+}
+.history-meta {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+.history-detail {
+  margin-top: 0.35rem;
+  border-top: 1px dashed var(--border-strong);
+  padding-top: 0.3rem;
+  font-size: 0.78rem;
+}
+
+/* History summary grid (IMPROVEMENT 3) */
+.history-summary {
+  margin-top: 0.4rem;
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.4rem;
+}
+.history-summary-card {
+  flex:0 0 calc(50% - 0.22rem);
+  background:var(--surface); /* Light theme */
+  color:var(--text-primary); /* Dark text */
+  border: 1px solid var(--border); /* Added border */
+  box-shadow: 0 2px 6px rgba(15,23,42,0.1); /* Lighter shadow */
+  border-radius:0.7rem;
+  padding:0.45rem 0.55rem;
+  font-size:0.78rem;
+}
+.history-summary-label {
+  font-size:0.7rem;
+  color: var(--text-muted);
+  opacity:1;
+}
+.history-summary-value {
+  font-size:0.95rem;
+  font-weight:600;
+  margin-top:0.1rem;
+}
+.history-summary-sub {
+  font-size:0.68rem;
+  color: var(--text-muted);
+  opacity:1;
+  margin-top:0.05rem;
+}
+.history-summary-cta {
+  margin-top:0.3rem;
+  font-size:0.7rem;
+}
+.pay-config-btn {
+  border:none;
+  border-radius:999px;
+  padding:0.2rem 0.5rem;
+  font-size:0.7rem;
+  background:#facc15;
+  color:#1f2937;
+  cursor:pointer;
+}
+
+/* History month chips container (IMPROVEMENT 4) */
+.history-month-chips {
+  margin-top: 0.4rem;
+  display: flex;
+  gap: 0.35rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 0.15rem;
+}
+.history-month-chips::-webkit-scrollbar { display: none; }
+.history-month-chip {
+  flex-shrink: 0;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  background: var(--surface-alt);
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.history-month-chip.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* History search bar */
+.history-search-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 64px;
+  display: none;
+  z-index: 45;
+}
+.history-search-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.9rem 0.9rem 0 0;
+  background: rgba(248,250,252,0.96);
+  box-shadow: 0 -4px 12px rgba(15,23,42,0.16);
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+.history-search-input {
+  flex: 1;
+  border-radius: 0.6rem;
+  border: 1px solid var(--border-strong);
+  padding: 0.4rem 0.6rem;
+  font-size: 0.82rem;
+}
+
+/* Profile form */
+.profile-form .field { margin-top: 0.6rem; }
+.profile-form label {
+  display: block;
+  font-size: 0.8rem;
+  margin-bottom: 0.2rem;
+}
+.profile-form input, .profile-form select {
+  width: 100%;
+  padding: 0.55rem 0.6rem;
+  border-radius: 0.55rem;
+  border: 1px solid var(--border-strong);
+  font-size: 0.86rem;
+}
+
+/* Duty table */
+.duty-table-container {
+  margin-top: 0.4rem;
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
+}
+.duty-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+.duty-table th, .duty-table td {
+  border-bottom: 1px solid var(--border);
+  padding: 0.35rem 0.3rem;
+  text-align: left;
+}
+.duty-table th {
+  font-weight: 600;
+  background: var(--surface-alt);
+}
+
+/* Bottom nav */
+.bottom-bar {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: 64px;
+  background: #ffffff;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 40;
+}
+.nav-item {
+  flex: 1;
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.nav-item span.icon { font-size: 1.3rem; }
+.nav-item.active {
+  color: var(--primary);
+  font-weight: 600;
+}
+</style>
+</head>
+<body>
+<div class="app-container">
+
+  <section id="home" class="screen active">
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="profile-left">
+          <div class="profile-avatar" id="profileAvatar">U</div>
+          <div>
+            <p class="profile-title" id="profileTitle">Hello</p>
+            <p class="profile-sub" id="profileSub">Set up your profile</p>
+          </div>
+        </div>
+        <div class="profile-datetime" id="liveDateTime">--</div>
+      </div>
+      <div class="profile-footer">
+        <span id="profileEmpText">ID: —</span>
+        <span id="profileRoleText">Role: —</span>
+        <span id="profileRestText">Rest: —</span>
+        <span id="profileCRText">CR: 0</span>
+      </div>
+      <div id="profileExtraWrapper">
+        <button id="profileMoreBtn">View more ▾</button>
+        <div id="profileExtra" style="display:none;"></div>
+      </div>
+    </div>
+
+    <div class="home-month-row">
+      <div class="home-month-hint">Tap a date to view or add duty</div>
+      <select id="monthSelect" class="home-month-select"></select>
+    </div>
+
+    <div id="calendarRow" class="timeline-row"></div>
+    <div id="noDutiesMsg" style="display:none;font-size:0.8rem;color:var(--text-muted);margin-top:0.4rem;">
+      No duties logged in this month yet. Tap any date to add.
+    </div>
+  </section>
+
+  <section id="history" class="screen">
+    <div class="card">
+      <div class="card-title-row">
+        <div class="card-title">History</div>
+        <div class="card-sub">Tap a row to expand</div>
+      </div>
+
+      <div id="historyMonthChips" class="history-month-chips"></div>
+
+     <div id="historySummary" class="history-summary"></div>
+
+<!-- PRINT REPORT BUTTON -->
+<div style="margin-top:0.6rem;">
+  <button class="btn-primary" onclick="window.open('print.html','_blank')">Print Report</button>
+</div>
+
+      <div id="historyList" class="history-list"></div>
+      <div id="noHistoryMsg">No records found. Log a duty to see history.</div>
+    </div>
+  </section>
+
+  <section id="profile" class="screen">
+    <div class="card profile-form">
+      <div class="card-title-row">
+        <div class="card-title">Profile</div>
+        <div class="card-sub">Used in summaries</div>
+      </div>
+      <div class="field">
+        <label for="pfName">Full Name</label>
+        <input type="text" id="pfName">
+      </div>
+      <div class="field">
+        <label for="pfEmpId">Employee ID</label>
+        <input type="text" id="pfEmpId">
+      </div>
+      <div class="field">
+        <label for="pfRole">Role</label>
+        <select id="pfRole">
+          <option value="">Select role</option>
+          <option value="Station Controller">Station Controller</option>
+          <option value="Train Operator">Train Operator</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="pfRest">Weekly Rest Day</label>
+        <select id="pfRest">
+          <option value="">Select rest day</option>
+          <option value="Sunday">Sunday</option>
+          <option value="Monday">Monday</option>
+          <option value="Tuesday">Tuesday</option>
+          <option value="Wednesday">Wednesday</option>
+          <option value="Thursday">Thursday</option>
+          <option value="Friday">Friday</option>
+          <option value="Saturday">Saturday</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="pfPhoto">Profile Photo</label>
+        <input type="file" id="pfPhoto" accept="image/*">
+      </div>
+
+      <div class="field">
+        <label for="pfConfirmDate">Date of Confirmation</label>
+        <input type="date" id="pfConfirmDate">
+      </div>
+      <div class="field">
+        <label for="pfPmeDate">Date of PME</label>
+        <input type="date" id="pfPmeDate">
+      </div>
+      <div class="field">
+        <label for="pfScCompDate">Date of Competency (Station Controller)</label>
+        <input type="date" id="pfScCompDate">
+      </div>
+      <div class="field">
+        <label for="pfToCompDate">Date of Competency (Train Operator)</label>
+        <input type="date" id="pfToCompDate">
+      </div>
+      <div class="field">
+        <label for="pfCL">Remaining Casual Leave</label>
+        <input type="number" id="pfCL" min="0" step="1" placeholder="e.g. 8">
+      </div>
+      <div class="field">
+        <label for="pfRH">Remaining RH</label>
+        <input type="number" id="pfRH" min="0" step="1" placeholder="e.g. 4">
+      </div>
+
+      <button class="btn-primary" id="saveProfileBtn">Save Profile</button>
+    </div>
+  </section>
+
+  <section id="settings" class="screen">
+    <div class="card">
+      <div class="card-title-row">
+        <div class="card-title">Settings</div>
+        <div class="card-sub">Tools & duty reference</div>
+      </div>
+      <p style="font-size:0.82rem; color:var(--text-muted); margin-top:0.3rem;">
+        Duty timings & places are based on your official duty table. Tap below to view the full table.
+      </p>
+      <button class="btn-primary" id="viewDutyTableBtn" style="margin-top:0.6rem;">View Duty Table</button>
+      
+      <button class="btn-primary" id="configPayBtn" style="margin-top:0.6rem; background:#facc15; color:#1f2937;">
+        Configure One Day Pay
+      </button>
+
+      <div class="field" style="margin-top:0.9rem;">
+        <span class="label">Recent Duties Layout</span>
+        <select id="viewModeSelect" class="input" style="padding:0.45rem 0.6rem;">
+          <option value="vertical">Vertical (fixed)</option>
+          <option value="horizontal">Horizontal (not used)</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<button class="fab" id="fabBtn" aria-label="Log duty">+</button>
+
+<div class="overlay" id="overlay"></div>
+
+<div class="sheet" id="logSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">Log Duty</div>
+    <div style="display:flex;align-items:center;gap:0.4rem;">
+      <select id="logMonthSelect" class="home-month-select" style="font-size:0.76rem;"></select>
+      <button class="sheet-close" id="sheetCloseBtn">✕</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="label">Date</label>
+    <div class="date-chip-row" id="dateChips"></div>
+  </div>
+
+  <div class="field">
+    <div class="duty-field-header">
+      <span class="label">Duty Number (1–26)</span>
+      <button class="special-toggle-btn" id="specialDutyToggle">Special ▾</button>
+    </div>
+    <div class="duty-rows" id="dutyButtons"></div>
+    <div id="specialDutyContainer" style="display:none;"></div>
+  </div>
+
+  <div id="inlineShiftStationSelector" style="display:none; margin-top:0.6rem; padding:0.6rem; border:1px solid var(--border); border-radius:0.7rem;">
+    <div id="shiftSelector" style="margin-bottom: 0.6rem;">
+      <label class="label">Select Shift</label>
+      <div id="shiftChips" class="duty-row" style="flex-wrap: wrap; gap: 0.4rem;">
+        <button type="button" class="duty-btn" data-shift="M">Morning</button>
+        <button type="button" class="duty-btn" data-shift="E">Evening</button>
+        <button type="button" class="duty-btn" data-shift="N">Night</button>
+      </div>
+    </div>
+    <div id="stationSelector">
+      <label class="label">Select Station</label>
+      <div id="inlineStationChips" class="duty-row" style="flex-wrap: wrap; gap: 0.4rem;">
+        </div>
+    </div>
+  </div>
+  <div class="field" id="trainField">
+    <label class="label">Train Sets (1–10)</label>
+    <div class="train-row" id="trainButtons"></div>
+  </div>
+
+  <button class="btn-primary" id="saveDutyBtn">Save Duty</button>
+</div>
+
+<div class="sheet" id="dutyTableSheet">
+  <div class="sheet-header">
+    <div class="sheet-title">Duty Table</div>
+    <button class="sheet-close" id="dutyTableCloseBtn">✕</button>
+  </div>
+  <div class="duty-table-container">
+    <table class="duty-table">
+      <thead>
+        <tr>
+          <th>Duty</th>
+          <th>Sign On</th>
+          <th>On Place</th>
+          <th>Sign Off</th>
+          <th>Off Place</th>
+          <th>Hours</th>
+        </tr>
+      </thead>
+      <tbody id="dutyTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sheet" id="restSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">Select New Rest Day</div>
+    <button class="sheet-close" id="restCloseBtn">✕</button>
+  </div>
+  <div class="field">
+    <label class="label">New Rest Date</label>
+    <input type="date" id="restDateInput" class="input" />
+  </div>
+  <button class="btn-primary" id="saveRestDateBtn">Save Rest Day</button>
+</div>
+
+<!-- ================= PAY SHEET ================= -->
+<div class="sheet" id="paySheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">One Day Pay Configuration</div>
+    <button class="sheet-close" id="payCloseBtn">✕</button>
+  </div>
+
+  <div class="field">
+    <div id="payMonthChips" class="date-chip-row"></div>
+  </div>
+
+  <div class="field">
+    <label class="label" id="payInputLabel">Pay for One Day (₹)</label>
+    <input type="number" id="payAmountInput" class="input" min="0" step="1" />
+  </div>
+
+  <button class="btn-primary" id="savePayBtn">Save Pay</button>
+</div>
+
+<!-- ================= CR CONSUME SHEET (NEW) ================= -->
+<div class="sheet" id="crConsumeSheet" style="display:none; max-height:60vh;">
+  <div class="sheet-handle"></div>
+
+  <div class="sheet-header">
+    <div class="sheet-title">Use Compensatory Rest</div>
+    <button class="sheet-close" id="crCloseBtn">✕</button>
+  </div>
+
+  <div id="crListContainer" style="font-size:0.82rem;"></div>
+</div>
+
+<div class="history-search-bar" id="historySearchBar">
+  <div class="history-search-inner">
+    <input
+      id="historySearchInput"
+      class="history-search-input"
+      type="text"
+      placeholder="Search by date, duty, train, place..."
+    />
+  </div>
+</div>
+
+<!-- CR Consume Popup -->
+<div id="crConsumeModal" class="sheet" style="display:none;">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">Use Compensatory Rest</div>
+    <button class="sheet-close" onclick="closeCRConsumeModal()">✕</button>
+  </div>
+
+  <div class="field">
+    <label class="label">Available CR Dates</label>
+    <div id="crList" class="date-chip-row"></div>
+  </div>
+
+  <button class="btn-primary" id="useCRBtn">Use Selected CR</button>
+</div>
+<div class="bottom-bar">
+  <div class="nav-item active" data-tab="home">
+    <span class="icon">🏠</span>
+    <span>Home</span>
+  </div>
+  <div class="nav-item" data-tab="history">
+    <span class="icon">📜</span>
+    <span>History</span>
+  </div>
+  <div class="nav-item" data-tab="profile">
+    <span class="icon">👤</span>
+    <span>Profile</span>
+  </div>
+  <div class="nav-item" data-tab="settings">
+    <span class="icon">⚙️</span>
+    <span>Settings</span>
+  </div>
+</div>
+<script>
+/* ---------- DUTY TABLE DATA ---------- */
+const DUTY_TABLE = {
+  "1": { signOn:"04:55", onPlace:"MSOR SCR", signOff:"11:55", offPlace:"MSOR SCR", hours:"07:00" },
+  "2": { signOn:"04:55", onPlace:"BICP SCR", signOff:"12:25", offPlace:"MSOR SCR", hours:"07:30" },
+  "3": { signOn:"04:55", onPlace:"MSOR SCR", signOff:"12:05", offPlace:"MSOR SCR", hours:"07:10" },
+  "4": { signOn:"05:05", onPlace:"BICP SCR", signOff:"12:45", offPlace:"MSOR SCR", hours:"07:40" },
+  "5": { signOn:"07:15", onPlace:"MSOR SCR", signOff:"14:35", offPlace:"MSOR SCR", hours:"07:20" },
+  "6": { signOn:"05:45", onPlace:"MSOR SCR", signOff:"13:25", offPlace:"MSOR SCR", hours:"07:40" },
+  "8": { signOn:"06:05", onPlace:"BICP SCR", signOff:"13:25", offPlace:"MSOR SCR", hours:"07:20" },
+  "9": { signOn:"06:05", onPlace:"MSOR SCR", signOff:"13:45", offPlace:"MSOR SCR", hours:"07:40" },
+  "10": { signOn:"06:05", onPlace:"BICP SCR", signOff:"14:15", offPlace:"MSOR SCR", hours:"08:10" },
+  "11": { signOn:"07:15", onPlace:"MSOR SCR", signOff:"15:05", offPlace:"MSOR SCR", hours:"07:50" },
+  "12": { signOn:"11:35", onPlace:"BICP SCR", signOff:"18:45", offPlace:"MSOR SCR", hours:"07:10" },
+  "15": { signOn:"12:00", onPlace:"MSOR SCR", signOff:"19:40", offPlace:"MSOR SCR", hours:"07:40" },
+  "16": { signOn:"12:20", onPlace:"BICP SCR", signOff:"20:00", offPlace:"MSOR SCR", hours:"07:40" },
+  "17": { signOn:"14:15", onPlace:"MSOR SCR", signOff:"22:15", offPlace:"MSOR SCR", hours:"08:00" },
+  "18": { signOn:"13:25", onPlace:"BICP SCR", signOff:"21:25", offPlace:"MSOR SCR", hours:"08:00" },
+  "19": { signOn:"13:35", onPlace:"MSOR SCR", signOff:"21:35", offPlace:"MSOR SCR", hours:"08:00" },
+  "20": { signOn:"13:45", onPlace:"BICP SCR", signOff:"21:45", offPlace:"MSOR SCR", hours:"08:00" },
+  "22": { signOn:"14:00", onPlace:"MSOR SCR", signOff:"21:55", offPlace:"MSOR SCR", hours:"07:55" },
+  "23": { signOn:"14:20", onPlace:"BICP SCR", signOff:"22:20", offPlace:"MSOR SCR", hours:"08:00" },
+  "24": { signOn:"14:40", onPlace:"MSOR SCR", signOff:"22:50", offPlace:"MSOR SCR", hours:"08:10" },
+  "25": { signOn:"15:00", onPlace:"BICP SCR", signOff:"23:05", offPlace:"MSOR SCR", hours:"08:05" },
+  "26": { signOn:"15:05", onPlace:"MSOR SCR", signOff:"23:15", offPlace:"MSOR SCR", hours:"08:10" },
+  "TRAINING": { signOn:"09:00", onPlace:"Training", signOff:"17:00", offPlace:"Training", hours:"08:00" },
+  "GENERAL": { signOn:"09:30", onPlace:"Office", signOff:"17:30", offPlace:"Office", hours:"08:00" },
+  "DCC-M": { signOn:"06:00", onPlace:"DCC", signOff:"14:00", offPlace:"DCC", hours:"08:00" },
+  "DCC-E": { signOn:"14:00", onPlace:"DCC", signOff:"22:00", offPlace:"DCC", hours:"08:00" },
+  "DCC-N": { signOn:"22:00", onPlace:"DCC", signOff:"06:00", offPlace:"DCC", hours:"08:00" },
+  "OCC-M": { signOn:"06:00", onPlace:"OCC", signOff:"14:00", offPlace:"OCC", hours:"08:00" },
+  "OCC-E": { signOn:"14:00", onPlace:"OCC", signOff:"22:00", offPlace:"OCC", hours:"08:00" },
+  "OCC-N": { signOn:"22:00", onPlace:"OCC", signOff:"06:00", offPlace:"OCC", hours:"08:00" },
+  "STN-M": { signOn:"06:00", onPlace:"STATION", signOff:"14:00", offPlace:"STATION", hours:"08:00" },
+  "STN-E": { signOn:"14:00", onPlace:"STATION", signOff:"22:00", offPlace:"STATION", hours:"08:00" },
+  "STN-N": { signOn:"22:00", onPlace:"STATION", signOff:"06:00", offPlace:"STATION", hours:"08:00" }
+};
+/* Special duty list for UI */
+const SPECIAL_DUTIES = [
+  { code:"CR", label:"CR", type:"simple", base:"CR" },
+  { code:"CL", label:"CL", type:"simple", base:"CL" },
+  { code:"GH", label:"GH", type:"simple", base:"GH" },
+  { code:"RH", label:"RH", type:"simple", base:"RH" },
+  { code:"TRAINING", label:"Trng", type:"simple", base:"TRAINING" },
+  { code:"GENERAL", label:"Gen", type:"simple", base:"GENERAL" },
+  { code:"DCC", label:"DCC", type:"shift", base:"DCC" },
+  { code:"OCC", label:"OCC", type:"shift", base:"OCC" },
+  { code:"STATION", label:"Station", type:"shift", base:"STATION" }
+];
+/* Station List */
+const STATION_LIST = ["MSOR", "NAMT", "VKVR", "SMNR", "RMNR", "CLJP", "MRSN", "SICP", "CDPE", "CTCP", "BICP"];
+
+// Special simple duties that require NO sign-on / sign-off / place details
+const NO_DETAIL_SPECIALS = ["CL", "RH", "GH", "CR"];
+
+function isNoDetailSpecial(code) {
+    if(!code) return false;
+    return NO_DETAIL_SPECIALS.indexOf(code) !== -1;
+}
+
+
+
+/* ---------- DATA / STORAGE ---------- */
+let data = loadData();
+if(!data.availableCR) data.availableCR = [ ];
+
+function loadData() {
+  const json = localStorage.getItem("dutyTrackerData");
+  return json ? JSON.parse(json) : {
+    records: {},
+    profile: {},
+    manualRestDates: {},
+    pay: {} // { "01": 500, "02": 500 }
+  };
+}
+/* =======================
+   CR CONSUME POPUP LOGIC
+   ======================= */
+
+// Open popup
+function openCRConsumeModal() {
+    showOverlay();
+    document.getElementById("crConsumeModal").style.display = "block";
+    renderCRList();
+}
+
+// Close popup
+function closeCRConsumeModal() {
+    hideOverlay();
+    document.getElementById("crConsumeModal").style.display = "none";
+    selectedCR = null; 
+}
+
+// Render list of CR dates
+function renderCRList() {
+    var container = document.getElementById("crList");
+    container.innerHTML = "";
+
+    if (!data.availableCR || data.availableCR.length === 0) {
+        container.innerHTML = "<div style='font-size:0.8rem;color:#64748b;'>No CR available.</div>";
+        return;
+    }
+
+    data.availableCR.forEach(function(date) {
+        var chip = document.createElement("div");
+        chip.className = "date-chip";
+        chip.textContent = date;
+        chip.dataset.date = date;
+
+        chip.addEventListener("click", function(){
+            selectedCR = this.dataset.date;
+            document.querySelectorAll("#crList .date-chip")
+                .forEach(c => c.classList.remove("active"));
+            this.classList.add("active");
+        });
+
+        container.appendChild(chip);
+    });
+}
+
+// Handle "Use CR" button
+document.getElementById("useCRBtn").addEventListener("click", function () {
+    if (!selectedCR) {
+        alert("Please select a CR to use.");
+        return;
+    }
+
+    // Log CR on selectedLogDate
+    data.records[selectedLogDate] = {
+        duty: "CR",
+        tag: null,
+        trains: [],
+        station: null
+    };
+
+    // Remove CR from available list
+    data.availableCR = data.availableCR.filter(d => d !== selectedCR);
+
+    saveData();
+    closeCRConsumeModal();
+    hideAllSheets();
+    renderCalendar();
+    if (currentTab === "history") renderHistory();
+
+    alert("CR used successfully!");
+});
+
+function saveData() {
+  localStorage.setItem("dutyTrackerData", JSON.stringify(data));
+}
+
+function todayISO() {
+  return new Date().toISOString().substring(0, 10);
+}
+
+function formatDateHuman(isoDate) {
+    const d = new Date(isoDate);
+    return d.toLocaleDateString("en-IN", {
+        weekday: "short",
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    });
+}
+
+function isNumericDuty(code) {
+  return !isNaN(code) && code.length > 0 && Number(code) >= 1 && Number(code) <= 26;
+}
+
+function isShiftDuty(code){
+  if(code.indexOf("DCC-") === 0) return true;
+  if(code.indexOf("OCC-") === 0) return true;
+  if(code.indexOf("STN-") === 0) return true;
+  if(code.startsWith("STATION-")) return true; // REQUIRED FIX
+  return false;
+}
+
+/* parse HH:MM -> minutes */
+function parseTimeToMinutes(t){
+  if(!t || typeof t !== 'string' || t.length !== 5) return 0;
+  return parseInt(t.substring(0,2), 10) * 60 + parseInt(t.substring(3,5), 10);
+}
+
+/* NEW: parse HH:MM -> hour (0-23) */
+function parseTimeHour(t) {
+    if (!t || typeof t !== 'string' || t.length !== 5) return -1;
+    return parseInt(t.substring(0, 2), 10);
+}
+
+/* FIXED: Format duty label with actual station name */
+function formatDutyLabel(code, tag, stationCode) {
+    if (!code) return "";
+
+    let shiftName = "";
+    let baseText = "";
+
+    // Extract shift (M/E/N)
+    let shift = null;
+    if (code.includes("-")) {
+        const parts = code.split("-");
+        shift = parts[1]; // M/E/N
+    }
+
+    // Convert shift letter to full name
+    if (shift === "M") shiftName = "Morning";
+    if (shift === "E") shiftName = "Evening";
+    if (shift === "N") shiftName = "Night";
+
+    // Use station if available
+    let stn = stationCode || "";
+
+    // TRAIN DUTIES 1–26
+    if (isNumericDuty(code)) {
+        baseText = "Duty " + code;
+    }
+
+    // SPECIALS
+    else if (["CR","CL","GH","RH"].includes(code)) {
+        baseText = code;
+    }
+
+    // TRAINING / GENERAL
+    else if (code === "TRAINING") baseText = "Trng";
+    else if (code === "GENERAL") baseText = "Gen";
+
+    // SHIFT DUTIES DCC/OCC/STN
+    else if (shiftName) {
+        if (stn) {
+            baseText = `${shiftName} @${stn}`;
+        } else {
+            baseText = `${shiftName}`;
+        }
+    }
+
+    // Rest tags
+    if (tag === "R/S") return baseText + " (R/S)";
+    if (tag === "R/C") return baseText + " (R/C)";
+
+    return baseText;
+}
+
+/* NEW: Calculate Hard Duty Allowance (HDA) */
+function calculateHDA(dutyCode) {
+    // Rule: If DUTY NUMBER is between 1 and 26 -> HDA = ₹100 Else -> HDA = ₹0
+    if (isNumericDuty(dutyCode)) {
+        const dutyNum = Number(dutyCode);
+        if (dutyNum >= 1 && dutyNum <= 26) {
+            return 100; // ₹100 flat
+        }
+    }
+    return 0;
+}
+
+/* NEW: Calculate Incidental Contingent Expenditure (ICE) */
+function calculateICE(dutyCode, signOn, signOff) {
+    // Rule: ICE is ONLY for train duties (1–26)
+    if (!isNumericDuty(dutyCode)) {
+        return 0;
+    }
+    const dutyNum = Number(dutyCode);
+    if (dutyNum < 1 || dutyNum > 26) {
+        return 0;
+    }
+
+    // Rule: AND only if the duty falls in ICE window: Before 06:00 OR After 22:00
+    const soHour = parseTimeHour(signOn);
+    const sfHour = parseTimeHour(signOff);
+
+    let isEligible = false;
+
+    // Check Sign-On: < 06:00 OR >= 22:00
+    if (soHour !== -1 && (soHour < 6 || soHour >= 22)) {
+        isEligible = true;
+    }
+
+    // Check Sign-Off: < 06:00 OR >= 22:00
+    if (sfHour !== -1 && (sfHour < 6 || sfHour >= 22)) {
+        isEligible = true;
+    }
+
+    // ICE per duty = ₹150 (flat, max once per duty)
+    return isEligible ? 150 : 0;
+}
+
+/* MODIFIED: Compute Night Duty Hours (for NDA) */
+function computeNightHours(dutyCode, signOn, signOff) {
+    if (!dutyCode) return 0;
+    
+    // A) Station / OCC / DCC Night shift = 8 hours
+    if (dutyCode.endsWith("-N")) {
+        return 8;
+    }
+
+    // B) Station Morning & Evening = 0 hours
+    if (dutyCode.endsWith("-M") || dutyCode.endsWith("-E")) {
+        return 0;
+    }
+
+    // C) Train duties 1–26 = maximum 1 hour
+    if (isNumericDuty(dutyCode)) {
+        const soHour = parseTimeHour(signOn);
+        const sfHour = parseTimeHour(signOff);
+
+        // Eligible if Sign-On < 06:00 OR Sign-Off > 22:00
+        if (soHour !== -1 && soHour < 6) { // Sign-On < 06:00
+            return 1;
+        }
+        if (sfHour !== -1 && sfHour >= 22) { // Sign-Off >= 22:00
+            return 1;
+        }
+        return 0; // Not eligible
+    }
+
+    // Other duties (CR, CL, GH, RH, Trng, Gen)
+    return 0;
+}
+
+
+/* ---------- LIVE CLOCK ---------- */
+function startClock(){
+  function tick(){
+    const now = new Date();
+    const day = now.toLocaleDateString("en-IN",{ weekday:"short" });
+    const date = now.toLocaleDateString("en-IN",{ day:"2-digit", month:"short", year:"numeric" });
+    const time = now.toLocaleTimeString("en-IN",{ hour12:false, hour:"2-digit", minute:"2-digit", second:"2-digit" });
+    const el = document.getElementById("liveDateTime");
+    if(el) el.textContent = day + ", " + date + " • " + time;
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
+/* ---------- PROFILE ---------- */
+let profileExpanded = false;
+function renderProfile(){
+  const p = data.profile || {};
+  const titleEl = document.getElementById("profileTitle");
+  const subEl = document.getElementById("profileSub");
+  const empEl = document.getElementById("profileEmpText");
+  const roleEl = document.getElementById("profileRoleText");
+  const restEl = document.getElementById("profileRestText");
+  const crEl = document.getElementById("profileCRText");
+  const avatarEl= document.getElementById("profileAvatar");
+  const firstName = p.name ? p.name.trim().split(" ")[0] : "";
+  titleEl.textContent = firstName ? ("Hello, " + firstName) : "Hello";
+  subEl.textContent = p.role || "Set up your profile";
+  empEl.textContent = "ID: " + (p.empId || "—");
+  roleEl.textContent = "Role: " + (p.role || "—");
+  restEl.textContent = "Rest: " + (p.restDay|| "—");
+  const crCount = data.availableCR ? data.availableCR.length : 0;
+  crEl.textContent = "CR: " + crCount;
+  let initials = "U";
+  if(p.name){
+    const parts = p.name.trim().split(/\s+/);
+    initials = parts.map(x=>x[0]).join("").slice(0,2).toUpperCase();
+  }
+  if(p.photo){
+    avatarEl.style.backgroundImage = "url(" + p.photo + ")";
+    avatarEl.textContent = "";
+  } else {
+    avatarEl.style.backgroundImage = "none";
+    avatarEl.textContent = initials;
+  }
+  
+  document.getElementById("pfName").value = p.name || "";
+  document.getElementById("pfEmpId").value = p.empId || "";
+  document.getElementById("pfRole").value = p.role || "";
+  document.getElementById("pfRest").value = p.restDay || "";
+  document.getElementById("pfConfirmDate").value = p.confirmDate || "";
+  document.getElementById("pfPmeDate").value = p.pmeDate || "";
+  document.getElementById("pfScCompDate").value = p.scCompDate || "";
+  document.getElementById("pfToCompDate").value = p.toCompDate || "";
+  document.getElementById("pfCL").value = p.cl || "";
+  document.getElementById("pfRH").value = p.rh || "";
+
+  const extraEl = document.getElementById("profileExtra");
+  extraEl.innerHTML = `
+    <div>Conf Date: ${p.confirmDate || '—'}</div>
+    <div>PME Date: ${p.pmeDate || '—'}</div>
+    <div>SC Comp: ${p.scCompDate || '—'}</div>
+    <div>TO Comp: ${p.toCompDate || '—'}</div>
+    <div>CL Left: ${p.cl || '—'}</div>
+    <div>RH Left: ${p.rh || '—'}</div>
+  `;
+  document.getElementById("profileMoreBtn").textContent = profileExpanded ? "View less ▴" : "View more ▾";
+  extraEl.style.display = profileExpanded ? "block" : "none";
+}
+
+function attachProfileHandlers(){
+  document.getElementById("saveProfileBtn").addEventListener("click", function(){
+    data.profile = {
+      name: document.getElementById("pfName").value.trim(),
+      empId: document.getElementById("pfEmpId").value.trim(),
+      role: document.getElementById("pfRole").value,
+      restDay: document.getElementById("pfRest").value,
+      confirmDate: document.getElementById("pfConfirmDate").value,
+      pmeDate: document.getElementById("pfPmeDate").value,
+      scCompDate: document.getElementById("pfScCompDate").value,
+      toCompDate: document.getElementById("pfToCompDate").value,
+      cl: document.getElementById("pfCL").value.trim(),
+      rh: document.getElementById("pfRH").value.trim()
+    };
+    saveData();
+    renderProfile();
+    alert("Profile saved!");
+  });
+
+  document.getElementById("pfPhoto").addEventListener("change", function(e){
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      data.profile.photo = ev.target.result;
+      saveData();
+      renderProfile();
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById("profileMoreBtn").addEventListener("click", function(){
+    profileExpanded = !profileExpanded;
+    renderProfile();
+  });
+}
+
+/* ---------- NAV ---------- */
+let currentTab = "home";
+let openHistoryDate = null;
+function setActiveTab(tabId){
+  currentTab = tabId;
+  var screens = document.querySelectorAll(".screen");
+  for(var i=0;i<screens.length;i++){
+    screens[i].classList.toggle("active", screens[i].id === tabId);
+  }
+  var items = document.querySelectorAll(".nav-item");
+  for(var j=0;j<items.length;j++){
+    var t = items[j].getAttribute("data-tab");
+    items[j].classList.toggle("active", t === tabId);
+  }
+  var fab = document.getElementById("fabBtn");
+  fab.style.display = (tabId === "home") ? "flex" : "none";
+  hideAllSheets();
+  var hsBar = document.getElementById("historySearchBar");
+  hsBar.style.display = (tabId === "history") ? "block" : "none";
+  if(tabId === "history") renderHistory();
+}
+
+function attachNav(){
+  var items = document.querySelectorAll(".nav-item");
+  for(var i=0;i<items.length;i++){
+    items[i].addEventListener("click", function(){
+      var tab = this.getAttribute("data-tab");
+      setActiveTab(tab);
+    });
+  }
+}
+
+/* ---------- SHEETS / FAB ---------- */
+let selectedLogDate = todayISO();
+let selectedDutyCode = null;
+let selectedTrains = [];
+let specialDutyOpen = false;
+let expandedDate = null;
+let restEditMode = null; // "R/S" or "R/C" or null
+let pendingRestOldDate = null;
+let selectedStation = null; // Stores the 3-4 letter station code (IMPROVEMENT 7)
+let selectedShiftCode = null; // Stores the M/E/N shift part (IMPROVEMENT 7)
+let selectedPayMonth = String(new Date().getMonth()+1).padStart(2,"0"); // MM format (IMPROVEMENT 8)
+
+const DUTY_ROW1 = ["1","2","3","4","5","6","8","9","10","11","12"];
+const DUTY_ROW2 = ["15","16","17","18","19","20","22","23","24","25","26"];
+
+/* Log sheet month state */
+let logMonthYear = { year: new Date().getFullYear(), month: new Date().getMonth() };
+let logMonthSelectInitialized = false;
+
+/* HOME month state */
+let currentMonthYear = { year: new Date().getFullYear(), month: new Date().getMonth() };
+
+function showOverlay(){ document.getElementById("overlay").style.display = "block"; }
+function hideOverlay(){ document.getElementById("overlay").style.display = "none"; }
+
+/* IMPROVEMENT 7: NEW - Function to render inline station chips */
+function renderInlineStationChips() {
+    var container = document.getElementById("inlineStationChips");
+    container.innerHTML = "";
+    STATION_LIST.forEach(function(code) {
+        var chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "train-btn"; 
+        chip.textContent = code;
+        chip.dataset.station = code;
+        if (selectedStation === code) chip.classList.add("active");
+        chip.addEventListener("click", function(ev) {
+            ev.preventDefault();
+            selectedStation = this.dataset.station;
+            var all = container.querySelectorAll(".train-btn");
+            all.forEach(function(c) {
+                c.classList.toggle("active", c.dataset.station === selectedStation);
+            });
+            updateDutyChipStates(); 
+        });
+        container.appendChild(chip);
+    });
+}
+
+/* IMPROVEMENT 7: NEW - Attach listeners for inline shift selector */
+function attachInlineSelectors() {
+    // Shift chips listener
+    document.querySelectorAll("#shiftChips button").forEach(function(btn) {
+        btn.addEventListener("click", function(ev) {
+            ev.preventDefault();
+            document.querySelectorAll("#shiftChips button").forEach(b => b.classList.remove("active"));
+            this.classList.add("active");
+            selectedShiftCode = this.dataset.shift;
+        });
+    });
+    // Station chips listener is handled by renderInlineStationChips
+}
+
+/* IMPROVEMENT 7: MODIFIED - Handle duty button click and show/hide inline selector */
+function handleDutySelection(dutyNo) {
+    selectedDutyCode = dutyNo;
+    selectedTrains = []; 
+
+    // Show/Hide Train Field
+    updateTrainVisibility();
+
+    // Show/Hide Inline Shift/Station Selector
+    const inlineSelector = document.getElementById("inlineShiftStationSelector");
+    const isShiftBase = (dutyNo === "DCC" || dutyNo === "OCC" || dutyNo === "STATION");
+
+    if (isShiftBase) {
+        inlineSelector.style.display = "block";
+        
+        // Load station/shift if already set
+        const rec = data.records[selectedLogDate];
+        if (rec && rec.duty.startsWith(dutyNo) && rec.station) {
+            selectedShiftCode = rec.duty.split("-")[1];
+            selectedStation = rec.station;
+        } else {
+            selectedStation = null;
+            selectedShiftCode = null;
+        }
+
+        // Reset shifts/stations UI and apply loaded state
+        document.querySelectorAll("#shiftChips button").forEach(b => {
+            b.classList.remove("active");
+            if (b.dataset.shift === selectedShiftCode) b.classList.add("active");
+        });
+        renderInlineStationChips();
+
+    } else {
+        inlineSelector.style.display = "none";
+        selectedStation = null;
+        selectedShiftCode = null;
+    }
+
+    updateDutyChipStates();
+    updateSpecialDutyStates();
+}
+
+function showFabLog(){
+  showOverlay();
+  document.getElementById("logSheet").style.display = "block";
+  renderLogMonthSelect();
+  renderLogDateChips();
+  renderDutyButtons();
+  renderSpecialDutyButtons();
+  renderTrainButtons();
+  updateTrainVisibility();
+  
+  // IMPROVEMENT 7: Hide inline selector initially
+  document.getElementById("inlineShiftStationSelector").style.display = "none";
+  selectedDutyCode = null;
+  selectedTrains = [];
+  selectedStation = null;
+  selectedShiftCode = null;
+}
+
+function showLogSheetFor(dateIso, restTag){
+  selectedLogDate = dateIso;
+  const rec = data.records[dateIso];
+  
+  
+  // ⭐ NEW R/S behavior — Option A
+if (restTag === "R/S") {
+
+    // convert this rest into CR immediately
+    if (!data.availableCR) data.availableCR = [];
+    data.availableCR.push(dateIso);
+
+    saveData();
+
+    // Now open Log Duty normally for user to select new duty
+    restEditMode = null;
+    pendingRestOldDate = null;
+
+    showOverlay();
+    document.getElementById("logSheet").style.display = "block";
+    renderLogMonthSelect();
+    renderLogDateChips();
+    renderDutyButtons();
+    renderSpecialDutyButtons();
+    renderTrainButtons();
+    updateTrainVisibility();
+
+    return;
+}
+  
+  // Set initial values
+  if(rec){
+    selectedTrains = rec.trains || [];
+    // IMPROVEMENT 7: Set initial station/shift for DCC/OCC/STN duties
+    if (isShiftDuty(rec.duty)) {
+      const parts = rec.duty.split("-");
+      selectedDutyCode = parts[0]; // Base: DCC, OCC, STN
+      selectedShiftCode = parts[1]; // Shift: M, E, N
+      selectedStation = rec.station;
+    } else {
+      selectedDutyCode = rec.duty;
+      selectedShiftCode = null;
+      selectedStation = null;
+    }
+
+  } else {
+    selectedDutyCode = null;
+    selectedTrains = [];
+    selectedShiftCode = null;
+    selectedStation = null;
+  }
+
+  // Handle R/S and R/C
+  if(restTag){
+    restEditMode = restTag;
+    pendingRestOldDate = dateIso; 
+    // Open rest sheet instead of log sheet
+    openRestSheet(dateIso);
+    return;
+  } else {
+    restEditMode = null;
+    pendingRestOldDate = null;
+  }
+  
+  showOverlay();
+  document.getElementById("logSheet").style.display = "block";
+  renderLogMonthSelect();
+  renderLogDateChips();
+  renderDutyButtons();
+  renderSpecialDutyButtons();
+  renderTrainButtons();
+  updateTrainVisibility();
+
+  // IMPROVEMENT 7: Initialize inline selector
+  const inlineSelector = document.getElementById("inlineShiftStationSelector");
+  const isShiftBase = (selectedDutyCode === "DCC" || selectedDutyCode === "OCC" || selectedDutyCode === "STATION");
+
+  if (isShiftBase) {
+    inlineSelector.style.display = "block";
+    renderInlineStationChips();
+    // Set active shift chip
+    if (selectedShiftCode) {
+        document.querySelectorAll("#shiftChips button").forEach(b => b.classList.remove("active"));
+        const shiftBtn = document.querySelector(`#shiftChips button[data-shift="${selectedShiftCode}"]`);
+        if (shiftBtn) shiftBtn.classList.add("active");
+    }
+  } else {
+    inlineSelector.style.display = "none";
+  }
+}
+
+/* IMPROVEMENT 8: MODIFIED openPaySheet */
+function openPaySheet(){
+  showOverlay();
+  document.getElementById("paySheet").style.display = "block";
+  renderPayMonthChips();
+} 
+/* ===================== CR CONSUME POPUP (NEW) ===================== */
+
+function openCRConsumeModal() {
+
+    // No CR available?
+    if (!data.availableCR || data.availableCR.length === 0) {
+        alert("No available CR credits to consume.");
+        return;
+    }
+
+    showOverlay();
+
+    const sheet = document.getElementById("crConsumeSheet");
+    sheet.style.display = "block";
+
+    const container = document.getElementById("crListContainer");
+    container.innerHTML = "";
+
+    // Build list of CR credits
+    data.availableCR.forEach((cr, index) => {
+
+        const row = document.createElement("div");
+        row.style.display = "flex";
+        row.style.justifyContent = "space-between";
+        row.style.alignItems = "center";
+        row.style.padding = "0.5rem 0.3rem";
+        row.style.borderBottom = "1px dashed var(--border-strong)";
+
+        row.innerHTML = `
+            <div>Earned on: ${formatDateHuman(cr.earnedOn)}</div>
+            <button class="btn-primary" style="padding:0.3rem 0.6rem;"
+                onclick="consumeCRAtIndex(${index})">
+                Use
+            </button>
+        `;
+
+        container.appendChild(row);
+    });
+}
+
+function consumeCRAtIndex(idx) {
+
+    if (!selectedLogDate) {
+        alert("Please select a date on the calendar first.");
+        return;
+    }
+
+    // If date already has a duty, confirm overwrite
+    if (data.records[selectedLogDate]) {
+        const overwrite = confirm("This date already has a duty. Replace it with CR?");
+        if (!overwrite) return;
+    }
+
+    // Apply CR to selected date
+    data.records[selectedLogDate] = {
+        duty: "CR",
+        tag: null,
+        trains: [],
+        station: null
+    };
+
+    // Remove this CR credit
+    data.availableCR.splice(idx, 1);
+
+    saveData();
+    hideAllSheets();
+    renderCalendar();
+
+    if (currentTab === "history") renderHistory();
+}
+
+function hideAllSheets(){
+  hideOverlay();
+  document.getElementById("logSheet").style.display = "none";
+  document.getElementById("dutyTableSheet").style.display = "none";
+  document.getElementById("restSheet").style.display = "none";
+  document.getElementById("paySheet").style.display = "none";
+  restEditMode = null;
+  pendingRestOldDate = null;
+}
+
+function openRestSheet(defaultDate){
+  showOverlay();
+  document.getElementById("restSheet").style.display = "block";
+  var input = document.getElementById("restDateInput");
+  input.value = defaultDate || todayISO();
+}
+
+function attachFabAndSheets(){
+  document.getElementById("fabBtn").addEventListener("click", showFabLog);
+  document.getElementById("overlay").addEventListener("click", hideAllSheets);
+  document.getElementById("sheetCloseBtn").addEventListener("click", hideAllSheets);
+  document.getElementById("dutyTableCloseBtn").addEventListener("click", hideAllSheets);
+  document.getElementById("viewDutyTableBtn").addEventListener("click", function(){
+    showOverlay();
+    document.getElementById("dutyTableSheet").style.display = "block";
+  });
+  
+  // IMPROVEMENT 8: New Pay Config button listener
+  document.getElementById("configPayBtn").addEventListener("click", openPaySheet);
+
+  // IMPROVEMENT 7: Attach inline selectors listeners
+  attachInlineSelectors();
+  
+  document.getElementById("restCloseBtn").addEventListener("click", hideAllSheets);
+  document.getElementById("saveRestDateBtn").addEventListener("click", function(){
+    var input = document.getElementById("restDateInput");
+    var val = input.value;
+    if(!val){
+      alert("Please select a valid rest date");
+      return;
+    }
+    
+    if(data.records[val]){
+      alert("Selected date already has a duty. Choose another date for rest.");
+      return;
+    }
+
+    if(restEditMode === "R/C" && pendingRestOldDate){
+      // Rest Change: log a duty (CR) on the old rest date, and log a REST on the new date
+      data.records[pendingRestOldDate] = { duty:"CR", tag:"R/C", trains:[], station:null };
+      if(!data.manualRestDates) data.manualRestDates = {};
+      data.manualRestDates[val] = true;
+    } else if(restEditMode === "R/S" && pendingRestOldDate) {
+      // Rest Suspended: log a duty (CR) on the old rest date, but do not create a new rest day
+      data.records[pendingRestOldDate] = { duty:"CR", tag:"R/S", trains:[], station:null };
+    } else {
+      // Manual add/edit of rest day: just save the manual rest day
+      if(!data.manualRestDates) data.manualRestDates = {};
+      data.manualRestDates[val] = true;
+    }
+
+    // Also remove any manually logged rest day if this date was previously a manual rest day
+    if(data.manualRestDates && data.manualRestDates[pendingRestOldDate]){
+      delete data.manualRestDates[pendingRestOldDate];
+    }
+    
+    saveData();
+    hideAllSheets();
+    renderCalendar();
+    if(currentTab === "history") renderHistory();
+  });
+
+  document.getElementById("payCloseBtn").addEventListener("click", hideAllSheets);
+
+  // IMPROVEMENT 8: MODIFIED savePayBtn listener
+  document.getElementById("savePayBtn").addEventListener("click", function(){
+    var inp = document.getElementById("payAmountInput");
+    var key = selectedPayMonth; // Use the globally selected month (MM format)
+    var amt = Number(inp.value);
+    
+    if(!key || isNaN(amt)){
+        alert("Please select month and enter a valid amount.");
+        return;
+    }
+    if(amt < 0) {
+        alert("Amount must be zero or positive.");
+        return;
+    }
+
+    if(!data.pay) data.pay = {};
+    data.pay[key] = amt;
+    saveData();
+    hideAllSheets();
+    if(currentTab === "history") renderHistory();
+  });
+}
+
+/* IMPROVEMENT 8: NEW/MODIFIED - Render Pay Month Chips */
+function renderPayMonthChips() {
+    var container = document.getElementById("payMonthChips");
+    var inp = document.getElementById("payAmountInput");
+    var label = document.getElementById("payInputLabel");
+    container.innerHTML = "";
+    var names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    for (var i = 0; i < 12; i++) {
+        var monthVal = String(i + 1).padStart(2, "0"); // MM format
+        var pay = data.pay && data.pay[monthVal] ? `₹${(data.pay[monthVal] || 0).toFixed(0)}` : "Set";
+        
+        var chip = document.createElement("div");
+        chip.className = "date-chip"; // Reusing date-chip style
+        chip.innerHTML = `<span class="date-chip-label">${names[i]}</span><span class="date-chip-secondary">${pay}</span>`;
+        chip.dataset.month = monthVal;
+
+        if (selectedPayMonth === monthVal) {
+            chip.classList.add("active");
+            inp.value = data.pay && data.pay[monthVal] ? data.pay[monthVal] : "";
+            label.textContent = `Pay for One Day in ${names[i]} (₹)`;
+        }
+
+        chip.addEventListener("click", function() {
+            selectedPayMonth = this.dataset.month;
+            renderPayMonthChips(); // Re-render to update active state
+        });
+        container.appendChild(chip);
+    }
+}
+
+/* Log sheet month select */
+function renderLogMonthSelect(){
+  const sel = document.getElementById("logMonthSelect");
+  if(!sel) return;
+  const baseYear = logMonthYear.year;
+  sel.innerHTML = "";
+  for(let m=0;m<12;m++){
+    const dt = new Date(baseYear, m, 1);
+    const label = dt.toLocaleDateString("en-IN",{ month:"short", year:"numeric" });
+    const value = baseYear + "-" + String(m+1).padStart(2,"0");
+    const opt = document.createElement("option");
+    opt.value = value;
+    opt.textContent = label;
+    if(m === logMonthYear.month) opt.selected = true;
+    sel.appendChild(opt);
+  }
+  if(!logMonthSelectInitialized){
+    logMonthSelectInitialized = true;
+    sel.addEventListener("change", function(){
+      const parts = this.value.split("-");
+      logMonthYear.year = Number(parts[0]);
+      logMonthYear.month = Number(parts[1]) - 1;
+      renderLogDateChips();
+    });
+  }
+}
+
+/* Date chips in log sheet (month-based) */
+function renderLogDateChips(){
+  var container = document.getElementById("dateChips");
+  container.innerHTML = "";
+  const year = logMonthYear.year;
+  const month = logMonthYear.month;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const todayIso = todayISO();
+  
+  for(let i=1;i<=daysInMonth;i++){
+    const isoDate = year + "-" + String(month+1).padStart(2,"0") + "-" + String(i).padStart(2,"0");
+    const dayName = new Date(year, month, i).toLocaleDateString("en-IN",{ weekday:"short" });
+    const chip = document.createElement("div");
+    chip.className = "date-chip";
+    const rec = data.records[isoDate];
+    const recText = rec ? formatDutyLabel(rec.duty, rec.tag, rec.station) : (data.manualRestDates && data.manualRestDates[isoDate] ? "REST" : "");
+    chip.innerHTML = `<span class="date-chip-label">${i}</span><span class="date-chip-secondary">${dayName} ${recText}</span>`;
+    chip.dataset.date = isoDate;
+    
+    if(selectedLogDate === isoDate) chip.classList.add("active");
+    if(isoDate === todayIso) chip.classList.add("today-chip");
+
+    chip.addEventListener("click", function(){
+      selectedLogDate = this.dataset.date;
+      renderLogDateChips();
+      
+      // Load existing duty if available
+      const existingRec = data.records[selectedLogDate];
+      if(existingRec){
+        showLogSheetFor(selectedLogDate, null);
+      } else {
+        // Clear selection when clicking an empty date
+        selectedDutyCode = null;
+        selectedTrains = [];
+        selectedStation = null;
+        selectedShiftCode = null;
+        updateDutyChipStates();
+        updateSpecialDutyStates();
+        updateTrainVisibility();
+        // IMPROVEMENT 7: Hide inline selector
+        document.getElementById("inlineShiftStationSelector").style.display = "none";
+      }
+    });
+    container.appendChild(chip);
+  }
+}
+
+/* Duty buttons for Log Sheet */
+function renderDutyButtons(){
+  var container = document.getElementById("dutyButtons");
+  container.innerHTML = "";
+  
+  const makeRow = (dutyList) => {
+    var row = document.createElement("div");
+    row.className = "duty-row";
+    dutyList.forEach(function(no){
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "duty-btn";
+      btn.dataset.no = no;
+      btn.textContent = no;
+      btn.addEventListener("click", function(ev){
+        ev.preventDefault();
+        // MODIFIED to use handleDutySelection
+        handleDutySelection(this.dataset.no);
+        updateTrainButtons();
+      });
+      row.appendChild(btn);
+    });
+    return row;
+  }
+  
+  container.appendChild(makeRow(DUTY_ROW1));
+  container.appendChild(makeRow(DUTY_ROW2));
+  updateDutyChipStates();
+}
+
+function updateDutyChipStates(){
+  var btns = document.querySelectorAll("#dutyButtons .duty-btn");
+  for(var i=0;i<btns.length;i++){
+    var no = btns[i].dataset.no;
+    // IMPROVEMENT 7: Match base code or shift code.
+    const active = isNumericDuty(no) ? (selectedDutyCode === no) : (selectedDutyCode && selectedDutyCode.split("-")[0] === no);
+    btns[i].classList.toggle("active", active);
+  }
+  // IMPROVEMENT 7: Update shift chips state
+  document.querySelectorAll("#shiftChips button").forEach(b => {
+      b.classList.toggle("active", selectedShiftCode === b.dataset.shift);
+  });
+  // IMPROVEMENT 7: Update station chips state (calls renderInlineStationChips if needed)
+  if (document.getElementById("inlineShiftStationSelector").style.display === "block") {
+      renderInlineStationChips();
+  }
+}
+
+/* Special duty chips */
+function renderSpecialDutyButtons(){
+  var container = document.getElementById("specialDutyContainer");
+  container.innerHTML = "";
+  if(!specialDutyOpen){
+    container.style.display = "none";
+    return;
+  }
+  container.style.display = "block";
+  var row = document.createElement("div");
+  row.className = "special-duty-row";
+  SPECIAL_DUTIES.forEach(function(spec){
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "special-duty-btn";
+    btn.dataset.code = spec.code;
+    btn.dataset.base = spec.base;
+    btn.textContent = spec.label;
+    btn.addEventListener("click", function(ev){
+  ev.preventDefault();
+
+  // ⭐ NEW: CR opens CR popup — nothing else changes
+  if (spec.code === "CR") {
+      openCRConsumeModal();
+      return;
+  }
+
+  var base = this.dataset.base;
+
+  if(spec.type === "shift"){
+      handleDutySelection(base);
+
+      const rec = data.records[selectedLogDate];
+      if (rec && rec.duty.startsWith(base)) {
+          selectedShiftCode = rec.duty.split("-")[1];
+          selectedStation = rec.station;
+      } else {
+          selectedShiftCode = null;
+          selectedStation = null;
+      }
+
+  } else {
+      handleDutySelection(base);
+  }
+
+  updateDutyChipStates();
+  updateSpecialDutyStates();
+  updateTrainVisibility();
+});
+    row.appendChild(btn);
+  });
+  container.appendChild(row);
+  updateSpecialDutyStates();
+}
+
+function updateSpecialDutyStates(){
+  var btns = document.querySelectorAll(".special-duty-btn");
+  for(var i=0;i<btns.length;i++){
+    var base = btns[i].dataset.base;
+    var active = false;
+    if(selectedDutyCode && !isNumericDuty(selectedDutyCode)){
+      // IMPROVEMENT 7: Check if base matches, even if selectedDutyCode has a shift (e.g. STN-M vs STATION)
+      if(selectedDutyCode.split("-")[0] === base) active = true;
+    }
+    btns[i].classList.toggle("active", active);
+  }
+}
+
+function updateTrainVisibility(){
+  var trainField = document.getElementById("trainField");
+  var show = selectedDutyCode && isNumericDuty(selectedDutyCode);
+  trainField.style.display = show ? "block" : "none";
+}
+
+/* Train buttons for Log Sheet */
+function renderTrainButtons(){
+  var container = document.getElementById("trainButtons");
+  container.innerHTML = "";
+  for(let i=1;i<=10;i++){
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "train-btn";
+    btn.dataset.no = i;
+    btn.textContent = String(i);
+    btn.addEventListener("click", function(ev){
+      ev.preventDefault();
+      var no = String(i);
+      var index = selectedTrains.indexOf(no);
+      if(index > -1){
+        selectedTrains.splice(index, 1);
+      } else {
+        selectedTrains.push(no);
+        selectedTrains.sort((a,b) => Number(a)-Number(b));
+      }
+      updateTrainButtonStates();
+    });
+    container.appendChild(btn);
+  }
+  updateTrainButtonStates();
+}
+
+function updateTrainButtonStates(){
+  var btns = document.querySelectorAll("#trainButtons .train-btn");
+  for(var i=0;i<btns.length;i++){
+    var no = btns[i].dataset.no;
+    btns[i].classList.toggle("active", selectedTrains.includes(no));
+  }
+}
+
+document.getElementById("saveDutyBtn").addEventListener("click", function(){
+
+  /* --------------------- VALIDATION --------------------- */
+
+  if(!selectedDutyCode){
+    alert("Please select a duty or leave type.");
+    return;
+  }
+  
+  let finalDutyCode = selectedDutyCode;
+  let finalStation = null;
+
+  // Shift-based duties: DCC / OCC / STATION
+  const isShiftBase = finalDutyCode === "DCC" || 
+                      finalDutyCode === "OCC" || 
+                      finalDutyCode === "STATION";
+
+  if (isShiftBase) {
+    if (!selectedShiftCode) {
+        alert("Please select a shift (Morning/Evening/Night).");
+        return;
+    }
+    if (!selectedStation) {
+        alert("Please select a station.");
+        return;
+    }
+    finalDutyCode = finalDutyCode + "-" + selectedShiftCode;
+    finalStation = selectedStation;
+  }
+
+  // Train selection required for numeric duties
+  if(isNumericDuty(finalDutyCode) && selectedTrains.length === 0){
+    alert("Please select at least one train set for a train duty.");
+    return;
+  }
+  /* ============================
+     STEP-5 — R/S → Add CR Earned
+     ============================ */
+  if (restEditMode === "R/S" && pendingRestOldDate) {
+      if (!data.availableCR) data.availableCR = [];
+      // convert missed rest into Compensatory Rest
+      data.availableCR.push(pendingRestOldDate);
+  }
+
+  /* --------------------- SAVE DUTY --------------------- */
+
+  data.records[selectedLogDate] = {
+    duty: finalDutyCode,
+    tag: null,
+    trains: isNumericDuty(finalDutyCode) ? selectedTrains : [],
+    station: finalStation
+  };
+
+  /* ---------------- R/S → Convert lost rest into CR ---------------- */
+  if (restEditMode === "R/S" && pendingRestOldDate) {
+
+    // Ensure CR array exists
+    if (!data.availableCR) data.availableCR = [];
+
+    // Add CR credit
+    data.availableCR.push({
+      earnedOn: pendingRestOldDate
+    });
+
+    // Remove accidental CR entry from old date (must not appear in calendar)
+    if (
+      data.records[pendingRestOldDate] &&
+      data.records[pendingRestOldDate].duty === "CR"
+    ) {
+      delete data.records[pendingRestOldDate];
+    }
+  }
+
+  /* --------------- Clear any REST marking on selected day --------------- */
+  if(data.manualRestDates && data.manualRestDates[selectedLogDate]){
+    delete data.manualRestDates[selectedLogDate];
+  }
+
+  /* -------- RESET R/S MODE AND SAVE -------- */
+
+  restEditMode = null;
+  pendingRestOldDate = null;
+
+  saveData();
+  hideAllSheets();
+  renderCalendar();
+
+  if(currentTab === "history") renderHistory();
+});
+
+
+/* SPECIAL DUTY DROPDOWN TOGGLE */
+document.getElementById("specialDutyToggle").addEventListener("click", function(){
+  specialDutyOpen = !specialDutyOpen;
+  this.textContent = specialDutyOpen ? "Special ▴" : "Special ▾";
+  renderSpecialDutyButtons();
+});
+
+/* ---------- HOME CALENDAR ---------- */
+function getDaysInMonth(year, month) {
+  return new Date(year, month + 1, 0).getDate();
+}
+
+function getDayOfWeek(year, month, day) {
+  return new Date(year, month, day).getDay(); // 0=Sun, 6=Sat
+}
+
+function getChipByDate(dateIso){
+  return document.querySelector(`.timeline-chip[data-date="${dateIso}"]`);
+}
+
+function renderCalendar(){
+  var calendarRow = document.getElementById("calendarRow");
+  calendarRow.innerHTML = "";
+  const year = currentMonthYear.year;
+  const month = currentMonthYear.month;
+  const daysInMonth = getDaysInMonth(year, month);
+  const todayIso = todayISO();
+  const todayInMonth = (new Date(todayIso).getFullYear() === year && new Date(todayIso).getMonth() === month);
+  const profRestDay = data.profile.restDay;
+  const restDayIndex = profRestDay ? ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"].indexOf(profRestDay) : -1;
+  let todayChip = null;
+  let isScrollHandled = false;
+
+  for(let i=1;i<=daysInMonth;i++){
+    const dateIso = year + "-" + String(month+1).padStart(2,"0") + "-" + String(i).padStart(2,"0");
+    const rec = data.records[dateIso];
+    const dayOfWeek = getDayOfWeek(year, month, i);
+    const isScheduledRest = (restDayIndex > -1 && dayOfWeek === restDayIndex);
+    const isManualRest = data.manualRestDates && data.manualRestDates[dateIso];
+    let isRest = isScheduledRest || isManualRest;
+    
+    // Check if a duty is logged on a rest day (Rest Suspended / Rest Changed)
+    if(rec && rec.tag && (rec.tag === "R/S" || rec.tag === "R/C")){
+        isRest = true; // Still treat as rest day for styling even though duty is logged
+    } else if (rec) {
+        isRest = false; // Logged duty overrides REST status for a day
+    }
+
+    // Determine what to display
+    const weekdayShort = new Date(year, month, i).toLocaleDateString("en-IN",{ weekday:"short" });
+    const dayNum = String(i).padStart(2,"0");
+    const chip = document.createElement("div");
+    chip.className = "timeline-chip";
+    chip.dataset.date = dateIso;
+
+    // Top Row
+    var topDiv = document.createElement("div");
+    topDiv.className = "timeline-chip-top";
+    var leftSpan = document.createElement("span");
+    const labelText = (dateIso === todayIso) ? ("TODAY " + dayNum) : (weekdayShort + " " + dayNum);
+    
+    if(dateIso === todayIso){
+        var wrap = document.createElement("span");
+        wrap.className = "today-label-text";
+        var textNode = document.createElement("span");
+        textNode.textContent = labelText;
+        var flash = document.createElement("span");
+        flash.className = "today-icon";
+        flash.textContent = "⚡";
+        wrap.appendChild(textNode);
+        wrap.appendChild(flash);
+        leftSpan.appendChild(wrap);
+    } else {
+        leftSpan.textContent = labelText;
+    }
+    
+    var rightSpan = document.createElement("span");
+    rightSpan.style.fontWeight = "700";
+    rightSpan.style.fontSize = "0.8rem";
+    if(rec){
+        // IMPROVEMENT 6: Pass rec.station to formatDutyLabel
+        rightSpan.textContent = formatDutyLabel(rec.duty, rec.tag, rec.station);
+    } else if(isRest){
+        rightSpan.textContent = "REST";
+    } else {
+        rightSpan.textContent = "";
+    }
+    topDiv.appendChild(leftSpan);
+    topDiv.appendChild(rightSpan);
+
+    // Bottom Row
+    var bottomDiv = document.createElement("div");
+    bottomDiv.className = "timeline-chip-bottom";
+    if(rec){
+        bottomDiv.textContent = "Tap to view or edit";
+    } else if(isRest){
+        bottomDiv.textContent = "Weekly rest day – tap to edit";
+    } else {
+        bottomDiv.textContent = "Tap to add duty";
+    }
+
+    if(dateIso === todayIso) chip.classList.add("today-chip");
+    if(dateIso > todayIso && todayInMonth) chip.classList.add("future-chip");
+    if(rec) chip.classList.add("has-duty");
+    if(isRest && !rec) chip.classList.add("rest-chip");
+    if(rec && isRest) chip.classList.add("rest-chip-duty"); // New class for duty on rest day
+
+    chip.appendChild(topDiv);
+    chip.appendChild(bottomDiv);
+    
+    var expandDiv = document.createElement("div");
+    expandDiv.className = "date-expand";
+    expandDiv.style.display = "none";
+    chip.appendChild(expandDiv);
+    
+    chip.addEventListener("click", function(){
+      handleDateClick(this.dataset.date);
+    });
+    calendarRow.appendChild(chip);
+    
+    if(dateIso === todayIso) todayChip = chip;
+  }
+  
+  if (todayChip && !isScrollHandled) {
+    todayChip.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    isScrollHandled = true;
+  }
+
+  document.getElementById("noDutiesMsg").style.display = (Object.keys(data.records).length === 0) ? "block" : "none";
+}
+
+// ... (handleDateClick function remains the same, but ensures it passes rec.station) ...
+function handleDateClick(dateIso){
+    var chip = getChipByDate(dateIso);
+    var rec = data.records[dateIso];
+    var isScheduledRest = false;
+    const dayOfWeek = getDayOfWeek(Number(dateIso.substring(0,4)), Number(dateIso.substring(5,7)) - 1, Number(dateIso.substring(8,10)));
+    const profRestDay = data.profile.restDay;
+    const restDayIndex = profRestDay ? ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"].indexOf(profRestDay) : -1;
+    if (restDayIndex > -1 && dayOfWeek === restDayIndex) isScheduledRest = true;
+    const isManualRest = data.manualRestDates && data.manualRestDates[dateIso];
+    const isRest = isScheduledRest || isManualRest;
+
+    // Close previous expanded chip
+    if(expandedDate){
+        var prevChip = getChipByDate(expandedDate);
+        if(prevChip){
+            prevChip.classList.remove("active");
+            prevChip.querySelector(".date-expand").style.display = "none";
+        }
+    }
+
+    if(expandedDate === dateIso){
+        expandedDate = null;
+        return;
+    }
+    
+    // Open new expanded chip
+    expandedDate = dateIso;
+    chip.classList.add("active");
+    var expandDiv = chip.querySelector(".date-expand");
+    expandDiv.style.display = "block";
+    expandDiv.innerHTML = "";
+
+    if(rec){
+        var dutyInfo = DUTY_TABLE[rec.duty] || {};
+        var signOnLabel = dutyInfo.signOn || "—";
+        var onPlaceLabel = dutyInfo.onPlace || "—";
+        var signOffLabel = dutyInfo.signOff || "—";
+        var offPlaceLabel = dutyInfo.offPlace || "—";
+        var hoursLabel = dutyInfo.hours || "—";
+        
+        // IMPROVEMENT 6: Update place labels for STN/OCC/DCC to include station if available
+        if (rec.station) {
+            onPlaceLabel = onPlaceLabel.replace("STATION", rec.station).replace("DCC", rec.station).replace("OCC", rec.station);
+            offPlaceLabel = offPlaceLabel.replace("STATION", rec.station).replace("DCC", rec.station).replace("OCC", rec.station);
+        }
+
+        var block = document.createElement("div");
+        block.className = "expand-block";
+        block.innerHTML = `
+    <div><strong>${formatDateHuman(dateIso)}</strong></div>
+    <div>Duty: ${formatDutyLabel(rec.duty, rec.tag, rec.station)}</div>
+    <button class="edit-btn">Edit Duty</button>
+`;
+        var editBtn = block.querySelector(".edit-btn");
+        editBtn.addEventListener("click", function(ev){
+            ev.stopPropagation();
+            // IMPROVEMENT 7: Log sheet now handles shift/station initialization
+            showLogSheetFor(dateIso, null); 
+        });
+        expandDiv.appendChild(block);
+    } else if(isRest){
+        var blockRest = document.createElement("div");
+        blockRest.className = "expand-block";
+        blockRest.innerHTML = "<div><strong>" + formatDateHuman(dateIso) + "</strong></div>" +
+            "<div>Scheduled Weekly Rest</div>";
+        var actions = document.createElement("div");
+        actions.className = "rest-actions";
+        var btnRS = document.createElement("button");
+        btnRS.className = "rest-btn rest-btn-rs";
+        btnRS.textContent = "R/S";
+        btnRS.title = "Rest Suspended";
+        var btnRC = document.createElement("button");
+        btnRC.className = "rest-btn rest-btn-rc";
+        btnRC.textContent = "R/C";
+        btnRC.title = "Rest Changed";
+        btnRS.addEventListener("click", function(ev){
+            ev.stopPropagation();
+            showLogSheetFor(dateIso, "R/S");
+        });
+        btnRC.addEventListener("click", function(ev){
+            ev.stopPropagation();
+            showLogSheetFor(dateIso, "R/C");
+        });
+        actions.appendChild(btnRS);
+        actions.appendChild(btnRC);
+        blockRest.appendChild(actions);
+        expandDiv.appendChild(blockRest);
+    } else {
+        // No duty: show log sheet
+        showLogSheetFor(dateIso, null);
+    }
+}
+
+
+function initMonthSelect(){
+  var sel = document.getElementById("monthSelect");
+  sel.innerHTML = "";
+  const baseYear = new Date().getFullYear();
+  for(let m=0;m<12;m++){
+    const dt = new Date(baseYear, m, 1);
+    const label = dt.toLocaleDateString("en-IN",{ month:"long" });
+    const opt = document.createElement("option");
+    opt.value = m;
+    opt.textContent = label;
+    if(m === currentMonthYear.month) opt.selected = true;
+    sel.appendChild(opt);
+  }
+  sel.addEventListener("change", function(){
+    currentMonthYear.month = Number(this.value);
+    renderCalendar();
+  });
+  renderCalendar();
+}
+
+/* ---------- HISTORY ---------- */
+let historyFilterMonth = "all";
+
+function getLoggedMonths(dates) {
+    const months = new Set();
+    dates.forEach(date => {
+        months.add(date.substring(0, 7)); // YYYY-MM
+    });
+    return Array.from(months);
+}
+
+/* MODIFIED: Filter history dates based on search input (IMPROVEMENT 5) */
+function filterHistoryDates(dates) {
+    const searchTerm = document.getElementById("historySearchInput").value.toLowerCase().trim();
+    if (!searchTerm) {
+        return dates;
+    }
+
+    const filtered = dates.filter(function(date) {
+        const rec = data.records[date];
+        if (!rec) return false;
+
+        // 1. Date digits
+        if (date.includes(searchTerm)) return true;
+        const dayNum = date.split('-')[2];
+        if (dayNum.includes(searchTerm)) return true;
+
+        // 2. Duty code, including CL, GH, RH, CR
+        const duty = rec.duty ? rec.duty.toLowerCase() : "";
+        if (duty.includes(searchTerm)) return true;
+
+        // 3. Trains
+        const trains = rec.trains ? rec.trains.join(",").toLowerCase() : "";
+        if (trains.includes(searchTerm)) return true;
+
+        // 4. Station/Place (from DUTY_TABLE, e.g. MSOR SCR, or STN, DCC, OCC)
+        const dutyInfo = DUTY_TABLE[rec.duty] || {};
+        const onPlace = dutyInfo.onPlace ? dutyInfo.onPlace.toLowerCase() : "";
+        const offPlace = dutyInfo.offPlace ? dutyInfo.offPlace.toLowerCase() : "";
+        if (onPlace.includes(searchTerm) || offPlace.includes(searchTerm)) return true;
+        
+        // 5. Explicit Station Code (for DCC/OCC/STN duties with station code)
+        const station = rec.station ? rec.station.toLowerCase() : "";
+        if(station.includes(searchTerm)) return true;
+        
+        // 6. Leave type search
+        if (["cl", "gh", "rh", "cr"].includes(searchTerm) && duty === searchTerm) return true;
+
+        return false;
+    });
+
+    return filtered;
+}
+
+/* MODIFIED: Render history month chips (IMPROVEMENT 4) */
+function renderHistoryMonthChips() {
+    const container = document.getElementById("historyMonthChips");
+    container.innerHTML = "";
+    
+    // Sort dates to get chronologically correct months
+    const allDates = Object.keys(data.records).sort().reverse();
+    const months = getLoggedMonths(allDates).sort().reverse();
+
+    const allChip = document.createElement("div");
+    allChip.className = "history-month-chip" + (historyFilterMonth === "all" ? " active" : "");
+    allChip.textContent = "All";
+    allChip.addEventListener("click", function() {
+        historyFilterMonth = "all";
+        renderHistory();
+    });
+    container.appendChild(allChip);
+
+    months.forEach(function(month) {
+        const parts = month.split("-");
+        const label = new Date(parts[0], parts[1] - 1, 1).toLocaleDateString("en-IN", {
+            month: "short",
+            year: "numeric"
+        });
+        const chip = document.createElement("div");
+        chip.className = "history-month-chip" + (historyFilterMonth === month ? " active" : "");
+        chip.textContent = label;
+        chip.dataset.month = month;
+        chip.addEventListener("click", function() {
+            historyFilterMonth = month;
+            renderHistory();
+        });
+        container.appendChild(chip);
+    });
+}
+
+/* MODIFIED: Compute summary of filtered history data (IMPROVEMENTS 1 & 2) */
+function computeHistorySummary(dates) {
+    const summary = {
+        totalDuties: 0,
+        totalCR: 0,
+        totalCL: 0,
+        totalGH: 0,
+        totalRH: 0,
+        totalNightHours: 0,
+        totalICE: 0,
+        totalHDA: 0,
+        totalAllowance: 0,
+        nightDays: 0,
+        ndaAmount: null
+    };
+
+    dates.forEach(function(date) {
+        const rec = data.records[date];
+        if (!rec) return;
+
+        const dutyInfo = DUTY_TABLE[rec.duty] || {};
+        const signOn = dutyInfo.signOn;
+        const signOff = dutyInfo.signOff;
+
+        // 1. Duty/Leave Counts
+        if (rec.duty) {
+            summary.totalDuties++;
+            if (rec.duty === "CR") summary.totalCR++;
+            else if (rec.duty === "CL") summary.totalCL++;
+            else if (rec.duty === "GH") summary.totalGH++;
+            else if (rec.duty === "RH") summary.totalRH++;
+        }
+
+        // 2. Allowance Calculations
+        const hda = calculateHDA(rec.duty);
+        const ice = calculateICE(rec.duty, signOn, signOff);
+        const nightHours = computeNightHours(rec.duty, signOn, signOff);
+
+        summary.totalHDA += hda;
+        summary.totalICE += ice;
+        summary.totalNightHours += nightHours;
+    });
+
+    // 3. NDA Calculation (FIXED: Use total hours / 8 for night days)
+    const filterMonthValue = historyFilterMonth; // YYYY-MM format from chip
+    const isSingleMonth = filterMonthValue !== "all" && filterMonthValue.length === 7;
+    const oneDayPayKey = isSingleMonth ? filterMonthValue.split("-")[1] : null; // MM part of YYYY-MM
+    const oneDayPay = (data.pay && oneDayPayKey) ? data.pay[oneDayPayKey] : null;
+
+    if (isSingleMonth && oneDayPay) {
+        // Night Days = Total Night Hours / 8 (assuming 8 hours per night duty)
+        summary.nightDays = summary.totalNightHours / 24; 
+        // NDA Amount = Night Days * One-Day-Pay
+        summary.ndaAmount = summary.nightDays * oneDayPay; // FIX: Changed from / 24 to use the calculated Night Days
+    } else {
+        summary.nightDays = 0;
+        summary.ndaAmount = null;
+    }
+
+    // 4. Total Allowance
+    summary.totalAllowance = summary.totalHDA + summary.totalICE + (summary.ndaAmount || 0);
+
+    return summary;
+}
+
+/* MODIFIED: Render history summary (IMPROVEMENT 1) */
+function renderHistorySummary(dates) {
+    var container = document.getElementById("historySummary");
+    container.innerHTML = "";
+    if (dates.length === 0) {
+        return;
+    }
+    var summary = computeHistorySummary(dates);
+
+    function nf0(x) { return (x || 0).toFixed(0); }
+    function nf1(x) { return (x || 0).toFixed(1); }
+    function addCard(title, value, sub) {
+        var card = document.createElement("div");
+        card.className = "history-summary-card";
+        card.innerHTML = "<div class='history-summary-label'>" + title + "</div>" +
+            "<div class='history-summary-value'>" + value + "</div>" +
+            (sub ? "<div class='history-summary-sub'>" + sub + "</div>" : "");
+        container.appendChild(card);
+        return card;
+    }
+
+    // a. Total Duties count with extra information
+    const totalDutiesSub = `CR: ${summary.totalCR}, CL: ${summary.totalCL}, GH: ${summary.totalGH}, RH: ${summary.totalRH}`;
+    // NOTE: Changed "Total Duties" to show total duties (including leaves), matching what's tracked.
+    addCard("Total Duties", String(summary.totalDuties), totalDutiesSub);
+
+    // b. Total night duty hr(A)
+    addCard("Night Hours (A)", nf1(summary.totalNightHours) + " hrs");
+
+    // c. ICE with Amount
+    addCard("ICE", "₹ " + nf0(summary.totalICE));
+
+    // c. HDA with Amount
+    addCard("HDA", "₹ " + nf0(summary.totalHDA));
+
+    // c. NDA with Amount (Improvement 2: Conditional Amount)
+    let ndaValueText = "—";
+    const oneDayPayKey = historyFilterMonth.length === 7 ? historyFilterMonth.split("-")[1] : null;
+    const oneDayPay = (data.pay && oneDayPayKey) ? data.pay[oneDayPayKey] : null;
+    let ndaSubText = "1-day pay not set or 'All' filter selected.";
+
+    if (summary.ndaAmount != null) {
+        ndaValueText = "₹ " + nf0(summary.ndaAmount);
+        // Show Night Days (Total Night Hours / 8)
+        ndaSubText = `Night Days: ${nf1(summary.nightDays)} (1-Day Pay: ₹${oneDayPay || 0})`;
+    }
+    addCard("NDA", ndaValueText, ndaSubText);
+
+    // d. Total Allowance
+    addCard("Total Allowance", "₹ " + nf0(summary.totalAllowance));
+}
+
+function renderHistory(){
+  var box = document.getElementById("historyList");
+  var emptyMsg = document.getElementById("noHistoryMsg");
+  const allDates = Object.keys(data.records).sort().reverse();
+  
+  // IMPROVEMENT 4: Render Month Chips
+  renderHistoryMonthChips();
+
+  let dates = allDates;
+  
+  // Filter by month
+  if (historyFilterMonth !== "all") {
+    dates = dates.filter(date => date.startsWith(historyFilterMonth));
+  }
+  
+  // IMPROVEMENT 5: Filter by search input
+  dates = filterHistoryDates(dates);
+
+  renderHistorySummary(dates);
+  box.innerHTML = "";
+  if(dates.length === 0){
+    emptyMsg.style.display = "block";
+    openHistoryDate = null;
+    return;
+  }
+  emptyMsg.style.display = "none";
+  dates.forEach(function(date){
+    var rec = data.records[date];
+    var dutyInfo = DUTY_TABLE[rec.duty] || {};
+    var signOnLabel = dutyInfo.signOn || "—";
+    var onPlaceLabel = dutyInfo.onPlace || "—";
+    var signOffLabel = dutyInfo.signOff || "—";
+    var offPlaceLabel = dutyInfo.offPlace || "—";
+    var hoursLabel = dutyInfo.hours || "—";
+
+    // IMPROVEMENT 6: Update place labels for STN/OCC/DCC to include station if available
+    if (rec.station) {
+        onPlaceLabel = onPlaceLabel.replace("STATION", rec.station).replace("DCC", rec.station).replace("OCC", rec.station);
+        offPlaceLabel = offPlaceLabel.replace("STATION", rec.station).replace("DCC", rec.station).replace("OCC", rec.station);
+    }
+
+    var item = document.createElement("div");
+    item.className = "history-item";
+    if(openHistoryDate === date) item.classList.add("active");
+    
+    var header = document.createElement("div");
+    header.className = "history-header";
+    // IMPROVEMENT 6: Pass rec.station to formatDutyLabel
+    header.innerHTML = "<span>" + formatDateHuman(date) + "</span>" + 
+                       "<span>" + formatDutyLabel(rec.duty, rec.tag, rec.station) + "</span>";
+    item.appendChild(header);
+
+var meta = document.createElement("div");
+
+// Hide meta completely for shift duties (STN, DCC, OCC)
+// AND special duties (CL, GH, RH, CR)
+if (isShiftDuty(rec.duty) || isNoDetailSpecial(rec.duty)) {
+    meta.style.display = "none";
+} else {
+    meta.className = "history-meta";
+    meta.textContent = `${signOnLabel} @ ${onPlaceLabel} – ${signOffLabel} @ ${offPlaceLabel} (${hoursLabel})`;
+}
+
+item.appendChild(meta);
+    var detail = document.createElement("div");
+    detail.className = "history-detail";
+    detail.style.display = (openHistoryDate === date) ? "block" : "none";
+    
+    // Allowances calculation for detail view
+    const hda = calculateHDA(rec.duty);
+    const ice = calculateICE(rec.duty, signOnLabel, signOffLabel);
+    const nightHours = computeNightHours(rec.duty, signOnLabel, signOffLabel);
+
+    detail.innerHTML = `
+      <div>Hours: ${hoursLabel}</div>
+      <div>Trains: ${(rec.trains || []).join(", ") || 'None'}</div>
+      <div>Hard Duty Allowance: ₹${hda}</div>
+      <div>Incidental Contingent Expenditure: ₹${ice}</div>
+      <div>Night Duty Hours: ${nightHours} hrs</div>
+      <button class="edit-btn" style="position:static; margin-top:0.4rem; float:right;">Edit Duty</button>
+    `;
+
+    detail.querySelector(".edit-btn").addEventListener("click", function(ev){
+        ev.stopPropagation();
+        showLogSheetFor(date, null);
+    });
+    
+    item.appendChild(detail);
+
+    item.addEventListener("click", function(){
+      openHistoryDate = (openHistoryDate === date) ? null : date;
+      renderHistory();
+    });
+
+    box.appendChild(item);
+  });
+}
+
+/* ---------- DUTY TABLE FULL VIEW ---------- */
+function renderDutyTableFull(){
+  var tbody = document.getElementById("dutyTableBody");
+  tbody.innerHTML = "";
+  var keys = Object.keys(DUTY_TABLE);
+  var stdKeys = keys.filter(isNumericDuty).sort(function(a,b){ return Number(a)-Number(b); });
+  var specKeys = keys.filter(function(k){ return !isNumericDuty(k); }).sort();
+
+  var trStdHead = document.createElement("tr");
+  trStdHead.innerHTML = "<th colspan='6'>Standard Duties (1–26)</th>";
+  tbody.appendChild(trStdHead);
+  stdKeys.forEach(function(no){
+    var d = DUTY_TABLE[no];
+    var tr = document.createElement("tr");
+    tr.innerHTML = "<td>" + no + "</td>" + "<td>" + (d.signOn || "") + "</td>" + "<td>" + (d.onPlace || "") + "</td>" + "<td>" + (d.signOff || "") + "</td>" + "<td>" + (d.offPlace || "") + "</td>" + "<td>" + (d.hours || "") + "</td>";
+    tbody.appendChild(tr);
+  });
+
+  var trSpecHead = document.createElement("tr");
+  trSpecHead.innerHTML = "<th colspan='6'>Special Duties</th>";
+  tbody.appendChild(trSpecHead);
+  specKeys.forEach(function(code){
+    var d = DUTY_TABLE[code];
+    var tr2 = document.createElement("tr");
+    tr2.innerHTML = "<td>" + code + "</td>" + "<td>" + (d.signOn || "") + "</td>" + "<td>" + (d.onPlace || "") + "</td>" + "<td>" + (d.signOff || "") + "</td>" + "<td>" + (d.offPlace || "") + "</td>" + "<td>" + (d.hours || "") + "</td>";
+    tbody.appendChild(tr2);
+  });
+}
+
+/* ---------- SETTINGS VIEW MODE (LOCKED) ---------- */
+function initViewModeUI(){
+  var sel = document.getElementById("viewModeSelect");
+  sel.value = "vertical";
+  sel.addEventListener("change", function(){
+    sel.value = "vertical";
+  });
+}
+
+/* ---------- INIT ---------- */
+document.addEventListener("DOMContentLoaded", function() {
+  startClock();
+  renderProfile();
+  attachProfileHandlers();
+  attachNav();
+  attachFabAndSheets();
+  renderDutyTableFull();
+  initMonthSelect();
+  initViewModeUI();
+
+  // IMPROVEMENT 5: Live search listener
+  document.getElementById("historySearchInput").addEventListener("input", renderHistory);
+});
+/* ================================
+   CR POPUP LOGIC — Option A
+   ================================ */
+
+/* Open CR modal */
+function openCRConsumeModal() {
+    if (!data.availableCR || data.availableCR.length === 0) {
+        alert("No available CR to consume.");
+        return;
+    }
+    showOverlay();
+    document.getElementById("crConsumeModal").style.display = "block";
+    renderCRList();
+}
+
+/* Close CR modal */
+function closeCRConsumeModal() {
+    hideOverlay();
+    document.getElementById("crConsumeModal").style.display = "none";
+}
+
+/* Render CR list as chips */
+function renderCRList() {
+    var container = document.getElementById("crList");
+    container.innerHTML = "";
+
+    data.availableCR.forEach(function(dateIso) {
+        var chip = document.createElement("div");
+        chip.className = "date-chip";
+        chip.dataset.date = dateIso;
+        chip.innerHTML =
+            `<span class="date-chip-label">${dateIso.substring(8)}</span>
+             <span class="date-chip-secondary">${formatDateHuman(dateIso)}</span>`;
+
+        chip.addEventListener("click", function() {
+            document.querySelectorAll("#crList .date-chip").forEach(c => c.classList.remove("active"));
+            chip.classList.add("active");
+            chip.dataset.selected = "1";
+        });
+
+        container.appendChild(chip);
+    });
+}
+
+/* Use selected CR */
+document.getElementById("useCRBtn").addEventListener("click", function() {
+    var selectedChip = document.querySelector("#crList .date-chip.active");
+    if (!selectedChip) {
+        alert("Please select a CR date to use.");
+        return;
+    }
+
+    var crDate = selectedChip.dataset.date;
+
+    // Log CR on selected day
+    data.records[selectedLogDate] = {
+        duty: "CR",
+        tag: null,
+        trains: [],
+        station: null
+    };
+
+    // Remove CR from available list
+    data.availableCR = data.availableCR.filter(d => d !== crDate);
+
+    saveData();
+    closeCRConsumeModal();
+    renderCalendar();
+    if (currentTab === "history") renderHistory();
+});
+</script>
+</body>
+</html>
