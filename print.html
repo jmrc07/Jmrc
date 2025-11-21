@@ -1,222 +1,216 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<title>Night Duty Allowance Claim Form</title>
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8" />
+<title>Monthly Duty Report</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <style>
-  @page { size: A4; margin: 10mm; }
-  body, html { margin:0; padding:0; background:#fff; font-family:"Times New Roman", serif; }
+  body { font-family: system-ui, -apple-system, sans-serif; margin:0; background:#f8fafc; padding:10px; }
+  .container { max-width:900px; margin:auto; background:white; padding:15px; border-radius:12px; box-shadow:0 0 10px rgba(0,0,0,0.08); }
+  .header { text-align:center; margin-bottom:20px; }
+  .profile-box { background:#eef2ff; border-left:4px solid #2563eb; padding:12px; border-radius:8px; margin-bottom:18px; font-size:14px; }
 
-  .page { width:760px; margin:0 auto; padding:12px; }
+  select { padding:8px 12px; font-size:15px; border-radius:6px; border:1px solid #cbd5e1; margin-bottom:15px; width:100%; }
 
-  .logo { text-align:center; margin-bottom:6px; }
-  .logo img { width:85px; height:auto; }
+  .filter-chips { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:15px; }
+  .chip { padding:6px 12px; background:#e2e8f0; border:none; border-radius:20px; cursor:pointer; font-size:13px; }
+  .chip.active { background:#2563eb; color:white; }
 
-  h1 { text-align:center; font-size:20px; margin:4px 0; }
-  .sub { text-align:center; font-size:11.5px; }
+  .table-container { width:100%; overflow-x:auto; border-radius:8px; }
+  table { width:100%; min-width:950px; border-collapse:collapse; font-size:13px; }
+  th { background:#2563eb; color:white; padding:8px 5px; white-space:nowrap; position:sticky; top:0; }
+  td { padding:6px 5px; border-bottom:1px solid #e2e8f0; white-space:nowrap; }
+  tr:nth-child(even){ background:#f8fafc; }
 
-  table { border-collapse:collapse; width:100%; table-layout:fixed; }
-  th, td { border:1px solid #000; padding:6px; font-size:12px; text-align:center; }
+  .total-box { margin-top:20px; padding:12px; background:#f1f5f9; border-left:4px solid #2563eb; border-radius:8px; font-size:14px; }
 
-  .meta th:nth-child(1), .meta td:nth-child(1) { width:22%; }
-  .meta th:nth-child(2), .meta td:nth-child(2) { width:12%; }
-  .meta th:nth-child(3), .meta td:nth-child(3) { width:16%; }
-  .meta th:nth-child(4), .meta td:nth-child(4) { width:16%; }
-  .meta th:nth-child(5), .meta td:nth-child(5) { width:12%; }
-  .meta th:nth-child(6), .meta td:nth-child(6) { width:22%; }
-
-  .duty th { font-size:12px; font-weight:bold; }
-  .duty td { height:26px; }
-
-  .cert-title { text-align:center; font-weight:bold; text-decoration:underline; font-size:13px; margin-top:18px; }
-  .cert-intro { font-size:10.5px; margin-top:6px; }
-
-  .sig-employee { float:right; width:40%; text-align:center; font-size:10.5px; margin-top:12px; }
-  .sigline { margin-top:10px; border-top:1px solid #000; width:160px; margin:10px auto 0 auto; }
-
-  .cert-points { margin-top:12px; font-size:10.5px; line-height:1.25; }
-
-  .manager-row { margin-top:16px; font-size:10.5px; }
-  .manager-left { float:left; width:48%; }
-  .manager-right { float:right; width:48%; text-align:right; }
-
-  .spacer { height:12px; clear:both; }
-
+  @media print {
+    select, .no-print, .filter-chips { display:none; }
+    body{ background:white; padding:0; }
+    .container{ box-shadow:none; border-radius:0; }
+  }
 </style>
 </head>
 
 <body>
-  <div class="page">
+<div class="container">
 
-    <!-- Logo -->
-    <div class="logo">
-        <img src="jaipur_logo.png" alt="JMRC Logo">
-    </div>
-
-    <h1>Night Duty Allowance Claim Form</h1>
-    <div class="sub">(As per Rule 9.2 (f) of JMRC Recruitment Rules) 2012<br>(To be submitted in Duplicate)</div>
-
-    <!-- TOP TABLE -->
-    <table class="meta" style="margin-top:12px;">
-      <tr>
-        <th>Name of Employee</th>
-        <th>Emp. ID</th>
-        <th>Designation & Deptt.</th>
-        <th>Date of Confirmation</th>
-        <th>Month :-</th>
-        <th>Pay of One day for the month (Basic+DA)</th>
-      </tr>
-      <tr>
-        <td id="empName"></td>
-        <td id="empId"></td>
-        <td id="designation"></td>
-        <td id="confirmDate"></td>
-        <td id="month"></td>
-        <td id="payOneDay"></td>
-      </tr>
-    </table>
-
-    <!-- DUTY TABLE -->
-    <table class="duty" style="margin-top:14px;">
-      <thead>
-        <tr>
-          <th>S.No.</th>
-          <th>Date</th>
-          <th>Sign On Time</th>
-          <th>Sign Off Time</th>
-          <th>Night Duty Hours<br>(2200 to 0600)</th>
-          <th>Duty Place/Station</th>
-          <th>Remarks</th>
-        </tr>
-      </thead>
-      <tbody id="dutyBody"></tbody>
-    </table>
-
-    <div class="cert-title">Certificate</div>
-
-    <div class="cert-intro">
-      It is certify that the Night Duty Allowance, as claimed above is correct &amp; due to me,
-      and this claim has not been submitted earlier.
-    </div>
-
-    <div style="width:100%;">
-      <div class="sig-employee">
-        <b>Signature of the employee</b>
-        <div class="sigline"></div>
-      </div>
-      <div style="clear:both;"></div>
-    </div>
-
-    <div class="cert-points">
-      <p>
-        1. As per sign on and sign off duty record of the employee Mr./Mrs...................<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;<span id="certName"></span> &nbsp;&nbsp; Design.<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;SC/TO, Deptt.–OPERATIONS, Duty Place/Station–Trains/Stations,
-        the above detail submitted for the Night Duty Allowance is certified and due to the above employee.
-      </p>
-
-      <p>
-        2. Total Night Duty Allowance payable to him / her is Rs. <b id="totalNDA"></b>/-
-      </p>
-    </div>
-
-    <div class="manager-row">
-      <div class="manager-left"><b>Sanctioned (As per clause E18 of SOP, JMRC) by:</b></div>
-      <div class="manager-right"><b>Name & Signature of Concerned Manager</b></div>
-      <div style="clear:both;"></div>
-    </div>
-
-    <div class="spacer"></div>
-
-    <div style="font-size:10.5px; margin-bottom:12px;"><b>Concerned ED/General Manager (Sign & Seal):</b></div>
-
-    <div class="spacer"></div>
-
-    <div style="font-size:10.5px;"><b>Forward to:</b> GM(Finance), JMRC for making payment</div>
-
+  <div class="header">
+    <h2 style="margin:0;">Monthly Duty Report</h2>
   </div>
 
+  <div class="profile-box" id="profileBox">Loading profile...</div>
+
+  <!-- FILTER CHIPS -->
+  <div class="filter-chips no-print">
+    <button class="chip" data-filter="ALL">All</button>
+    <button class="chip" data-filter="CR">CR</button>
+    <button class="chip" data-filter="CL">CL</button>
+    <button class="chip" data-filter="GH">GH</button>
+    <button class="chip" data-filter="RH">RH</button>
+    <button class="chip" data-filter="STN">Station</button>
+    <button class="chip" data-filter="TRAIN">Train</button>
+  </div>
+
+  <!-- MONTH DROPDOWN -->
+  <select id="monthSelect"></select>
+
+  <!-- PRINT NDA BUTTON -->
+  <button class="chip no-print" id="printNDAButton" 
+    style="margin-bottom:15px; background:#16a34a; color:white;">
+    Print NDA
+  </button>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Duty</th>
+          <th>Shift</th>
+          <th>Sign On</th>
+          <th>Sign Off</th>
+          <th>On Place</th>
+          <th>Off Place</th>
+          <th>Hours</th>
+          <th>Night</th>
+          <th>Trains</th>
+        </tr>
+      </thead>
+      <tbody id="reportBody"></tbody>
+    </table>
+  </div>
+
+  <div class="total-box" id="totalBox">Totals will appear here...</div>
+
+</div>
+
 <script>
-(function(){
+// Load Data
+const raw = localStorage.getItem("dutyTrackerData");
+const data = raw ? JSON.parse(raw) : { printData:{ records:{}, profile:{}, pay:{} } };
+const printData = data.printData || { records:{}, profile:{}, pay:{} };
 
-  let profile = {};
-  let duties = [];
+// Profile
+function renderProfile(){
+  const p = printData.profile || {};
+  document.getElementById("profileBox").innerHTML = `
+    <strong>Name:</strong> ${p.name || "—"}<br>
+    <strong>Employee ID:</strong> ${p.empId || "—"}<br>
+    <strong>Confirmation Date:</strong> ${p.confirmDate || "—"}
+  `;
+}
 
-  try { profile = JSON.parse(localStorage.getItem("profile") || "{}"); } catch(e){}
-  try { duties = JSON.parse(localStorage.getItem("dutyRecords") || "[]"); } catch(e){}
+// Month Dropdown
+function renderMonthDropdown(){
+  const select = document.getElementById("monthSelect");
+  select.innerHTML = "";
 
-  // Fill header
-  empName.textContent = profile.name || "";
-  empId.textContent = profile.empId || "";
-  designation.textContent = profile.designation || "";
-  confirmDate.textContent = profile.confirm || "";
-  month.textContent = profile.month || "";
-  payOneDay.textContent = Number(profile.pay || 0).toFixed(2);
+  const dates = Object.keys(printData.records);
+  if(!dates.length) return;
 
-  // Fill certificate name
-  certName.textContent = profile.name || "";
+  const months = [...new Set(dates.map(d => d.substring(0,7)))];
 
-  // Duty Rows
-  const tbody = document.getElementById("dutyBody");
+  months.sort().forEach(m => {
+    const opt=document.createElement("option");
+    opt.value=m;
+    opt.textContent = new Date(m+"-01").toLocaleDateString("en-IN", { month:"long", year:"numeric" });
+    select.appendChild(opt);
+  });
+
+  select.value = months[months.length-1];
+  loadMonth(select.value);
+  select.onchange = () => loadMonth(select.value);
+}
+
+// Load Month
+function loadMonth(month){
+  const body = document.getElementById("reportBody");
+  body.innerHTML="";
+
+  const recs = Object.values(printData.records)
+    .filter(r => r.date.startsWith(month))
+    .sort((a,b)=> a.date.localeCompare(b.date));
+
+  let totalNight = 0;
   let totalHours = 0;
 
-  for (let i=0; i<28; i++){
-      const d = duties[i];
-      const tr = document.createElement("tr");
+  recs.forEach(r => {
+    totalNight += Number(r.nightDutyHours || 0);
+    const hrs = (r.dutyHours && r.dutyHours.length >= 2) ? parseInt(r.dutyHours.substring(0,2)) : 0;
+    totalHours += hrs;
 
-      if(d){
-          const hrs = Number(d.hrs || d.hours || 0);
-          totalHours += hrs;
-          tr.innerHTML = `
-              <td>${i+1}</td>
-              <td>${d.date || ""}</td>
-              <td>${d.on || ""}</td>
-              <td>${d.off || ""}</td>
-              <td>${hrs}</td>
-              <td>${d.place || ""}</td>
-              <td></td>
-          `;
-      } else {
-          tr.innerHTML = `
-              <td>${i+1}</td>
-              <td></td><td></td><td></td><td></td><td></td><td></td>
-          `;
-      }
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${r.date}</td>
+      <td>${r.duty}</td>
+      <td>${r.shift || "—"}</td>
+      <td>${r.signOnTime}</td>
+      <td>${r.signOffTime}</td>
+      <td>${r.signOnPlace}</td>
+      <td>${r.signOffPlace}</td>
+      <td>${r.dutyHours}</td>
+      <td>${r.nightDutyHours}</td>
+      <td>${(r.trains || []).join(", ")}</td>
+    `;
+    body.appendChild(row);
+  });
 
-      tbody.appendChild(tr);
-  }
-
-  // A/B/C rows
-  const eq = totalHours / 24;
-  const nda = eq * Number(profile.pay || 0);
-
-  tbody.innerHTML += `
-    <tr>
-      <td>(A)</td>
-      <td colspan="5" style="text-align:left;">TOTAL Night Hours</td>
-      <td>${totalHours}</td>
-    </tr>
-    <tr>
-      <td>(B)</td>
-      <td colspan="5" style="text-align:left;">Equivalent Night Duty Day = A/24</td>
-      <td>${totalHours}/24</td>
-    </tr>
-    <tr>
-      <td>(C)</td>
-      <td colspan="5" style="text-align:left;">NDA Claimed (Rs.) = B × Pay of One Day</td>
-      <td>${nda.toFixed(2)}</td>
-    </tr>
+  document.getElementById("totalBox").innerHTML = `
+    <strong>Total Duties:</strong> ${recs.length}<br>
+    <strong>Total Duty Hours:</strong> ${totalHours} hrs<br>
+    <strong>Total Night Hours:</strong> ${totalNight} hrs
   `;
+}
 
-  totalNDA.textContent = nda.toFixed(2);
+// Filters
+const chips = document.querySelectorAll('.chip');
+chips.forEach(btn => {
+  btn.addEventListener('click', ()=>{
+    chips.forEach(c=>c.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilter(btn.dataset.filter);
+  })
+});
 
-  // Auto print
-  window.onload = function(){
-      setTimeout(() => { window.print(); }, 500);
-  };
+function applyFilter(type){
+  const rows = document.querySelectorAll('#reportBody tr');
+  rows.forEach(r => {
+    const duty = r.children[1].textContent;
+    const trains = r.children[9].textContent;
+    let show = true;
 
-})();
+    if(["CR","CL","GH","RH"].includes(type)){
+      show = duty === type;
+    }
+    else if(type === "STN"){
+      show = duty.startsWith("STN");
+    }
+    else if(type === "TRAIN"){
+      show = trains.trim() !== "";
+    }
+    else if(type === "DUTY"){
+      const n = parseInt(duty);
+      show = !isNaN(n) && n>=1 && n<=26;
+    }
+
+    r.style.display = show ? "" : "none";
+  });
+}
+
+// --- PRINT NDA BUTTON ---
+document.getElementById("printNDAButton").addEventListener("click", () => {
+  const selectedMonth = document.getElementById("monthSelect").value;
+
+  localStorage.setItem("selectedPrintMonth", selectedMonth);
+
+  window.open("NDAprint.html", "_blank");
+});
+
+// INIT
+renderProfile();
+renderMonthDropdown();
 </script>
 
 </body>
