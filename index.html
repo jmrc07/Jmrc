@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Duty Tracker v5.2</title>
+<title>Duty Tracker v4.3</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <style>
-:root{--bg:#f8fafc;--primary:#2563eb;--primary-dark:#1d4ed8;--surface:#ffffff;--surface-alt:#eef2ff;--border:#e2e8f0;--border-strong:#cbd5e1;--text-primary:#0f172a;--text-muted:#64748b;--special-bg:#ede9fe;--special-bg-active:#ddd6fe;--special-text:#4c1d95;--rest-bg:#e5e7eb;--rest-text:#374151;--alarm:#ef4444;--success:#16a34a;--gold-bg:#fffbeb;--gold-border:#fbbf24;--gold-text:#92400e}*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;background:var(--bg);color:var(--text-primary)}.app-container{max-width:720px;margin:0 auto;padding:0 .75rem 5.5rem}.screen{display:none}.screen.active{display:block}
+:root{--bg:#f8fafc;--primary:#2563eb;--primary-dark:#1d4ed8;--surface:#ffffff;--surface-alt:#eef2ff;--border:#e2e8f0;--border-strong:#cbd5e1;--text-primary:#0f172a;--text-muted:#64748b;--special-bg:#ede9fe;--special-bg-active:#ddd6fe;--special-text:#4c1d95;--rest-bg:#e5e7eb;--rest-text:#374151;--alarm:#ef4444}*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;background:var(--bg);color:var(--text-primary)}.app-container{max-width:720px;margin:0 auto;padding:0 .75rem 5.5rem}.screen{display:none}.screen.active{display:block}
 
-/* --- FIXED HEADER --- */
+/* --- FIXED HEADER STYLES --- */
 .profile-card-wrapper { position: fixed; top: 0; left: 0; right: 0; z-index: 60; background: var(--bg); padding: 0.5rem 0.75rem 0.25rem; max-width: 720px; margin: 0 auto; transition: transform 0.3s ease; }
 .profile-card-wrapper.hidden { transform: translateY(-120%); pointer-events: none; }
 .profile-card{position:relative; padding:0.75rem 0.9rem; border-radius:1rem; background:linear-gradient(135deg,#1d4ed8 0%,#2563eb 40%,#3b82f6 100%); box-shadow:0 8px 20px rgba(37,99,235,.4); color:#eff6ff; overflow:hidden}
@@ -18,6 +18,8 @@
 .profile-title{margin:0;font-size:1.1rem;font-weight:700}
 .profile-datetime{font-size:.9rem;font-weight:600;text-align:right}
 .profile-date-sub { font-size: 0.7rem; opacity: 0.85; text-align: right; }
+
+/* Status Row */
 .duty-status-row { margin-top: 0.5rem; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2; }
 .duty-info { display: flex; flex-direction: row; align-items: center; gap: 8px; }
 .current-duty-badge { background: rgba(255,255,255,0.25); padding: 1px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
@@ -29,86 +31,57 @@
 .alarm-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 15px; padding: 3px 8px; font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; gap: 4px; }
 .alarm-btn.active { background: #fff; color: var(--primary); font-weight: 600; }
 .view-trips-btn { background: none; border: none; color: #dbeafe; font-size: 0.7rem; cursor: pointer; text-decoration: underline; }
+
 #homeContent { margin-top: 10px; } 
 
-/* Components */
-.card{margin-top:1rem;padding:.9rem;background:var(--surface);border-radius:1rem;border:1px solid var(--border);box-shadow:0 4px 10px rgba(15,23,42,.06)}.card-title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem}.card-title{font-size:.98rem;font-weight:600}.card-sub{font-size:.78rem;color:var(--text-muted)}.home-month-row{display:flex;justify-content:space-between;align-items:center;margin-top:.7rem;padding:0 .1rem}.home-month-hint{font-size:.78rem;color:var(--text-muted)}.home-month-select{font-size:.78rem;padding:.15rem .4rem;border-radius:.6rem;border:1px solid var(--border-strong);background:#fff}
-.timeline-row{display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem;max-height:calc(100vh - 240px);overflow-y:auto;padding-right:4px}
-.timeline-chip{position:relative;flex-shrink:0;width:100%;padding:.6rem .75rem;border-radius:.9rem;background:#fff;box-shadow:0 1px 4px rgba(15,23,42,.1);font-size:.8rem;display:flex;flex-direction:column;gap:.15rem;cursor:pointer;transition:box-shadow .12s ease;-webkit-tap-highlight-color:transparent}
-.timeline-chip-top{font-size:.8rem;font-weight:600;display:flex;justify-content:space-between;align-items:center}
-.timeline-chip-bottom{font-size:.76rem;color:var(--text-muted)}
-.timeline-chip.today-chip{background:#e0edff;box-shadow:0 0 0 2px rgba(37,99,235,.2); z-index: 2;}
-/* Future Gold */
-.timeline-chip.future-chip{background:var(--gold-bg); border: 1px solid var(--gold-border); opacity: 1; }
-.timeline-chip.future-chip .timeline-chip-top { color: var(--gold-text); }
-.timeline-chip.has-duty{background:#dcfce7}.timeline-chip.has-duty .timeline-chip-bottom{color:#166534;font-weight:600}
-.timeline-chip.rest-chip{background:var(--rest-bg);color:var(--rest-text)}.timeline-chip.active{box-shadow:0 0 0 2px rgba(37,99,235,.35)}
-.date-expand{margin-top:.4rem}
-.expand-block{font-size:.8rem;border-top:1px dashed var(--border-strong);padding-top:.35rem;background:#fff!important;border-radius:.65rem;padding:.6rem .7rem;position:relative}
-.edit-btn{border:none;background:var(--primary);color:#fff;padding:.25rem .6rem;border-radius:14px;font-size:.72rem;font-weight:600;cursor:pointer;position:absolute;top:6px;right:6px}
-.rest-actions{margin-top:.45rem;display:flex;justify-content:flex-end;gap:.4rem}.rest-btn{border:none;border-radius:999px;font-size:.72rem;padding:.25rem .6rem;cursor:pointer}
-.rest-btn-rs{background:#facc15;color:#1f2937}.rest-btn-rc{background:#fb923c;color:#1f2937}
-.fab{position:fixed;right:18px;bottom:80px;width:56px;height:56px;border-radius:999px;border:none;background:var(--primary);color:#fff;font-size:1.9rem;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 28px rgba(37,99,235,.6);cursor:pointer;z-index:50}
-.overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;z-index:80}
-.sheet{position:fixed;left:0;right:0;bottom:0;max-width:720px;margin:0 auto;background:#fff;border-radius:16px 16px 0 0;padding:.9rem .9rem 1rem;box-shadow:0 -10px 30px rgba(15,23,42,.5);display:none;z-index:81}
-#logSheet{min-height:65vh;max-height:85vh;overflow-y:auto}
-#dutyTableSheet,#currentDutyTripsSheet,#editProfileSheet{top:0;bottom:0;border-radius:0;padding-top:.9rem; max-height: 100vh; z-index: 85;}
+/* Common */
+.card{margin-top:1rem;padding:.9rem;background:var(--surface);border-radius:1rem;border:1px solid var(--border);box-shadow:0 4px 10px rgba(15,23,42,.06)}.card-title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem}.card-title{font-size:.98rem;font-weight:600}.card-sub{font-size:.78rem;color:var(--text-muted)}.home-month-row{display:flex;justify-content:space-between;align-items:center;margin-top:.7rem;padding:0 .1rem}.home-month-hint{font-size:.78rem;color:var(--text-muted)}.home-month-select{font-size:.78rem;padding:.15rem .4rem;border-radius:.6rem;border:1px solid var(--border-strong);background:#fff}.timeline-row{display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem;max-height:calc(100vh - 240px);overflow-y:auto;padding-right:4px}
+.timeline-chip{position:relative;flex-shrink:0;width:100%;padding:.6rem .75rem;border-radius:.9rem;background:#fff;box-shadow:0 1px 4px rgba(15,23,42,.1);font-size:.8rem;display:flex;flex-direction:column;gap:.15rem;cursor:pointer;transition:box-shadow .12s ease;-webkit-tap-highlight-color:transparent}.timeline-chip-top{font-size:.8rem;font-weight:600;display:flex;justify-content:space-between;align-items:center}.timeline-chip-bottom{font-size:.76rem;color:var(--text-muted)}.timeline-chip.today-chip{background:#e0edff;box-shadow:0 0 0 2px rgba(37,99,235,.2); z-index: 2;}.today-label-text{display:inline-flex;align-items:center;gap:4px}.today-icon{font-size:.9rem}.timeline-chip.future-chip{background:#fff; opacity: 0.9; border: 1px dashed var(--border);}.timeline-chip.has-duty{background:#dcfce7}.timeline-chip.has-duty .timeline-chip-bottom{color:#166534;font-weight:600}.timeline-chip.rest-chip{background:var(--rest-bg);color:var(--rest-text)}.timeline-chip.active{box-shadow:0 0 0 2px rgba(37,99,235,.35)}.date-expand{margin-top:.4rem}.expand-block{font-size:.8rem;border-top:1px dashed var(--border-strong);padding-top:.35rem;background:#fff!important;border-radius:.65rem;padding:.6rem .7rem;position:relative}.edit-btn{border:none;background:var(--primary);color:#fff;padding:.25rem .6rem;border-radius:14px;font-size:.72rem;font-weight:600;cursor:pointer;position:absolute;top:6px;right:6px}.rest-actions{margin-top:.45rem;display:flex;justify-content:flex-end;gap:.4rem}.rest-btn{border:none;border-radius:999px;font-size:.72rem;padding:.25rem .6rem;cursor:pointer}.rest-btn-rs{background:#facc15;color:#1f2937}.rest-btn-rc{background:#fb923c;color:#1f2937}.fab{position:fixed;right:18px;bottom:80px;width:56px;height:56px;border-radius:999px;border:none;background:var(--primary);color:#fff;font-size:1.9rem;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 28px rgba(37,99,235,.6);cursor:pointer;z-index:50}.overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;z-index:80}.sheet{position:fixed;left:0;right:0;bottom:0;max-width:720px;margin:0 auto;background:#fff;border-radius:16px 16px 0 0;padding:.9rem .9rem 1rem;box-shadow:0 -10px 30px rgba(15,23,42,.5);display:none;z-index:81}#logSheet{min-height:65vh;max-height:85vh;overflow-y:auto}
+#dutyTableSheet,#profileSummarySheet,#currentDutyTripsSheet{top:0;bottom:0;border-radius:0;padding-top:.9rem; max-height: 100vh; z-index: 85;}
 #restSheet,#paySheet,#alarmSheet{max-height:70vh;z-index:82}
-.sheet-handle{width:40px;height:4px;background:var(--border-strong);border-radius:999px;margin:0 auto .5rem}.sheet-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem}.sheet-title{font-size:.98rem;font-weight:600}.sheet-close{border:none;background:none;font-size:1.4rem;cursor:pointer}.field{margin-top:.6rem}.label{font-size:.78rem;font-weight:500;color:var(--text-muted);margin-bottom:.25rem;display:block}.input{width:100%;padding:.55rem .6rem;border-radius:.6rem;border:1px solid var(--border-strong);font-size:.88rem}
-.duty-field-header{display:flex;justify-content:space-between;align-items:center}
-.special-toggle-btn{border-radius:999px;border:1px solid var(--border-strong);background:#f3f4ff;font-size:.75rem;padding:.15rem .6rem;cursor:pointer;color:var(--special-text)}
-.date-chip-row{display:flex;gap:.35rem;overflow-x:auto;scrollbar-width:none;padding-bottom:.15rem}
-.date-chip{flex-shrink:0;padding:.3rem .6rem;border-radius:999px;background:#fff;box-shadow:0 1px 4px rgba(15,23,42,.1);font-size:.78rem;cursor:pointer;white-space:nowrap}
-.date-chip.active{background:var(--primary);color:#fff}.date-chip.active .date-chip-secondary{color:rgba(255,255,255,.8)}
-.duty-rows{display:flex;flex-direction:column;gap:.3rem}.duty-row{display:flex;gap:.3rem;overflow-x:auto;scrollbar-width:none}
-.duty-btn{flex-shrink:0;min-width:40px;padding:.3rem .4rem;border-radius:999px;background:#fff;box-shadow:0 1px 4px rgba(15,23,42,.1);font-size:.8rem;cursor:pointer;text-align:center}
-.duty-btn.active{background:#dbeafe;box-shadow:0 1px 6px rgba(37,99,235,.5)}
-.train-row{display:flex;gap:.3rem;overflow-x:auto;scrollbar-width:none}
-.train-btn{flex-shrink:0;min-width:34px;padding:.3rem .35rem;border-radius:999px;background:#fff;box-shadow:0 1px 4px rgba(15,23,42,.1);font-size:.8rem;cursor:pointer;text-align:center}
-.train-btn.active{background:#dbeafe;box-shadow:0 1px 6px rgba(37,99,235,.5)}
-.special-duty-row{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.35rem}
-.special-duty-btn{flex-shrink:0;padding:.3rem .6rem;border-radius:999px;border:none;background:var(--special-bg);color:var(--special-text);font-size:.78rem;cursor:pointer;box-shadow:0 1px 4px rgba(76,29,149,.18)}.special-duty-btn.active{background:var(--special-bg-active);box-shadow:0 1px 6px rgba(76,29,149,.35)}
-.btn-primary{width:100%;margin-top:.6rem;padding:.6rem .7rem;border-radius:.7rem;border:none;background:var(--primary);color:#fff;font-size:.9rem;font-weight:600;cursor:pointer}
+.sheet-handle{width:40px;height:4px;background:var(--border-strong);border-radius:999px;margin:0 auto .5rem}.sheet-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem}.sheet-title{font-size:.98rem;font-weight:600}.sheet-close{border:none;background:none;font-size:1.4rem;cursor:pointer}.field{margin-top:.6rem}.label{font-size:.78rem;font-weight:500;color:var(--text-muted);margin-bottom:.25rem;display:block}.input{width:100%;padding:.55rem .6rem;border-radius:.6rem;border:1px solid var(--border-strong);font-size:.88rem}.duty-field-header{display:flex;justify-content:space-between;align-items:center}.special-toggle-btn{border-radius:999px;border:1px solid var(--border-strong);background:#f3f4ff;font-size:.75rem;padding:.15rem .6rem;cursor:pointer;color:var(--special-text)}.date-chip-row{display:flex;gap:.35rem;overflow-x:auto;scrollbar-width:none;padding-bottom:.15rem}.date-chip-row::-webkit-scrollbar{display:none}.date-chip{flex-shrink:0;padding:.3rem .6rem;border-radius:999px;background:#fff;box-shadow:0 1px 4px rgba(15,23,42,.1);font-size:.78rem;cursor:pointer;white-space:nowrap}.date-chip-label{font-weight:600;margin-right:.2rem}.date-chip-secondary{font-size:.72rem;color:var(--text-muted)}.date-chip.active{background:var(--primary);color:#fff}.date-chip.active .date-chip-secondary{color:rgba(255,255,255,.8)}.duty-rows{display:flex;flex-direction:column;gap:.3rem}.duty-row{display:flex;gap:.3rem;overflow-x:auto;scrollbar-width:none}.duty-row::-webkit-scrollbar{display:none}.duty-btn{flex-shrink:0;min-width:40px;padding:.3rem .4rem;border-radius:999px;background:#fff;box-shadow:0 1px 4px rgba(15,23,42,.1);font-size:.8rem;cursor:pointer;text-align:center}.duty-btn.active{background:#dbeafe;box-shadow:0 1px 6px rgba(37,99,235,.5)}.train-row{display:flex;gap:.3rem;overflow-x:auto;scrollbar-width:none}.train-row::-webkit-scrollbar{display:none}.train-btn{flex-shrink:0;min-width:34px;padding:.3rem .35rem;border-radius:999px;background:#fff;box-shadow:0 1px 4px rgba(15,23,42,.1);font-size:.8rem;cursor:pointer;text-align:center}.train-btn.active{background:#dbeafe;box-shadow:0 1px 6px rgba(37,99,235,.5)}.special-duty-row{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.35rem}.special-duty-btn{flex-shrink:0;padding:.3rem .6rem;border-radius:999px;border:none;background:var(--special-bg);color:var(--special-text);font-size:.78rem;cursor:pointer;box-shadow:0 1px 4px rgba(76,29,149,.18)}.special-duty-btn.active{background:var(--special-bg-active);box-shadow:0 1px 6px rgba(76,29,149,.35)}.btn-primary{width:100%;margin-top:.6rem;padding:.6rem .7rem;border-radius:.7rem;border:none;background:var(--primary);color:#fff;font-size:.9rem;font-weight:600;cursor:pointer}.history-list{margin-top:.5rem;padding-bottom:4.8rem}.history-item{margin-top:.4rem;padding:.7rem .75rem;background:var(--surface);border-radius:.8rem;border:1px solid var(--border);font-size:.82rem;cursor:pointer}.history-item.active{border-color:var(--primary);background:#fff}.history-header{display:flex;justify-content:space-between;margin-bottom:.15rem;font-weight:600}.history-meta{font-size:.76rem;color:var(--text-muted)}.history-detail{margin-top:.35rem;border-top:1px dashed var(--border-strong);padding-top:.3rem;font-size:.78rem}.history-summary{margin-top:.4rem;display:flex;flex-wrap:wrap;gap:.4rem}.history-summary-card{flex:0 0 calc(50% - .22rem);background:var(--surface);color:var(--text-primary);border:1px solid var(--border);box-shadow:0 2px 6px rgba(15,23,42,.1);border-radius:.7rem;padding:.45rem .55rem;font-size:.78rem}.history-summary-label{font-size:.7rem;color:var(--text-muted)}.history-summary-value{font-size:.95rem;font-weight:600;margin-top:.1rem}.history-summary-sub{font-size:.68rem;color:var(--text-muted);margin-top:.05rem}.history-month-chips{margin-top:.4rem;display:flex;gap:.35rem;overflow-x:auto;scrollbar-width:none;padding-bottom:.15rem}.history-month-chips::-webkit-scrollbar{display:none}.history-month-chip{flex-shrink:0;padding:.3rem .6rem;border-radius:999px;background:var(--surface-alt);color:var(--text-primary);font-size:.78rem;cursor:pointer;white-space:nowrap}.history-month-chip.active{background:var(--primary);color:#fff}.history-search-bar{position:fixed;left:0;right:0;bottom:64px;display:none;z-index:45}.history-search-inner{max-width:720px;margin:0 auto;padding:.4rem .6rem;border-radius:.9rem .9rem 0 0;background:rgba(248,250,252,.96);box-shadow:0 -4px 12px rgba(15,23,42,.16);display:flex;gap:.4rem;align-items:center}.history-search-input{flex:1;border-radius:.6rem;border:1px solid var(--border-strong);padding:.4rem .6rem;font-size:.82rem}.profile-form .field{margin-top:.6rem}.profile-form label{display:block;font-size:.8rem;margin-bottom:.2rem}.profile-form input,.profile-form select{width:100%;padding:.55rem .6rem;border-radius:.55rem;border:1px solid var(--border-strong);font-size:.86rem}.duty-table-container{margin-top:.4rem;max-height:calc(100vh - 150px);overflow-y:auto}.duty-table{width:100%;border-collapse:collapse;font-size:0.8rem}.duty-table th,.duty-table td{border-bottom:1px solid var(--border);padding:.35rem .3rem;text-align:left}.duty-table th{font-weight:600;background:var(--surface-alt)}.bottom-bar{position:fixed;left:0;right:0;bottom:0;height:64px;background:#fff;border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:center;z-index:40}.nav-item{flex:1;text-align:center;font-size:.72rem;color:var(--text-muted);display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;cursor:pointer}.nav-item span.icon{font-size:1.3rem}.nav-item.active{color:var(--primary);font-weight:600}
 
-/* Premium & Edit Form Fixes */
-.premium-form-container { padding: 1rem 0.5rem 350px 0.5rem; }
-.premium-group { margin-bottom: 1rem; position: relative; }
-.premium-label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.5px; }
-.premium-input { width: 100%; padding: 0.75rem; font-size: 0.95rem; border: 1px solid var(--border); border-radius: 0.75rem; background: #f8fafc; transition: all 0.2s ease; outline: none; color: var(--text-primary); }
-.premium-input:focus { background: #fff; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
-.premium-save-btn { width: 100%; padding: 0.9rem; border-radius: 0.8rem; border: none; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; font-weight: 600; font-size: 1rem; letter-spacing: 0.5px; margin-top: 1.5rem; box-shadow: 0 4px 12px rgba(37,99,235,0.25); cursor: pointer; }
-
-.settings-profile-card { background: linear-gradient(135deg,#1d4ed8 0%,#2563eb 40%,#3b82f6 100%); border-radius: 1rem; padding: 1.2rem; color: #fff; box-shadow: 0 8px 20px rgba(37,99,235,.3); margin-bottom: 1.2rem; position: relative; }
-.settings-pc-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
-.settings-pc-avatar { width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; border: 2px solid rgba(255,255,255,0.5); background-size: cover; background-position: center; }
-.settings-pc-info h2 { margin: 0; font-size: 1.2rem; }
-.settings-pc-info p { margin: 2px 0 0; font-size: 0.85rem; opacity: 0.9; }
-.settings-pc-stats { display: flex; justify-content: space-between; background: rgba(0,0,0,0.15); border-radius: 0.8rem; padding: 0.8rem; }
-.settings-stat-item { text-align: center; flex: 1; }
-.settings-stat-val { font-weight: 700; font-size: 1.1rem; display: block; }
-.settings-stat-lbl { font-size: 0.7rem; opacity: 0.8; text-transform: uppercase; }
-.settings-edit-btn { position: absolute; top: 1rem; right: 1rem; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: #fff; border-radius: 20px; padding: 4px 12px; font-size: 0.75rem; cursor: pointer; }
-
-/* Trip Chart Compact & Highlight */
-.trip-chart-container { padding-bottom: 130px; }
-.trip-filter-bottom { position: fixed; bottom: 64px; left: 0; right: 0; background: #fff; border-top: 1px solid var(--border); padding: 6px 8px; z-index: 45; display: grid; grid-template-rows: 1fr 1fr; grid-auto-flow: column; overflow-x: auto; gap: 4px; box-shadow: 0 -4px 10px rgba(0,0,0,0.03); }
-.trip-filter-bottom::-webkit-scrollbar { display: none; }
-.trip-chip { width: 32px; height: 32px; border-radius: 50%; background: #f1f5f9; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); cursor: pointer; flex-shrink: 0; }
-.trip-chip.active { background: var(--primary); color: #fff; border-color: var(--primary-dark); box-shadow: 0 2px 5px rgba(37,99,235,0.4); }
-.trip-time-highlight { font-weight: 800; color: var(--primary-dark); font-size: 0.85rem; }
-
-/* Navigation */
-.bottom-bar{position:fixed;left:0;right:0;bottom:0;height:64px;background:#fff;border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:center;z-index:40}.nav-item{flex:1;text-align:center;font-size:.72rem;color:var(--text-muted);display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;cursor:pointer}.nav-item span.icon{font-size:1.3rem}.nav-item.active{color:var(--primary);font-weight:600}
-
+.profile-summary-list { margin-top: 1rem; }
+.profile-item { display: flex; justify-content: space-between; padding: 0.8rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+.profile-item span:first-child { color: var(--text-muted); }
+.profile-item span:last-child { font-weight: 600; }
 .alarm-option { padding: 0.8rem; border-bottom: 1px solid var(--border); cursor: pointer; text-align: center; font-weight: 500; }
-.history-list{margin-top:.5rem;padding-bottom:4.8rem}.history-item{margin-top:.4rem;padding:.7rem .75rem;background:var(--surface);border-radius:.8rem;border:1px solid var(--border);font-size:.82rem;cursor:pointer}.history-item.active{border-color:var(--primary);background:#fff}.history-header{display:flex;justify-content:space-between;margin-bottom:.15rem;font-weight:600}.history-meta{font-size:.76rem;color:var(--text-muted)}.history-detail{margin-top:.35rem;border-top:1px dashed var(--border-strong);padding-top:.3rem;font-size:.78rem}
-.history-summary{margin-top:.4rem;display:flex;flex-wrap:wrap;gap:.4rem}
-.history-summary-card{flex:0 0 calc(50% - .22rem);background:var(--surface);color:var(--text-primary);border:1px solid var(--border);box-shadow:0 2px 6px rgba(15,23,42,.1);border-radius:.7rem;padding:.45rem .55rem;font-size:.78rem}
-.history-summary-label{font-size:.7rem;color:var(--text-muted)}.history-summary-value{font-size:.95rem;font-weight:600;margin-top:.1rem}.history-summary-sub{font-size:.68rem;color:var(--text-muted);margin-top:.05rem}
-.history-month-chips{margin-top:.4rem;display:flex;gap:.35rem;overflow-x:auto;scrollbar-width:none;padding-bottom:.15rem}
-.history-month-chip{flex-shrink:0;padding:.3rem .6rem;border-radius:999px;background:var(--surface-alt);color:var(--text-primary);font-size:.78rem;cursor:pointer;white-space:nowrap}.history-month-chip.active{background:var(--primary);color:#fff}
-.history-search-bar{position:fixed;left:0;right:0;bottom:64px;display:none;z-index:45}.history-search-inner{max-width:720px;margin:0 auto;padding:.4rem .6rem;border-radius:.9rem .9rem 0 0;background:rgba(248,250,252,.96);box-shadow:0 -4px 12px rgba(15,23,42,.16);display:flex;gap:.4rem;align-items:center}.history-search-input{flex:1;border-radius:.6rem;border:1px solid var(--border-strong);padding:.4rem .6rem;font-size:.82rem}
-.duty-table-container{margin-top:.4rem;max-height:calc(100vh - 150px);overflow-y:auto}.duty-table{width:100%;border-collapse:collapse;font-size:0.8rem}.duty-table th,.duty-table td{border-bottom:1px solid var(--border);padding:.35rem .3rem;text-align:left}.duty-table th{font-weight:600;background:var(--surface-alt)}.duty-table tr.section-header{background:#f1f5f9;color:var(--text-muted);font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;}
+
+/* Split Table Styles */
+.split-header { background: #e0e7ff; color: #3730a3; padding: 8px 10px; font-size: 0.85rem; font-weight: 700; border-radius: 6px; margin: 15px 0 5px 0; display: flex; justify-content: space-between; }
+.split-header:first-child { margin-top: 0; }
+.time-highlight { color: var(--primary); font-weight: 700; background: rgba(37,99,235,0.1); padding: 2px 6px; border-radius: 4px; }
+.current-trip-row { background: #eff6ff; border-left: 3px solid var(--primary); }
+
+/* Updated Trip Filter - Fixed at Bottom */
+.trip-filter-container-bottom { position: fixed; left: 0; right: 0; bottom: 64px; background: #fff; border-top: 1px solid var(--border); box-shadow: 0 -4px 10px rgba(0,0,0,0.05); z-index: 50; padding: 8px 0; display: flex; flex-direction: column; gap: 8px; }
+.trip-filter-row { display: flex; gap: 6px; overflow-x: auto; padding: 0 10px; scrollbar-width: none; }
+.trip-filter-row::-webkit-scrollbar { display: none; }
+
+.trip-chip {
+  flex-shrink: 0;
+  min-width: 42px;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px; /* Capsule shape like log sheet */
+  background: #fff;
+  border: none;
+  box-shadow: 0 1px 4px rgba(15,23,42,.1);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+.trip-chip.active {
+  background: #dbeafe; /* Light blue like log sheet active */
+  color: var(--primary-dark);
+  box-shadow: 0 1px 6px rgba(37,99,235,.5);
+  font-weight: 600;
+}
+
+#trips .card { padding-bottom: 20px; }
+#trips { padding-bottom: 180px !important; }
 </style>
 </head>
 <body>
@@ -119,13 +92,16 @@
       <div class="profile-header">
         <div class="profile-left">
           <div class="profile-avatar" id="profileAvatar">U</div>
-          <div><p class="profile-title" id="profileTitle">Hello</p></div>
+          <div>
+            <p class="profile-title" id="profileTitle">Hello</p>
+          </div>
         </div>
         <div style="text-align:right;">
           <div class="profile-datetime" id="liveDateTime">--:--</div>
           <div class="profile-date-sub" id="liveDate">--</div>
         </div>
       </div>
+      
       <div class="duty-status-row" id="statusRow">
         <div class="duty-info">
           <div class="current-duty-badge" id="currentDutyBadge">No Duty</div>
@@ -133,11 +109,14 @@
         </div>
         <div class="countdown-box" id="countdownBox" style="display:none;">
           <div class="countdown-timer" id="countdownTimer">00:00:00</div>
-          <div class="countdown-label">UNTIL MSOR DEPARTURE</div>
+          <div class="countdown-label">MSOR DEPARTURE</div>
         </div>
       </div>
+
       <div class="card-actions" id="cardActions" style="display:none;">
-        <button class="alarm-btn" id="alarmBtn"><span>🔔</span> <span id="alarmBtnText">Set Alarm</span></button>
+        <button class="alarm-btn" id="alarmBtn">
+          <span>🔔</span> <span id="alarmBtnText">Set Alarm</span>
+        </button>
         <button class="view-trips-btn" id="viewCurrentTripsBtn">View Today's Trips ›</button>
       </div>
     </div>
@@ -150,7 +129,9 @@
         <select id="monthSelect" class="home-month-select"></select>
       </div>
       <div id="calendarRow" class="timeline-row"></div>
-      <div id="noDutiesMsg" style="display:none;font-size:0.8rem;color:var(--text-muted);margin-top:0.4rem;">No duties logged.</div>
+      <div id="noDutiesMsg" style="display:none;font-size:0.8rem;color:var(--text-muted);margin-top:0.4rem;">
+        No duties logged in this month yet. Tap any date to add.
+      </div>
     </div>
   </section>
 
@@ -164,7 +145,7 @@
         <div id="historyMonthChips" class="history-month-chips"></div>
         <div id="historySummary" class="history-summary"></div>
         <div style="margin-top:0.6rem;">
-          <button class="btn-primary" onclick="window.print()">Print Report</button>
+          <button class="btn-primary" onclick="window.open('print.html','_blank')">Print Report</button>
         </div>
         <div id="historyList" class="history-list"></div>
         <div id="noHistoryMsg">No records found. Log a duty to see history.</div>
@@ -173,42 +154,66 @@
   </section>
 
   <section id="trips" class="screen">
-    <div class="trip-chart-container" style="margin-top: 20px;">
+    <div style="margin-top: 20px;">
       <div class="card">
-         <div class="card-title-row"><div class="card-title">Trip Chart</div><div class="card-sub">Filter by Duty No.</div></div>
-        <div class="duty-table-container">
-          <table class="duty-table">
-            <thead><tr><th>Dep</th><th>From</th><th>To</th><th>Train</th></tr></thead>
-            <tbody id="tripChartBody"></tbody>
-          </table>
+         <div class="card-title-row">
+          <div class="card-title">Trip Chart</div>
+          <div class="card-sub">MSOR ⇄ BICP</div>
         </div>
+        <div id="tripSplitTableContainer" class="duty-table-container"></div>
       </div>
     </div>
-    <div class="trip-filter-bottom" id="tripFilterChips"></div>
+    <div class="trip-filter-container-bottom" id="tripFilterBottom"></div>
   </section>
 
   <section id="settings" class="screen">
     <div style="margin-top: 20px; padding-bottom:80px;">
-      <div class="settings-profile-card">
-        <button class="settings-edit-btn" id="editProfileBtn">Edit Profile</button>
-        <div class="settings-pc-header">
-          <div class="settings-pc-avatar" id="stAvatar">U</div>
-          <div class="settings-pc-info">
-            <h2 id="stName">User</h2>
-            <p id="stRole">Station Controller</p>
-          </div>
-        </div>
-        <div class="settings-pc-stats">
-          <div class="settings-stat-item"><span class="settings-stat-val" id="stCR">0</span><span class="settings-stat-lbl">CR</span></div>
-          <div class="settings-stat-item"><span class="settings-stat-val" id="stCL">0</span><span class="settings-stat-lbl">CL</span></div>
-          <div class="settings-stat-item"><span class="settings-stat-val" id="stRH">0</span><span class="settings-stat-lbl">RH</span></div>
-          <div class="settings-stat-item"><span class="settings-stat-val" id="stRest">SUN</span><span class="settings-stat-lbl">REST</span></div>
-        </div>
-      </div>
       <div class="card">
-        <div class="card-title-row"><div class="card-title">Tools</div></div>
+        <div class="card-title-row">
+          <div class="card-title">Settings</div>
+          <div class="card-sub">Tools & reference</div>
+        </div>
+        <button class="btn-primary" id="viewProfileSummaryBtn" style="margin-top:0.6rem; background:#4f46e5;">View Profile Summary</button>
         <button class="btn-primary" id="viewDutyTableBtn" style="margin-top:0.6rem;">View Duty Table Reference</button>
-        <button class="btn-primary" id="configPayBtn" style="margin-top:0.6rem; background:#facc15; color:#1f2937;">Configure One Day Pay</button>
+        <button class="btn-primary" id="configPayBtn" style="margin-top:0.6rem; background:#facc15; color:#1f2937;">
+          Configure One Day Pay
+        </button>
+      </div>
+
+      <div class="card profile-form" style="margin-top: 1rem;">
+        <div class="card-title-row">
+          <div class="card-title">Edit Profile</div>
+          <div class="card-sub">Update your details</div>
+        </div>
+        <div class="field"><label for="pfName">Full Name</label><input type="text" id="pfName"></div>
+        <div class="field"><label for="pfEmpId">Employee ID</label><input type="text" id="pfEmpId"></div>
+        <div class="field">
+          <label for="pfRole">Role</label>
+          <select id="pfRole">
+            <option value="">Select role</option>
+            <option value="Station Controller">Station Controller</option>
+            <option value="Train Operator">Train Operator</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="pfRest">Weekly Rest Day</label>
+          <select id="pfRest">
+            <option value="">Select rest day</option>
+            <option value="Sunday">Sunday</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+          </select>
+        </div>
+        <div class="field"><label for="pfPhoto">Profile Photo</label><input type="file" id="pfPhoto" accept="image/*"></div>
+        <div class="field"><label for="pfConfirmDate">Date of Confirmation</label><input type="date" id="pfConfirmDate"></div>
+        <div class="field"><label for="pfPmeDate">Date of PME</label><input type="date" id="pfPmeDate"></div>
+        <div class="field"><label for="pfCL">Remaining CL</label><input type="number" id="pfCL" min="0" step="1"></div>
+        <div class="field"><label for="pfRH">Remaining RH</label><input type="number" id="pfRH" min="0" step="1"></div>
+        <button class="btn-primary" id="saveProfileBtn">Save Profile</button>
       </div>
     </div>
   </section>
@@ -216,12 +221,6 @@
 
 <button class="fab" id="fabBtn" aria-label="Log duty">+</button>
 <div class="overlay" id="overlay"></div>
-<div class="sheet" id="ringingModal" style="z-index:99;height:auto;bottom:50%;transform:translateY(50%);border-radius:1rem;padding:2rem;text-align:center;">
-  <div style="font-size:3rem;margin-bottom:1rem;">⏰</div>
-  <h2 style="margin-bottom:1rem;">Trip Departing!</h2>
-  <p style="color:var(--text-muted);margin-bottom:1.5rem;">Your trip is about to depart.</p>
-  <button class="btn-primary" id="stopRingingBtn" style="background:#ef4444;">Turn Off Alarm</button>
-</div>
 
 <div class="sheet" id="logSheet">
   <div class="sheet-handle"></div>
@@ -232,9 +231,15 @@
       <button class="sheet-close" id="sheetCloseBtn">✕</button>
     </div>
   </div>
-  <div class="field"><label class="label">Date</label><div class="date-chip-row" id="dateChips"></div></div>
   <div class="field">
-    <div class="duty-field-header"><span class="label">Duty Number</span><button class="special-toggle-btn" id="specialDutyToggle">Special ▾</button></div>
+    <label class="label">Date</label>
+    <div class="date-chip-row" id="dateChips"></div>
+  </div>
+  <div class="field">
+    <div class="duty-field-header">
+      <span class="label">Duty Number (1–26)</span>
+      <button class="special-toggle-btn" id="specialDutyToggle">Special ▾</button>
+    </div>
     <div class="duty-rows" id="dutyButtons"></div>
     <div id="specialDutyContainer" style="display:none;"></div>
   </div>
@@ -252,397 +257,1106 @@
       <div id="inlineStationChips" class="duty-row" style="flex-wrap: wrap; gap: 0.4rem;"></div>
     </div>
   </div>
-  <div class="field" id="trainField"><label class="label">Train Sets</label><div class="train-row" id="trainButtons"></div></div>
+  <div class="field" id="trainField">
+    <label class="label">Train Sets (1–10)</label>
+    <div class="train-row" id="trainButtons"></div>
+  </div>
   <button class="btn-primary" id="saveDutyBtn">Save Duty</button>
 </div>
 
-<div class="sheet" id="editProfileSheet">
-  <div class="sheet-header"><div class="sheet-title">Edit Profile</div><button class="sheet-close" id="editProfileCloseBtn">✕</button></div>
-  <div class="premium-form-container">
-    <div class="premium-group"><label class="premium-label" for="pfName">Full Name</label><input class="premium-input" type="text" id="pfName" placeholder="Enter Name"></div>
-    <div class="premium-group"><label class="premium-label" for="pfEmpId">Employee ID</label><input class="premium-input" type="text" id="pfEmpId" placeholder="ID Number"></div>
-    <div class="premium-group"><label class="premium-label" for="pfRole">Role</label>
-      <select class="premium-input" id="pfRole">
-        <option value="Station Controller">Station Controller</option>
-        <option value="Train Operator">Train Operator</option>
-      </select>
-    </div>
-    <div class="premium-group"><label class="premium-label" for="pfRest">Weekly Rest</label>
-      <select class="premium-input" id="pfRest">
-        <option value="Sunday">Sunday</option><option value="Monday">Monday</option><option value="Tuesday">Tuesday</option>
-        <option value="Wednesday">Wednesday</option><option value="Thursday">Thursday</option><option value="Friday">Friday</option><option value="Saturday">Saturday</option>
-      </select>
-    </div>
-    <div class="premium-group"><label class="premium-label" for="pfPhoto">Profile Photo</label><input class="premium-input" type="file" id="pfPhoto" accept="image/*"></div>
-    <div style="display:flex; gap:10px;">
-      <div class="premium-group" style="flex:1;"><label class="premium-label" for="pfConfirmDate">Confirmation</label><input class="premium-input" type="date" id="pfConfirmDate"></div>
-      <div class="premium-group" style="flex:1;"><label class="premium-label" for="pfPmeDate">PME Date</label><input class="premium-input" type="date" id="pfPmeDate"></div>
-    </div>
-    <div style="display:flex; gap:10px;">
-      <div class="premium-group" style="flex:1;"><label class="premium-label" for="pfCL">Remaining CL</label><input class="premium-input" type="number" id="pfCL" min="0"></div>
-      <div class="premium-group" style="flex:1;"><label class="premium-label" for="pfRH">Remaining RH</label><input class="premium-input" type="number" id="pfRH" min="0"></div>
-    </div>
-    <button class="premium-save-btn" id="saveProfileBtn">Save Changes</button>
+<div class="sheet" id="dutyTableSheet">
+  <div class="sheet-header">
+    <div class="sheet-title">Duty Table Reference</div>
+    <button class="sheet-close" id="dutyTableCloseBtn">✕</button>
+  </div>
+  <div class="duty-table-container">
+    <table class="duty-table">
+      <thead><tr><th>Duty</th><th>Sign On</th><th>On Place</th><th>Sign Off</th><th>Off Place</th><th>Hours</th></tr></thead>
+      <tbody id="dutyTableBody"></tbody>
+    </table>
   </div>
 </div>
 
-<div class="sheet" id="dutyTableSheet">
-  <div class="sheet-header"><div class="sheet-title">Duty Reference</div><button class="sheet-close" id="dutyTableCloseBtn">✕</button></div>
-  <div class="duty-table-container"><table class="duty-table"><thead><tr><th>Duty</th><th>Sign On</th><th>On Place</th><th>Sign Off</th><th>Off Place</th><th>Hours</th></tr></thead><tbody id="dutyTableBody"></tbody></table></div>
+<div class="sheet" id="restSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header"><div class="sheet-title">Select New Rest Day</div><button class="sheet-close" id="restCloseBtn">✕</button></div>
+  <div class="field"><label class="label">New Rest Date</label><input type="date" id="restDateInput" class="input" /></div>
+  <button class="btn-primary" id="saveRestDateBtn">Save Rest Day</button>
 </div>
+
+<div class="sheet" id="paySheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header"><div class="sheet-title">One Day Pay Config</div><button class="sheet-close" id="payCloseBtn">✕</button></div>
+  <div class="field"><div id="payMonthChips" class="date-chip-row"></div></div>
+  <div class="field"><label class="label" id="payInputLabel">Pay for One Day (₹)</label><input type="number" id="payAmountInput" class="input" min="0" step="1" /></div>
+  <button class="btn-primary" id="savePayBtn">Save Pay</button>
+</div>
+
+<div class="history-search-bar" id="historySearchBar">
+  <div class="history-search-inner">
+    <input id="historySearchInput" class="history-search-input" type="text" placeholder="Search..." />
+  </div>
+</div>
+
+<div id="crConsumeModal" class="sheet" style="display:none;">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header"><div class="sheet-title">Use CR</div><button class="sheet-close" onclick="closeCRConsumeModal()">✕</button></div>
+  <div class="field"><label class="label">Available CR Dates</label><div id="crList" class="date-chip-row"></div></div>
+  <button class="btn-primary" id="useCRBtn">Use Selected CR</button>
+</div>
+
+<div class="sheet" id="profileSummarySheet">
+  <div class="sheet-header"><div class="sheet-title">Profile Summary</div><button class="sheet-close" id="profileSummaryCloseBtn">✕</button></div>
+  <div class="profile-summary-list">
+    <div class="profile-item"><span>Name</span><span id="psName">—</span></div>
+    <div class="profile-item"><span>Employee ID</span><span id="psEmpId">—</span></div>
+    <div class="profile-item"><span>Role</span><span id="psRole">—</span></div>
+    <div class="profile-item"><span>Weekly Rest</span><span id="psRest">—</span></div>
+    <div class="profile-item"><span>Available CR</span><span id="psCR">0</span></div>
+    <div class="profile-item"><span>CL Left</span><span id="psCL">—</span></div>
+    <div class="profile-item"><span>RH Left</span><span id="psRH">—</span></div>
+    <div class="profile-item"><span>Conf Date</span><span id="psConf">—</span></div>
+    <div class="profile-item"><span>PME Date</span><span id="psPME">—</span></div>
+  </div>
+</div>
+
 <div class="sheet" id="currentDutyTripsSheet">
-  <div class="sheet-header"><div class="sheet-title">Today's Trips (MSOR Only)</div><button class="sheet-close" id="currentTripsCloseBtn">✕</button></div>
-  <div class="duty-table-container"><table class="duty-table"><thead><tr><th>Dep</th><th>From</th><th>To</th><th>Train</th></tr></thead><tbody id="currentDutyTripsBody"></tbody></table></div>
+  <div class="sheet-header"><div class="sheet-title">Today's Trips</div><button class="sheet-close" id="currentTripsCloseBtn">✕</button></div>
+  <div class="duty-table-container">
+    <table class="duty-table"><thead><tr><th>Dep</th><th>From</th><th>To</th><th>Train</th></tr></thead><tbody id="currentDutyTripsBody"></tbody></table>
+  </div>
 </div>
+
 <div class="sheet" id="alarmSheet">
-  <div class="sheet-header"><div class="sheet-title">Set Alarm</div><button class="sheet-close" id="alarmCloseBtn">✕</button></div>
+  <div class="sheet-header"><div class="sheet-title">Set Reminder</div><button class="sheet-close" id="alarmCloseBtn">✕</button></div>
   <div style="padding-bottom:1rem;">
-    <div style="padding:0.8rem;text-align:center;font-size:0.8rem;color:#64748b;background:#f8fafc;margin-bottom:0.5rem;">Alarm rings until turned off.</div>
     <div class="alarm-option" data-min="5">5 Minutes Before</div>
     <div class="alarm-option" data-min="10">10 Minutes Before</div>
     <div class="alarm-option" data-min="15">15 Minutes Before</div>
     <div class="alarm-option" data-min="20">20 Minutes Before</div>
-    <button class="alarm-option" id="testAlarmBtn" style="color:var(--primary);width:100%;border:none;background:none;">Test Sound</button>
+    <div class="alarm-option" data-min="30">30 Minutes Before</div>
     <div class="alarm-option" id="turnOffAlarmBtn" style="color:#ef4444;">Turn Off Alarm</div>
   </div>
 </div>
-<div class="sheet" id="restSheet">
-  <div class="sheet-handle"></div><div class="sheet-header"><div class="sheet-title">Rest Day</div><button class="sheet-close" id="restCloseBtn">✕</button></div>
-  <div class="field"><label class="label">New Rest Date</label><input type="date" id="restDateInput" class="input" /></div>
-  <button class="btn-primary" id="saveRestDateBtn">Save Rest Day</button>
-</div>
-<div class="sheet" id="paySheet">
-  <div class="sheet-handle"></div><div class="sheet-header"><div class="sheet-title">Pay Config</div><button class="sheet-close" id="payCloseBtn">✕</button></div>
-  <div class="field"><div id="payMonthChips" class="date-chip-row"></div></div>
-  <div class="field"><label class="label" id="payInputLabel">Pay (₹)</label><input type="number" id="payAmountInput" class="input" min="0" /></div>
-  <button class="btn-primary" id="savePayBtn">Save Pay</button>
-</div>
-<div id="crConsumeModal" class="sheet">
-  <div class="sheet-handle"></div><div class="sheet-header"><div class="sheet-title">Use CR</div><button class="sheet-close" onclick="closeCRConsumeModal()">✕</button></div>
-  <div class="field"><div id="crList" class="date-chip-row"></div></div>
-  <button class="btn-primary" id="useCRBtn">Use Selected CR</button>
-</div>
-<div class="history-search-bar" id="historySearchBar"><div class="history-search-inner"><input id="historySearchInput" class="history-search-input" type="text" placeholder="Search..." /></div></div>
 
 <div class="bottom-bar">
   <div class="nav-item active" data-tab="home"><span class="icon">🏠</span><span>Home</span></div>
-  <div class="nav-item" data-tab="trips"><span class="icon">🚆</span><span>Trips</span></div>
+  <div class="nav-item" data-tab="trips"><span class="icon">🚆</span><span>Trip Chart</span></div>
   <div class="nav-item" data-tab="history"><span class="icon">📜</span><span>History</span></div>
   <div class="nav-item" data-tab="settings"><span class="icon">⚙️</span><span>Settings</span></div>
 </div>
 
 <script>
+// ======= DUTY TRACKER SCRIPT v4.3 =======
+
 const $ = id => document.getElementById(id);
-const DUTY_TABLE={"1":{signOn:"04:55",onPlace:"MSOR SCR",signOff:"11:55",offPlace:"MSOR SCR",hours:"07:00"},"2":{signOn:"04:55",onPlace:"BICP SCR",signOff:"12:25",offPlace:"MSOR SCR",hours:"07:30"},"3":{signOn:"04:55",onPlace:"MSOR SCR",signOff:"12:05",offPlace:"MSOR SCR",hours:"07:10"},"4":{signOn:"05:05",onPlace:"BICP SCR",signOff:"12:45",offPlace:"MSOR SCR",hours:"07:40"},"5":{signOn:"07:15",onPlace:"MSOR SCR",signOff:"14:35",offPlace:"MSOR SCR",hours:"07:20"},"6":{signOn:"05:00",onPlace:"DEPOT",signOff:"14:00",offPlace:"MSOR SCR",hours:"09:00"},"8":{signOn:"04:30",onPlace:"DEPOT",signOff:"12:15",offPlace:"MSOR SCR",hours:"07:45"},"9":{signOn:"04:50",onPlace:"DEPOT",signOff:"12:35",offPlace:"MSOR SCR",hours:"07:45"},"10":{signOn:"07:25",onPlace:"MSOR SCR",signOff:"14:55",offPlace:"MSOR SCR",hours:"07:30"},"11":{signOn:"07:35",onPlace:"MSOR SCR",signOff:"15:05",offPlace:"MSOR SCR",hours:"07:30"},"12":{signOn:"11:35",onPlace:"MSOR SCR",signOff:"18:45",offPlace:"MSOR SCR",hours:"07:10"},"15":{signOn:"11:45",onPlace:"MSOR SCR",signOff:"19:05",offPlace:"MSOR SCR",hours:"07:20"},"16":{signOn:"12:25",onPlace:"MSOR SCR",signOff:"20:35",offPlace:"MSOR SCR",hours:"08:10"},"17":{signOn:"12:55",onPlace:"MSOR SCR",signOff:"20:45",offPlace:"MSOR SCR",hours:"07:50"},"18":{signOn:"13:05",onPlace:"MSOR SCR",signOff:"20:55",offPlace:"MSOR SCR",hours:"07:50"},"19":{signOn:"14:35",onPlace:"MSOR SCR",signOff:"22:48",offPlace:"BICP SCR",hours:"08:13"},"20":{signOn:"14:45",onPlace:"MSOR SCR",signOff:"22:54",offPlace:"MSOR SCR",hours:"08:09"},"22":{signOn:"15:25",onPlace:"MSOR SCR",signOff:"23:10",offPlace:"DEPOT",hours:"07:45"},"23":{signOn:"15:05",onPlace:"MSOR SCR",signOff:"23:10",offPlace:"MSOR SCR",hours:"08:05"},"24":{signOn:"15:55",onPlace:"MSOR SCR",signOff:"23:05",offPlace:"BICP SCR",hours:"07:10"},"25":{signOn:"16:05",onPlace:"MSOR SCR",signOff:"23:20",offPlace:"DEPOT",hours:"07:15"},"26":{signOn:"14:00",onPlace:"MSOR SCR",signOff:"23:00",offPlace:"DEPOT",hours:"09:00"},"TRAINING":{signOn:"09:00",onPlace:"Training",signOff:"17:00",offPlace:"Training",hours:"08:00"},"GENERAL":{signOn:"09:30",onPlace:"Office",signOff:"17:30",offPlace:"Office",hours:"08:00"},"DCC-M":{signOn:"06:00",onPlace:"DCC",signOff:"14:00",offPlace:"DCC",hours:"08:00"},"DCC-E":{signOn:"14:00",onPlace:"DCC",signOff:"22:00",offPlace:"DCC",hours:"08:00"},"DCC-N":{signOn:"22:00",onPlace:"DCC",signOff:"06:00",offPlace:"DCC",hours:"08:00"},"OCC-M":{signOn:"06:00",onPlace:"OCC",signOff:"14:00",offPlace:"OCC",hours:"08:00"},"OCC-E":{signOn:"14:00",onPlace:"OCC",signOff:"22:00",offPlace:"OCC",hours:"08:00"},"OCC-N":{signOn:"22:00",onPlace:"OCC",signOff:"06:00",offPlace:"OCC",hours:"08:00"},"STN-M":{signOn:"06:00",onPlace:"STATION",signOff:"14:00",offPlace:"STATION",hours:"08:00"},"STN-E":{signOn:"14:00",onPlace:"STATION",signOff:"22:00",offPlace:"STATION",hours:"08:00"},"STN-N":{signOn:"22:00",onPlace:"STATION",signOff:"06:00",offPlace:"STATION",hours:"08:00"}};
-const TRIP_DATA=[{d:"1",f:"MSOR",dep:"05:20",t:"BICP",tr:"401"},{d:"1",f:"BICP",dep:"05:59",t:"MSOR",tr:"1801"},{d:"1",f:"MSOR",dep:"06:30",t:"BICP",tr:"401"},{d:"1",f:"BICP",dep:"06:59",t:"MSOR",tr:"1801"},{d:"1",f:"MSOR",dep:"08:00",t:"BICP",tr:"402"},{d:"1",f:"BICP",dep:"08:29",t:"MSOR",tr:"1802"},{d:"1",f:"MSOR",dep:"09:50",t:"BICP",tr:"405"},{d:"1",f:"BICP",dep:"10:19",t:"MSOR",tr:"1805"},{d:"1",f:"MSOR",dep:"10:50",t:"BICP",tr:"405"},{d:"1",f:"BICP",dep:"11:19",t:"MSOR",tr:"1805"},{d:"2",f:"MSOR",dep:"05:58",t:"BICP",tr:"402"},{d:"2",f:"BICP",dep:"06:29",t:"MSOR",tr:"1802"},{d:"2",f:"MSOR",dep:"07:00",t:"BICP",tr:"402"},{d:"2",f:"BICP",dep:"07:29",t:"MSOR",tr:"1802"},{d:"2",f:"MSOR",dep:"08:30",t:"BICP",tr:"401"},{d:"2",f:"BICP",dep:"08:59",t:"MSOR",tr:"1801"},{d:"2",f:"MSOR",dep:"09:30",t:"BICP",tr:"401"},{d:"2",f:"BICP",dep:"09:59",t:"MSOR",tr:"1801"},{d:"2",f:"MSOR",dep:"11:20",t:"BICP",tr:"404"},{d:"2",f:"BICP",dep:"11:49",t:"MSOR",tr:"1804"},{d:"3",f:"MSOR",dep:"05:38",t:"BICP",tr:"403"},{d:"3",f:"BICP",dep:"06:09",t:"MSOR",tr:"1803"},{d:"3",f:"MSOR",dep:"06:40",t:"BICP",tr:"403"},{d:"3",f:"BICP",dep:"07:09",t:"MSOR",tr:"1803"},{d:"3",f:"MSOR",dep:"08:10",t:"BICP",tr:"406"},{d:"3",f:"BICP",dep:"08:39",t:"MSOR",tr:"1806"},{d:"3",f:"MSOR",dep:"10:00",t:"BICP",tr:"402"},{d:"3",f:"BICP",dep:"10:29",t:"MSOR",tr:"1802"},{d:"3",f:"MSOR",dep:"11:00",t:"BICP",tr:"402"},{d:"3",f:"BICP",dep:"11:29",t:"MSOR",tr:"1802"},{d:"4",f:"MSOR",dep:"06:18",t:"BICP",tr:"404"},{d:"4",f:"BICP",dep:"06:49",t:"MSOR",tr:"1804"},{d:"4",f:"MSOR",dep:"07:20",t:"BICP",tr:"404"},{d:"4",f:"BICP",dep:"07:49",t:"MSOR",tr:"1804"},{d:"4",f:"MSOR",dep:"09:10",t:"BICP",tr:"406"},{d:"4",f:"BICP",dep:"09:39",t:"MSOR",tr:"1806"},{d:"4",f:"MSOR",dep:"11:40",t:"BICP",tr:"403"},{d:"4",f:"BICP",dep:"12:09",t:"MSOR",tr:"1803"},{d:"5",f:"MSOR",dep:"07:30",t:"BICP",tr:"401"},{d:"5",f:"BICP",dep:"07:59",t:"MSOR",tr:"1801"},{d:"5",f:"MSOR",dep:"09:40",t:"BICP",tr:"403"},{d:"5",f:"BICP",dep:"10:09",t:"MSOR",tr:"1803"},{d:"5",f:"MSOR",dep:"10:40",t:"BICP",tr:"403"},{d:"5",f:"BICP",dep:"11:09",t:"MSOR",tr:"1803"},{d:"5",f:"MSOR",dep:"12:30",t:"BICP",tr:"401"},{d:"5",f:"BICP",dep:"12:59",t:"MSOR",tr:"1801"},{d:"5",f:"MSOR",dep:"13:30",t:"BICP",tr:"401"},{d:"5",f:"BICP",dep:"13:59",t:"MSOR",tr:"1801"},{d:"8",f:"MSOR",dep:"05:48",t:"BICP",tr:"405"},{d:"8",f:"BICP",dep:"06:19",t:"MSOR",tr:"1805"},{d:"8",f:"MSOR",dep:"06:50",t:"BICP",tr:"405"},{d:"8",f:"BICP",dep:"07:19",t:"MSOR",tr:"1805"},{d:"8",f:"MSOR",dep:"08:20",t:"BICP",tr:"404"},{d:"8",f:"BICP",dep:"08:49",t:"MSOR",tr:"1804"},{d:"8",f:"MSOR",dep:"09:20",t:"BICP",tr:"404"},{d:"8",f:"BICP",dep:"09:49",t:"MSOR",tr:"1804"},{d:"8",f:"MSOR",dep:"11:10",t:"BICP",tr:"406"},{d:"8",f:"BICP",dep:"11:39",t:"MSOR",tr:"1806"},{d:"9",f:"MSOR",dep:"06:08",t:"BICP",tr:"406"},{d:"9",f:"BICP",dep:"06:39",t:"MSOR",tr:"1806"},{d:"9",f:"MSOR",dep:"07:10",t:"BICP",tr:"406"},{d:"9",f:"BICP",dep:"07:39",t:"MSOR",tr:"1806"},{d:"9",f:"MSOR",dep:"09:00",t:"BICP",tr:"402"},{d:"9",f:"BICP",dep:"09:29",t:"MSOR",tr:"1802"},{d:"9",f:"MSOR",dep:"10:30",t:"BICP",tr:"401"},{d:"9",f:"BICP",dep:"10:59",t:"MSOR",tr:"1801"},{d:"9",f:"MSOR",dep:"11:30",t:"BICP",tr:"401"},{d:"9",f:"BICP",dep:"11:59",t:"MSOR",tr:"1801"},{d:"10",f:"MSOR",dep:"07:40",t:"BICP",tr:"403"},{d:"10",f:"BICP",dep:"08:09",t:"MSOR",tr:"1803"},{d:"10",f:"MSOR",dep:"08:40",t:"BICP",tr:"403"},{d:"10",f:"BICP",dep:"09:09",t:"MSOR",tr:"1803"},{d:"10",f:"MSOR",dep:"10:10",t:"BICP",tr:"406"},{d:"10",f:"BICP",dep:"10:39",t:"MSOR",tr:"1806"},{d:"10",f:"MSOR",dep:"12:20",t:"BICP",tr:"404"},{d:"10",f:"BICP",dep:"12:49",t:"MSOR",tr:"1804"},{d:"10",f:"MSOR",dep:"13:50",t:"BICP",tr:"405"},{d:"10",f:"BICP",dep:"14:19",t:"MSOR",tr:"1805"},{d:"11",f:"MSOR",dep:"07:50",t:"BICP",tr:"405"},{d:"11",f:"BICP",dep:"08:19",t:"MSOR",tr:"1805"},{d:"11",f:"MSOR",dep:"08:50",t:"BICP",tr:"405"},{d:"11",f:"BICP",dep:"09:19",t:"MSOR",tr:"1805"},{d:"11",f:"MSOR",dep:"10:20",t:"BICP",tr:"404"},{d:"11",f:"BICP",dep:"10:49",t:"MSOR",tr:"1804"},{d:"11",f:"MSOR",dep:"12:10",t:"BICP",tr:"406"},{d:"11",f:"BICP",dep:"12:39",t:"MSOR",tr:"1806"},{d:"11",f:"MSOR",dep:"14:00",t:"BICP",tr:"402"},{d:"11",f:"BICP",dep:"14:29",t:"MSOR",tr:"1802"},{d:"12",f:"MSOR",dep:"11:50",t:"BICP",tr:"405"},{d:"12",f:"BICP",dep:"12:19",t:"MSOR",tr:"1805"},{d:"12",f:"MSOR",dep:"12:50",t:"BICP",tr:"405"},{d:"12",f:"BICP",dep:"13:19",t:"MSOR",tr:"1805"},{d:"12",f:"MSOR",dep:"14:30",t:"BICP",tr:"401"},{d:"12",f:"BICP",dep:"14:59",t:"MSOR",tr:"1801"},{d:"12",f:"MSOR",dep:"15:30",t:"BICP",tr:"401"},{d:"12",f:"BICP",dep:"15:59",t:"MSOR",tr:"1801"},{d:"12",f:"MSOR",dep:"17:40",t:"BICP",tr:"403"},{d:"12",f:"BICP",dep:"18:09",t:"MSOR",tr:"1803"},{d:"15",f:"MSOR",dep:"12:00",t:"BICP",tr:"402"},{d:"15",f:"BICP",dep:"12:29",t:"MSOR",tr:"1802"},{d:"15",f:"MSOR",dep:"13:00",t:"BICP",tr:"402"},{d:"15",f:"BICP",dep:"13:29",t:"MSOR",tr:"1802"},{d:"15",f:"MSOR",dep:"14:40",t:"BICP",tr:"403"},{d:"15",f:"BICP",dep:"15:09",t:"MSOR",tr:"1803"},{d:"15",f:"MSOR",dep:"17:00",t:"BICP",tr:"402"},{d:"15",f:"BICP",dep:"17:29",t:"MSOR",tr:"1802"},{d:"15",f:"MSOR",dep:"18:00",t:"BICP",tr:"402"},{d:"15",f:"BICP",dep:"18:29",t:"MSOR",tr:"1802"},{d:"16",f:"MSOR",dep:"12:40",t:"BICP",tr:"403"},{d:"16",f:"BICP",dep:"13:09",t:"MSOR",tr:"1803"},{d:"16",f:"MSOR",dep:"13:40",t:"BICP",tr:"403"},{d:"16",f:"BICP",dep:"14:09",t:"MSOR",tr:"1803"},{d:"16",f:"MSOR",dep:"15:10",t:"BICP",tr:"406"},{d:"16",f:"BICP",dep:"15:39",t:"MSOR",tr:"1806"},{d:"16",f:"MSOR",dep:"17:50",t:"BICP",tr:"405"},{d:"16",f:"BICP",dep:"18:19",t:"MSOR",tr:"1805"},{d:"16",f:"MSOR",dep:"19:30",t:"BICP",tr:"401"},{d:"16",f:"BICP",dep:"19:59",t:"MSOR",tr:"1801"},{d:"17",f:"MSOR",dep:"13:10",t:"BICP",tr:"406"},{d:"17",f:"BICP",dep:"13:39",t:"MSOR",tr:"1806"},{d:"17",f:"MSOR",dep:"14:10",t:"BICP",tr:"406"},{d:"17",f:"BICP",dep:"14:39",t:"MSOR",tr:"1806"},{d:"17",f:"MSOR",dep:"16:30",t:"BICP",tr:"401"},{d:"17",f:"BICP",dep:"16:59",t:"MSOR",tr:"1801"},{d:"17",f:"MSOR",dep:"18:10",t:"BICP",tr:"406"},{d:"17",f:"BICP",dep:"18:39",t:"MSOR",tr:"1806"},{d:"17",f:"MSOR",dep:"19:40",t:"BICP",tr:"403"},{d:"17",f:"BICP",dep:"20:09",t:"MSOR",tr:"1803"},{d:"18",f:"MSOR",dep:"13:20",t:"BICP",tr:"404"},{d:"18",f:"BICP",dep:"13:49",t:"MSOR",tr:"1804"},{d:"18",f:"MSOR",dep:"14:20",t:"BICP",tr:"404"},{d:"18",f:"BICP",dep:"14:49",t:"MSOR",tr:"1804"},{d:"18",f:"MSOR",dep:"16:50",t:"BICP",tr:"405"},{d:"18",f:"BICP",dep:"17:19",t:"MSOR",tr:"1805"},{d:"18",f:"MSOR",dep:"18:50",t:"BICP",tr:"405"},{d:"18",f:"BICP",dep:"19:19",t:"MSOR",tr:"1805"},{d:"18",f:"MSOR",dep:"19:50",t:"BICP",tr:"405"},{d:"18",f:"BICP",dep:"20:19",t:"MSOR",tr:"1805"},{d:"19",f:"MSOR",dep:"14:50",t:"BICP",tr:"405"},{d:"19",f:"BICP",dep:"15:19",t:"MSOR",tr:"1805"},{d:"19",f:"MSOR",dep:"15:50",t:"BICP",tr:"405"},{d:"19",f:"BICP",dep:"16:19",t:"MSOR",tr:"1805"},{d:"19",f:"MSOR",dep:"18:30",t:"BICP",tr:"401"},{d:"19",f:"BICP",dep:"18:59",t:"MSOR",tr:"1801"},{d:"19",f:"MSOR",dep:"20:00",t:"BICP",tr:"402"},{d:"19",f:"BICP",dep:"20:29",t:"MSOR",tr:"1802"},{d:"19",f:"MSOR",dep:"21:00",t:"BICP",tr:"402"},{d:"19",f:"BICP",dep:"21:29",t:"MSOR",tr:"1802"},{d:"19",f:"MSOR",dep:"22:05",t:"BICP",tr:"402"},{d:"20",f:"MSOR",dep:"15:00",t:"BICP",tr:"402"},{d:"20",f:"BICP",dep:"15:29",t:"MSOR",tr:"1802"},{d:"20",f:"MSOR",dep:"16:00",t:"BICP",tr:"402"},{d:"20",f:"BICP",dep:"16:29",t:"MSOR",tr:"1802"},{d:"20",f:"MSOR",dep:"19:10",t:"BICP",tr:"406"},{d:"20",f:"BICP",dep:"19:39",t:"MSOR",tr:"1806"},{d:"20",f:"MSOR",dep:"20:40",t:"BICP",tr:"403"},{d:"20",f:"BICP",dep:"21:09",t:"MSOR",tr:"1803"},{d:"20",f:"MSOR",dep:"21:40",t:"BICP",tr:"403"},{d:"20",f:"BICP",dep:"22:11",t:"MSOR",tr:"1803"},{d:"22",f:"MSOR",dep:"15:40",t:"BICP",tr:"403"},{d:"22",f:"BICP",dep:"16:09",t:"MSOR",tr:"1803"},{d:"22",f:"MSOR",dep:"16:40",t:"BICP",tr:"403"},{d:"22",f:"BICP",dep:"17:09",t:"MSOR",tr:"1803"},{d:"22",f:"MSOR",dep:"18:20",t:"BICP",tr:"404"},{d:"22",f:"BICP",dep:"18:49",t:"MSOR",tr:"1804"},{d:"22",f:"MSOR",dep:"20:20",t:"BICP",tr:"404"},{d:"22",f:"BICP",dep:"20:49",t:"MSOR",tr:"1804"},{d:"22",f:"MSOR",dep:"21:20",t:"BICP",tr:"404"},{d:"22",f:"BICP",dep:"21:51",t:"MSOR",tr:"1804"},{d:"23",f:"MSOR",dep:"15:20",t:"BICP",tr:"404"},{d:"23",f:"BICP",dep:"15:49",t:"MSOR",tr:"1804"},{d:"23",f:"MSOR",dep:"17:30",t:"BICP",tr:"401"},{d:"23",f:"BICP",dep:"17:59",t:"MSOR",tr:"1801"},{d:"23",f:"MSOR",dep:"19:20",t:"BICP",tr:"404"},{d:"23",f:"BICP",dep:"19:49",t:"MSOR",tr:"1804"},{d:"23",f:"MSOR",dep:"20:50",t:"BICP",tr:"405"},{d:"23",f:"BICP",dep:"21:19",t:"MSOR",tr:"1805"},{d:"23",f:"MSOR",dep:"21:50",t:"BICP",tr:"405"},{d:"23",f:"BICP",dep:"22:21",t:"MSOR",tr:"1805"},{d:"24",f:"MSOR",dep:"16:10",t:"BICP",tr:"406"},{d:"24",f:"BICP",dep:"16:39",t:"MSOR",tr:"1806"},{d:"24",f:"MSOR",dep:"17:10",t:"BICP",tr:"406"},{d:"24",f:"BICP",dep:"17:39",t:"MSOR",tr:"1806"},{d:"24",f:"MSOR",dep:"18:40",t:"BICP",tr:"403"},{d:"24",f:"BICP",dep:"19:09",t:"MSOR",tr:"1803"},{d:"24",f:"MSOR",dep:"20:10",t:"BICP",tr:"406"},{d:"24",f:"BICP",dep:"20:39",t:"MSOR",tr:"1806"},{d:"24",f:"MSOR",dep:"21:10",t:"BICP",tr:"406"},{d:"24",f:"BICP",dep:"21:41",t:"MSOR",tr:"1806"},{d:"24",f:"MSOR",dep:"22:21",t:"BICP",tr:"406"},{d:"25",f:"MSOR",dep:"16:20",t:"BICP",tr:"404"},{d:"25",f:"BICP",dep:"16:49",t:"MSOR",tr:"1804"},{d:"25",f:"MSOR",dep:"17:20",t:"BICP",tr:"404"},{d:"25",f:"BICP",dep:"17:49",t:"MSOR",tr:"1804"},{d:"25",f:"MSOR",dep:"19:00",t:"BICP",tr:"402"},{d:"25",f:"BICP",dep:"19:29",t:"MSOR",tr:"1802"},{d:"25",f:"MSOR",dep:"20:30",t:"BICP",tr:"401"},{d:"25",f:"BICP",dep:"20:59",t:"MSOR",tr:"1801"},{d:"25",f:"MSOR",dep:"21:30",t:"BICP",tr:"401"},{d:"25",f:"BICP",dep:"22:01",t:"MSOR",tr:"1801"}];
-const SPECIAL_DUTIES=[{code:"CR",label:"CR",type:"simple",base:"CR"},{code:"CL",label:"CL",type:"simple",base:"CL"},{code:"GH",label:"GH",type:"simple",base:"GH"},{code:"RH",label:"RH",type:"simple",base:"RH"},{code:"TRAINING",label:"Trng",type:"simple",base:"TRAINING"},{code:"GENERAL",label:"Gen",type:"simple",base:"GENERAL"},{code:"DCC",label:"DCC",type:"shift",base:"DCC"},{code:"OCC",label:"OCC",type:"shift",base:"OCC"},{code:"STATION",label:"Station",type:"shift",base:"STN"}];
+
+// ----------------- CONFIG -----------------
+const DUTY_TABLE = {
+  "1": { signOn:"04:55", onPlace:"MSOR SCR", signOff:"11:55", offPlace:"MSOR SCR", hours:"07:00" },
+  "2": { signOn:"04:55", onPlace:"BICP SCR", signOff:"12:25", offPlace:"MSOR SCR", hours:"07:30" },
+  "3": { signOn:"04:55", onPlace:"MSOR SCR", signOff:"12:05", offPlace:"MSOR SCR", hours:"07:10" },
+  "4": { signOn:"05:05", onPlace:"BICP SCR", signOff:"12:45", offPlace:"MSOR SCR", hours:"07:40" },
+  "5": { signOn:"07:15", onPlace:"MSOR SCR", signOff:"14:35", offPlace:"MSOR SCR", hours:"07:20" },
+  "6": { signOn:"05:00", onPlace:"DEPOT", signOff:"14:00", offPlace:"MSOR SCR", hours:"09:00" },
+  "8": { signOn:"04:30", onPlace:"DEPOT", signOff:"12:15", offPlace:"MSOR SCR", hours:"07:45" },
+  "9": { signOn:"04:50", onPlace:"DEPOT", signOff:"12:35", offPlace:"MSOR SCR", hours:"07:45" },
+  "10": { signOn:"07:25", onPlace:"MSOR SCR", signOff:"14:55", offPlace:"MSOR SCR", hours:"07:30" },
+  "11": { signOn:"07:35", onPlace:"MSOR SCR", signOff:"15:05", offPlace:"MSOR SCR", hours:"07:30" },
+  "12": { signOn:"11:35", onPlace:"MSOR SCR", signOff:"18:45", offPlace:"MSOR SCR", hours:"07:10" },
+  "15": { signOn:"11:45", onPlace:"MSOR SCR", signOff:"19:05", offPlace:"MSOR SCR", hours:"07:20" },
+  "16": { signOn:"12:25", onPlace:"MSOR SCR", signOff:"20:35", offPlace:"MSOR SCR", hours:"08:10" },
+  "17": { signOn:"12:55", onPlace:"MSOR SCR", signOff:"20:45", offPlace:"MSOR SCR", hours:"07:50" },
+  "18": { signOn:"13:05", onPlace:"MSOR SCR", signOff:"20:55", offPlace:"MSOR SCR", hours:"07:50" },
+  "19": { signOn:"14:35", onPlace:"MSOR SCR", signOff:"22:48", offPlace:"BICP SCR", hours:"08:13" },
+  "20": { signOn:"14:45", onPlace:"MSOR SCR", signOff:"22:54", offPlace:"MSOR SCR", hours:"08:09" },
+  "22": { signOn:"15:25", onPlace:"MSOR SCR", signOff:"23:10", offPlace:"DEPOT", hours:"07:45" },
+  "23": { signOn:"15:05", onPlace:"MSOR SCR", signOff:"23:10", offPlace:"MSOR SCR", hours:"08:05" },
+  "24": { signOn:"15:55", onPlace:"MSOR SCR", signOff:"23:05", offPlace:"BICP SCR", hours:"07:10" },
+  "25": { signOn:"16:05", onPlace:"MSOR SCR", signOff:"23:20", offPlace:"DEPOT", hours:"07:15" },
+  "26": { signOn:"14:00", onPlace:"MSOR SCR", signOff:"23:00", offPlace:"DEPOT", hours:"09:00" },
+  "TRAINING":{signOn:"09:00",onPlace:"Training",signOff:"17:00",offPlace:"Training",hours:"08:00"},
+  "GENERAL":{signOn:"09:30",onPlace:"Office",signOff:"17:30",offPlace:"Office",hours:"08:00"},
+  "DCC-M":{signOn:"06:00",onPlace:"DCC",signOff:"14:00",offPlace:"DCC",hours:"08:00"},
+  "DCC-E":{signOn:"14:00",onPlace:"DCC",signOff:"22:00",offPlace:"DCC",hours:"08:00"},
+  "DCC-N":{signOn:"22:00",onPlace:"DCC",signOff:"06:00",offPlace:"DCC",hours:"08:00"},
+  "OCC-M":{signOn:"06:00",onPlace:"OCC",signOff:"14:00",offPlace:"OCC",hours:"08:00"},
+  "OCC-E":{signOn:"14:00",onPlace:"OCC",signOff:"22:00",offPlace:"OCC",hours:"08:00"},
+  "OCC-N":{signOn:"22:00",onPlace:"OCC",signOff:"06:00",offPlace:"OCC",hours:"08:00"},
+  "STN-M":{signOn:"06:00",onPlace:"STATION",signOff:"14:00",offPlace:"STATION",hours:"08:00"},
+  "STN-E":{signOn:"14:00",onPlace:"STATION",signOff:"22:00",offPlace:"STATION",hours:"08:00"},
+  "STN-N":{signOn:"22:00",onPlace:"STATION",signOff:"06:00",offPlace:"STATION",hours:"08:00"}
+};
+
+const TRIP_DATA = [
+  {d:"1",f:"MSOR",dep:"05:20",t:"BICP",tr:"401"},{d:"1",f:"BICP",dep:"05:59",t:"MSOR",tr:"1801"},{d:"1",f:"MSOR",dep:"06:30",t:"BICP",tr:"401"},{d:"1",f:"BICP",dep:"06:59",t:"MSOR",tr:"1801"},{d:"1",f:"MSOR",dep:"08:00",t:"BICP",tr:"402"},{d:"1",f:"BICP",dep:"08:29",t:"MSOR",tr:"1802"},{d:"1",f:"MSOR",dep:"09:50",t:"BICP",tr:"405"},{d:"1",f:"BICP",dep:"10:19",t:"MSOR",tr:"1805"},{d:"1",f:"MSOR",dep:"10:50",t:"BICP",tr:"405"},{d:"1",f:"BICP",dep:"11:19",t:"MSOR",tr:"1805"},
+  {d:"2",f:"MSOR",dep:"05:58",t:"BICP",tr:"402"},{d:"2",f:"BICP",dep:"06:29",t:"MSOR",tr:"1802"},{d:"2",f:"MSOR",dep:"07:00",t:"BICP",tr:"402"},{d:"2",f:"BICP",dep:"07:29",t:"MSOR",tr:"1802"},{d:"2",f:"MSOR",dep:"08:30",t:"BICP",tr:"401"},{d:"2",f:"BICP",dep:"08:59",t:"MSOR",tr:"1801"},{d:"2",f:"MSOR",dep:"09:30",t:"BICP",tr:"401"},{d:"2",f:"BICP",dep:"09:59",t:"MSOR",tr:"1801"},{d:"2",f:"MSOR",dep:"11:20",t:"BICP",tr:"404"},{d:"2",f:"BICP",dep:"11:49",t:"MSOR",tr:"1804"},
+  {d:"3",f:"MSOR",dep:"05:38",t:"BICP",tr:"403"},{d:"3",f:"BICP",dep:"06:09",t:"MSOR",tr:"1803"},{d:"3",f:"MSOR",dep:"06:40",t:"BICP",tr:"403"},{d:"3",f:"BICP",dep:"07:09",t:"MSOR",tr:"1803"},{d:"3",f:"MSOR",dep:"08:10",t:"BICP",tr:"406"},{d:"3",f:"BICP",dep:"08:39",t:"MSOR",tr:"1806"},{d:"3",f:"MSOR",dep:"10:00",t:"BICP",tr:"402"},{d:"3",f:"BICP",dep:"10:29",t:"MSOR",tr:"1802"},{d:"3",f:"MSOR",dep:"11:00",t:"BICP",tr:"402"},{d:"3",f:"BICP",dep:"11:29",t:"MSOR",tr:"1802"},
+  {d:"4",f:"MSOR",dep:"06:18",t:"BICP",tr:"404"},{d:"4",f:"BICP",dep:"06:49",t:"MSOR",tr:"1804"},{d:"4",f:"MSOR",dep:"07:20",t:"BICP",tr:"404"},{d:"4",f:"BICP",dep:"07:49",t:"MSOR",tr:"1804"},{d:"4",f:"MSOR",dep:"09:10",t:"BICP",tr:"406"},{d:"4",f:"BICP",dep:"09:39",t:"MSOR",tr:"1806"},{d:"4",f:"MSOR",dep:"11:40",t:"BICP",tr:"403"},{d:"4",f:"BICP",dep:"12:09",t:"MSOR",tr:"1803"},
+  {d:"5",f:"MSOR",dep:"07:30",t:"BICP",tr:"401"},{d:"5",f:"BICP",dep:"07:59",t:"MSOR",tr:"1801"},{d:"5",f:"MSOR",dep:"09:40",t:"BICP",tr:"403"},{d:"5",f:"BICP",dep:"10:09",t:"MSOR",tr:"1803"},{d:"5",f:"MSOR",dep:"10:40",t:"BICP",tr:"403"},{d:"5",f:"BICP",dep:"11:09",t:"MSOR",tr:"1803"},{d:"5",f:"MSOR",dep:"12:30",t:"BICP",tr:"401"},{d:"5",f:"BICP",dep:"12:59",t:"MSOR",tr:"1801"},{d:"5",f:"MSOR",dep:"13:30",t:"BICP",tr:"401"},{d:"5",f:"BICP",dep:"13:59",t:"MSOR",tr:"1801"},
+  {d:"8",f:"MSOR",dep:"05:48",t:"BICP",tr:"405"},{d:"8",f:"BICP",dep:"06:19",t:"MSOR",tr:"1805"},{d:"8",f:"MSOR",dep:"06:50",t:"BICP",tr:"405"},{d:"8",f:"BICP",dep:"07:19",t:"MSOR",tr:"1805"},{d:"8",f:"MSOR",dep:"08:20",t:"BICP",tr:"404"},{d:"8",f:"BICP",dep:"08:49",t:"MSOR",tr:"1804"},{d:"8",f:"MSOR",dep:"09:20",t:"BICP",tr:"404"},{d:"8",f:"BICP",dep:"09:49",t:"MSOR",tr:"1804"},{d:"8",f:"MSOR",dep:"11:10",t:"BICP",tr:"406"},{d:"8",f:"BICP",dep:"11:39",t:"MSOR",tr:"1806"},
+  {d:"9",f:"MSOR",dep:"06:08",t:"BICP",tr:"406"},{d:"9",f:"BICP",dep:"06:39",t:"MSOR",tr:"1806"},{d:"9",f:"MSOR",dep:"07:10",t:"BICP",tr:"406"},{d:"9",f:"BICP",dep:"07:39",t:"MSOR",tr:"1806"},{d:"9",f:"MSOR",dep:"09:00",t:"BICP",tr:"402"},{d:"9",f:"BICP",dep:"09:29",t:"MSOR",tr:"1802"},{d:"9",f:"MSOR",dep:"10:30",t:"BICP",tr:"401"},{d:"9",f:"BICP",dep:"10:59",t:"MSOR",tr:"1801"},{d:"9",f:"MSOR",dep:"11:30",t:"BICP",tr:"401"},{d:"9",f:"BICP",dep:"11:59",t:"MSOR",tr:"1801"},
+  {d:"10",f:"MSOR",dep:"07:40",t:"BICP",tr:"403"},{d:"10",f:"BICP",dep:"08:09",t:"MSOR",tr:"1803"},{d:"10",f:"MSOR",dep:"08:40",t:"BICP",tr:"403"},{d:"10",f:"BICP",dep:"09:09",t:"MSOR",tr:"1803"},{d:"10",f:"MSOR",dep:"10:10",t:"BICP",tr:"406"},{d:"10",f:"BICP",dep:"10:39",t:"MSOR",tr:"1806"},{d:"10",f:"MSOR",dep:"12:20",t:"BICP",tr:"404"},{d:"10",f:"BICP",dep:"12:49",t:"MSOR",tr:"1804"},{d:"10",f:"MSOR",dep:"13:50",t:"BICP",tr:"405"},{d:"10",f:"BICP",dep:"14:19",t:"MSOR",tr:"1805"},
+  {d:"11",f:"MSOR",dep:"07:50",t:"BICP",tr:"405"},{d:"11",f:"BICP",dep:"08:19",t:"MSOR",tr:"1805"},{d:"11",f:"MSOR",dep:"08:50",t:"BICP",tr:"405"},{d:"11",f:"BICP",dep:"09:19",t:"MSOR",tr:"1805"},{d:"11",f:"MSOR",dep:"10:20",t:"BICP",tr:"404"},{d:"11",f:"BICP",dep:"10:49",t:"MSOR",tr:"1804"},{d:"11",f:"MSOR",dep:"12:10",t:"BICP",tr:"406"},{d:"11",f:"BICP",dep:"12:39",t:"MSOR",tr:"1806"},{d:"11",f:"MSOR",dep:"14:00",t:"BICP",tr:"402"},{d:"11",f:"BICP",dep:"14:29",t:"MSOR",tr:"1802"},
+  {d:"12",f:"MSOR",dep:"11:50",t:"BICP",tr:"405"},{d:"12",f:"BICP",dep:"12:19",t:"MSOR",tr:"1805"},{d:"12",f:"MSOR",dep:"12:50",t:"BICP",tr:"405"},{d:"12",f:"BICP",dep:"13:19",t:"MSOR",tr:"1805"},{d:"12",f:"MSOR",dep:"14:30",t:"BICP",tr:"401"},{d:"12",f:"BICP",dep:"14:59",t:"MSOR",tr:"1801"},{d:"12",f:"MSOR",dep:"15:30",t:"BICP",tr:"401"},{d:"12",f:"BICP",dep:"15:59",t:"MSOR",tr:"1801"},{d:"12",f:"MSOR",dep:"17:40",t:"BICP",tr:"403"},{d:"12",f:"BICP",dep:"18:09",t:"MSOR",tr:"1803"},
+  {d:"15",f:"MSOR",dep:"12:00",t:"BICP",tr:"402"},{d:"15",f:"BICP",dep:"12:29",t:"MSOR",tr:"1802"},{d:"15",f:"MSOR",dep:"13:00",t:"BICP",tr:"402"},{d:"15",f:"BICP",dep:"13:29",t:"MSOR",tr:"1802"},{d:"15",f:"MSOR",dep:"14:40",t:"BICP",tr:"403"},{d:"15",f:"BICP",dep:"15:09",t:"MSOR",tr:"1803"},{d:"15",f:"MSOR",dep:"17:00",t:"BICP",tr:"402"},{d:"15",f:"BICP",dep:"17:29",t:"MSOR",tr:"1802"},{d:"15",f:"MSOR",dep:"18:00",t:"BICP",tr:"402"},{d:"15",f:"BICP",dep:"18:29",t:"MSOR",tr:"1802"},
+  {d:"16",f:"MSOR",dep:"12:40",t:"BICP",tr:"403"},{d:"16",f:"BICP",dep:"13:09",t:"MSOR",tr:"1803"},{d:"16",f:"MSOR",dep:"13:40",t:"BICP",tr:"403"},{d:"16",f:"BICP",dep:"14:09",t:"MSOR",tr:"1803"},{d:"16",f:"MSOR",dep:"15:10",t:"BICP",tr:"406"},{d:"16",f:"BICP",dep:"15:39",t:"MSOR",tr:"1806"},{d:"16",f:"MSOR",dep:"17:50",t:"BICP",tr:"405"},{d:"16",f:"BICP",dep:"18:19",t:"MSOR",tr:"1805"},{d:"16",f:"MSOR",dep:"19:30",t:"BICP",tr:"401"},{d:"16",f:"BICP",dep:"19:59",t:"MSOR",tr:"1801"},
+  {d:"17",f:"MSOR",dep:"13:10",t:"BICP",tr:"406"},{d:"17",f:"BICP",dep:"13:39",t:"MSOR",tr:"1806"},{d:"17",f:"MSOR",dep:"14:10",t:"BICP",tr:"406"},{d:"17",f:"BICP",dep:"14:39",t:"MSOR",tr:"1806"},{d:"17",f:"MSOR",dep:"16:30",t:"BICP",tr:"401"},{d:"17",f:"BICP",dep:"16:59",t:"MSOR",tr:"1801"},{d:"17",f:"MSOR",dep:"18:10",t:"BICP",tr:"406"},{d:"17",f:"BICP",dep:"18:39",t:"MSOR",tr:"1806"},{d:"17",f:"MSOR",dep:"19:40",t:"BICP",tr:"403"},{d:"17",f:"BICP",dep:"20:09",t:"MSOR",tr:"1803"},
+  {d:"18",f:"MSOR",dep:"13:20",t:"BICP",tr:"404"},{d:"18",f:"BICP",dep:"13:49",t:"MSOR",tr:"1804"},{d:"18",f:"MSOR",dep:"14:20",t:"BICP",tr:"404"},{d:"18",f:"BICP",dep:"14:49",t:"MSOR",tr:"1804"},{d:"18",f:"MSOR",dep:"16:50",t:"BICP",tr:"405"},{d:"18",f:"BICP",dep:"17:19",t:"MSOR",tr:"1805"},{d:"18",f:"MSOR",dep:"18:50",t:"BICP",tr:"405"},{d:"18",f:"BICP",dep:"19:19",t:"MSOR",tr:"1805"},{d:"18",f:"MSOR",dep:"19:50",t:"BICP",tr:"405"},{d:"18",f:"BICP",dep:"20:19",t:"MSOR",tr:"1805"},
+  {d:"19",f:"MSOR",dep:"14:50",t:"BICP",tr:"405"},{d:"19",f:"BICP",dep:"15:19",t:"MSOR",tr:"1805"},{d:"19",f:"MSOR",dep:"15:50",t:"BICP",tr:"405"},{d:"19",f:"BICP",dep:"16:19",t:"MSOR",tr:"1805"},{d:"19",f:"MSOR",dep:"18:30",t:"BICP",tr:"401"},{d:"19",f:"BICP",dep:"18:59",t:"MSOR",tr:"1801"},{d:"19",f:"MSOR",dep:"20:00",t:"BICP",tr:"402"},{d:"19",f:"BICP",dep:"20:29",t:"MSOR",tr:"1802"},{d:"19",f:"MSOR",dep:"21:00",t:"BICP",tr:"402"},{d:"19",f:"BICP",dep:"21:29",t:"MSOR",tr:"1802"},{d:"19",f:"MSOR",dep:"22:05",t:"BICP",tr:"402"},
+  {d:"20",f:"MSOR",dep:"15:00",t:"BICP",tr:"402"},{d:"20",f:"BICP",dep:"15:29",t:"MSOR",tr:"1802"},{d:"20",f:"MSOR",dep:"16:00",t:"BICP",tr:"402"},{d:"20",f:"BICP",dep:"16:29",t:"MSOR",tr:"1802"},{d:"20",f:"MSOR",dep:"19:10",t:"BICP",tr:"406"},{d:"20",f:"BICP",dep:"19:39",t:"MSOR",tr:"1806"},{d:"20",f:"MSOR",dep:"20:40",t:"BICP",tr:"403"},{d:"20",f:"BICP",dep:"21:09",t:"MSOR",tr:"1803"},{d:"20",f:"MSOR",dep:"21:40",t:"BICP",tr:"403"},{d:"20",f:"BICP",dep:"22:11",t:"MSOR",tr:"1803"},
+  {d:"22",f:"MSOR",dep:"15:40",t:"BICP",tr:"403"},{d:"22",f:"BICP",dep:"16:09",t:"MSOR",tr:"1803"},{d:"22",f:"MSOR",dep:"16:40",t:"BICP",tr:"403"},{d:"22",f:"BICP",dep:"17:09",t:"MSOR",tr:"1803"},{d:"22",f:"MSOR",dep:"18:20",t:"BICP",tr:"404"},{d:"22",f:"BICP",dep:"18:49",t:"MSOR",tr:"1804"},{d:"22",f:"MSOR",dep:"20:20",t:"BICP",tr:"404"},{d:"22",f:"BICP",dep:"20:49",t:"MSOR",tr:"1804"},{d:"22",f:"MSOR",dep:"21:20",t:"BICP",tr:"404"},{d:"22",f:"BICP",dep:"21:51",t:"MSOR",tr:"1804"},
+  {d:"23",f:"MSOR",dep:"15:20",t:"BICP",tr:"404"},{d:"23",f:"BICP",dep:"15:49",t:"MSOR",tr:"1804"},{d:"23",f:"MSOR",dep:"17:30",t:"BICP",tr:"401"},{d:"23",f:"BICP",dep:"17:59",t:"MSOR",tr:"1801"},{d:"23",f:"MSOR",dep:"19:20",t:"BICP",tr:"404"},{d:"23",f:"BICP",dep:"19:49",t:"MSOR",tr:"1804"},{d:"23",f:"MSOR",dep:"20:50",t:"BICP",tr:"405"},{d:"23",f:"BICP",dep:"21:19",t:"MSOR",tr:"1805"},{d:"23",f:"MSOR",dep:"21:50",t:"BICP",tr:"405"},{d:"23",f:"BICP",dep:"22:21",t:"MSOR",tr:"1805"},
+  {d:"24",f:"MSOR",dep:"16:10",t:"BICP",tr:"406"},{d:"24",f:"BICP",dep:"16:39",t:"MSOR",tr:"1806"},{d:"24",f:"MSOR",dep:"17:10",t:"BICP",tr:"406"},{d:"24",f:"BICP",dep:"17:39",t:"MSOR",tr:"1806"},{d:"24",f:"MSOR",dep:"18:40",t:"BICP",tr:"403"},{d:"24",f:"BICP",dep:"19:09",t:"MSOR",tr:"1803"},{d:"24",f:"MSOR",dep:"20:10",t:"BICP",tr:"406"},{d:"24",f:"BICP",dep:"20:39",t:"MSOR",tr:"1806"},{d:"24",f:"MSOR",dep:"21:10",t:"BICP",tr:"406"},{d:"24",f:"BICP",dep:"21:41",t:"MSOR",tr:"1806"},{d:"24",f:"MSOR",dep:"22:21",t:"BICP",tr:"406"},
+  {d:"25",f:"MSOR",dep:"16:20",t:"BICP",tr:"404"},{d:"25",f:"BICP",dep:"16:49",t:"MSOR",tr:"1804"},{d:"25",f:"MSOR",dep:"17:20",t:"BICP",tr:"404"},{d:"25",f:"BICP",dep:"17:49",t:"MSOR",tr:"1804"},{d:"25",f:"MSOR",dep:"19:00",t:"BICP",tr:"402"},{d:"25",f:"BICP",dep:"19:29",t:"MSOR",tr:"1802"},{d:"25",f:"MSOR",dep:"20:30",t:"BICP",tr:"401"},{d:"25",f:"BICP",dep:"20:59",t:"MSOR",tr:"1801"},{d:"25",f:"MSOR",dep:"21:30",t:"BICP",tr:"401"},{d:"25",f:"BICP",dep:"22:01",t:"MSOR",tr:"1801"}
+];
+
+const SPECIAL_DUTIES = [
+  {code:"CR",label:"CR",type:"simple",base:"CR"},
+  {code:"CL",label:"CL",type:"simple",base:"CL"},
+  {code:"GH",label:"GH",type:"simple",base:"GH"},
+  {code:"RH",label:"RH",type:"simple",base:"RH"},
+  {code:"TRAINING",label:"Trng",type:"simple",base:"TRAINING"},
+  {code:"GENERAL",label:"Gen",type:"simple",base:"GENERAL"},
+  {code:"DCC",label:"DCC",type:"shift",base:"DCC"},
+  {code:"OCC",label:"OCC",type:"shift",base:"OCC"},
+  {code:"STATION",label:"Station",type:"shift",base:"STN"}
+];
+
 const STATION_LIST=["MSOR","NAMT","VKVR","SMNR","RMNR","CLJP","MRSN","SICP","CDPE","CTCP","BICP"];
 const NO_DETAIL_SPECIALS=["CL","RH","GH","CR"];
-let data=loadData(); if(!data.availableCR) data.availableCR=[]; if(!data.printData) data.printData={records:{},profile:{},pay:{}}; if(!data.alarm) data.alarm={time:null};
-function loadData(){const json=localStorage.getItem("dutyTrackerData");return json?JSON.parse(json):{records:{},profile:{},manualRestDates:{},pay:{},printData:{records:{},profile:{},pay:{}},alarm:{time:null}};}
-function saveData(){localStorage.setItem("dutyTrackerData",JSON.stringify(data));}
-function todayISO(){const d=new Date();const offset=d.getTimezoneOffset()*60000;return new Date(d.getTime()-offset).toISOString().substring(0,10);}
-function formatDateHuman(isoDate){return new Date(isoDate).toLocaleDateString("en-IN",{weekday:"short",day:"2-digit",month:"short",year:"numeric"});}
-function isNumericDuty(code){return code && !isNaN(code) && Number(code)>=1 && Number(code)<=26;}
-function isShiftDuty(code){return code && (code.startsWith("DCC-")||code.startsWith("OCC-")||code.startsWith("STN-"));}
-function isNoDetailSpecial(code){return code && NO_DETAIL_SPECIALS.includes(code);}
-function parseTimeHour(t){return (t&&t.length===5)?parseInt(t.substring(0,2),10):-1;}
 
-// --- ALARM ---
-let isAlarmRinging=false, alarmInterval=null; const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-function playBeep(){if(audioCtx.state==='suspended')audioCtx.resume();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='square';o.frequency.value=800;o.connect(g);g.connect(audioCtx.destination);o.start();setTimeout(()=>o.stop(),200);}
+let data = loadData();
+if(!data.availableCR) data.availableCR=[];
+if(!data.printData) data.printData = { records: {}, profile: {}, pay: {} };
+if(!data.alarm) data.alarm = {time: null};
+
+function loadData(){
+  const json = localStorage.getItem("dutyTrackerData");
+  return json ? JSON.parse(json) : {records:{},profile:{},manualRestDates:{},pay:{}, printData:{ records:{}, profile:{}, pay:{} }, alarm:{time:null} };
+}
+function saveData(){ localStorage.setItem("dutyTrackerData", JSON.stringify(data)); }
+
+// ----------------- HELPERS -----------------
+// FIX FOR DATE DISPLAY ISSUE (Uses Local Time)
+function todayISO(){ 
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+function formatDateHuman(isoDate){ return new Date(isoDate).toLocaleDateString("en-IN",{weekday:"short",day:"2-digit",month:"short",year:"numeric"}); }
+function isNumericDuty(code){ return code!==undefined && !isNaN(code) && String(code).length > 0 && Number(code)>=1 && Number(code)<=26; }
+function isShiftDuty(code){ return code && (code.startsWith("DCC-") || code.startsWith("OCC-") || code.startsWith("STN-")); }
+function isNoDetailSpecial(code){ return code && NO_DETAIL_SPECIALS.indexOf(code) !== -1; }
+function parseTimeHour(t){ return (t && t.length===5) ? parseInt(t.substring(0,2),10) : -1; }
+
+function formatDutyLabel(code, tag, stationCode){
+  if(!code) return "";
+  let baseText = "";
+  let shiftName = "";
+  const parts = String(code).split("-");
+  if(parts.length>1){
+    if(parts[1]==="M") shiftName="Morning";
+    if(parts[1]==="E") shiftName="Evening";
+    if(parts[1]==="N") shiftName="Night";
+  }
+  if(isNumericDuty(code)) baseText = `Duty ${code}`;
+  else if(["CR","CL","GH","RH"].includes(code)) baseText = code;
+  else if(code==="TRAINING") baseText = "Trng";
+  else if(code==="GENERAL") baseText = "Gen";
+  else if(shiftName) baseText = stationCode ? `${shiftName} @${stationCode}` : shiftName;
+  if(tag==="R/S") return `${baseText} (R/S)`;
+  if(tag==="R/C") return `${baseText} (R/C)`;
+  return baseText;
+}
+
+function calculateHDA(code){ return (isNumericDuty(code) && Number(code)>=1 && Number(code)<=26) ? 100 : 0; }
+function calculateICE(code, so, sf){
+  if(!isNumericDuty(code)) return 0;
+  const h1 = parseTimeHour(so), h2 = parseTimeHour(sf);
+  if((h1!==-1 && (h1<6 || h1>=22)) || (h2!==-1 && (h2<6 || h2>=22))) return 150;
+  return 0;
+}
+function computeNightHours(code, so, sf){
+  if(!code) return 0;
+  if(String(code).endsWith("-N")) return 8;
+  if(String(code).endsWith("-M") || String(code).endsWith("-E")) return 0;
+  if(isNumericDuty(code)){
+    const h1 = parseTimeHour(so), h2 = parseTimeHour(sf);
+    if((h1!==-1 && h1<6) || (h2!==-1 && h2>=22)) return 1;
+  }
+  return 0;
+}
+
+// ----------------- HEADER LAYOUT -----------------
+function updateLayout(){
+  const h = $("fixedHeader").offsetHeight;
+  if(!$("fixedHeader").classList.contains("hidden")){
+     $("homeContent").style.marginTop = (h + 5) + "px";
+  } else {
+     $("homeContent").style.marginTop = "10px";
+  }
+}
+window.addEventListener("resize", updateLayout);
+
+// ----------------- ALARM & CLOCK LOGIC (FIXED) -----------------
+let nextTripTarget = null;
+let isAlarmRinging = false;
+let audioContext = null;
+
+// FORCE UNLOCK AUDIO ON BUTTON TAP
+function unlockAudio() {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const buffer = audioContext.createBuffer(1, 1, 22050);
+    const source = audioContext.createSource();
+    source.buffer = buffer;
+    source.connect(audioContext.destination);
+    source.start(0);
+    console.log("Audio Context Started");
+  } else if (audioContext.state === 'suspended') {
+    audioContext.resume();
+    console.log("Audio Context Resumed");
+  }
+}
+
+// Request Wake Lock (Keep Screen On)
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      await navigator.wakeLock.request('screen');
+      console.log('Screen Wake Lock active');
+    }
+  } catch (err) {
+    console.error(`Wake Lock failed: ${err.name}, ${err.message}`);
+  }
+}
+
+function beep(){
+  if(!audioContext) unlockAudio();
+  if(!audioContext) return; 
+  try {
+    const osc = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    osc.type = "square";
+    osc.frequency.setValueAtTime(880, audioContext.currentTime); 
+    osc.frequency.exponentialRampToValueAtTime(440, audioContext.currentTime + 0.1);
+    gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+    osc.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    osc.start();
+    osc.stop(audioContext.currentTime + 0.2);
+  } catch(e){ console.error(e); }
+}
+
 function triggerAlarm(){
-  if(isAlarmRinging) return; isAlarmRinging=true; showOverlay(); $("ringingModal").style.display="block";
-  alarmInterval=setInterval(()=>{ playBeep(); if(navigator.vibrate) navigator.vibrate([500,200,500]); },1000);
-}
-function stopAlarm(){ isAlarmRinging=false; if(alarmInterval) clearInterval(alarmInterval); hideOverlay(); $("ringingModal").style.display="none"; clearAlarm(); }
-function clearAlarm(){ data.alarm.time=null; saveData(); $("alarmBtn").classList.remove("active"); $("alarmBtnText").textContent="Set Alarm"; }
-function setAlarm(min){
-  if(audioCtx.state==='suspended') audioCtx.resume(); playBeep();
-  if(!nextTripTarget){ alert("No next trip found."); return; }
-  const trig=new Date(nextTripTarget.getTime()-min*60000); data.alarm.time=trig.toISOString(); saveData();
-  $("alarmBtn").classList.add("active"); $("alarmBtnText").textContent=`${min}m`; hideAllSheets(); alert(`Alarm set for ${trig.toLocaleTimeString()}`);
-}
-$("testAlarmBtn").onclick=()=>{ if(audioCtx.state==='suspended') audioCtx.resume(); playBeep(); if(navigator.vibrate) navigator.vibrate(200); };
-$("stopRingingBtn").onclick=stopAlarm;
+  isAlarmRinging = true;
+  
+  // 1. Try Notification
+  if(Notification.permission === "granted"){
+    new Notification("DUTY TRACKER ALERT", { body: "Train Departing Soon!", vibrate: [200, 100, 200] });
+  }
 
-// --- CLOCK ---
-let nextTripTarget=null;
+  // 2. Play Audio Loop
+  const interval = setInterval(beep, 500); 
+  
+  setTimeout(()=>{
+    if(isAlarmRinging && confirm("ALARM: Trip Departing Soon! Click OK to stop.")){
+      clearInterval(interval);
+      clearAlarm();
+    } else {
+      clearInterval(interval);
+    }
+    isAlarmRinging = false;
+  }, 100); 
+}
+
+function clearAlarm(){
+  data.alarm.time = null;
+  saveData();
+  $("alarmBtn").classList.remove("active");
+  $("alarmBtnText").textContent = "Set Alarm";
+  hideAllSheets();
+}
+
+function setAlarm(min){
+  // Fix: Force audio unlock immediately when user taps SET
+  unlockAudio();
+  requestWakeLock(); // Request screen to stay on
+
+  if(!nextTripTarget){ alert("No next trip found."); return; }
+  const trig = new Date(nextTripTarget.getTime() - min*60000);
+  data.alarm.time = trig.toISOString();
+  saveData();
+  $("alarmBtn").classList.add("active");
+  $("alarmBtnText").textContent = `${min}m`;
+  hideAllSheets();
+  alert("Alarm set for " + trig.toLocaleTimeString() + "\n\nKEEP APP OPEN ON SCREEN.");
+}
+
+// ----------------- NEXT TRIP CALC -----------------
 function updateNextTripLogic(){
-  const today=todayISO(), rec=data.records[today];
-  $("cardActions").style.display="none"; $("countdownBox").style.display="none"; $("currentDutyBadge").textContent="No Duty"; $("nextTripText").textContent="--"; nextTripTarget=null;
+  const today = todayISO(); // Use fixed date function
+  const rec = data.records[today];
+  
+  $("cardActions").style.display = "none";
+  $("countdownBox").style.display = "none";
+  $("currentDutyBadge").textContent = "No Duty";
+  $("nextTripText").textContent = "--";
+  nextTripTarget = null;
+
   if(!rec) return;
-  $("currentDutyBadge").textContent=formatDutyLabel(rec.duty,rec.tag,rec.station);
-  if(!isNumericDuty(rec.duty)){ updateLayout(); return; }
-  $("cardActions").style.display="flex"; const now=new Date(), curVal=now.getHours()*60+now.getMinutes();
-  // Next trip logic: Filter only MSOR departing trips for the home card
-  const trips=TRIP_DATA.filter(x=>x.d===String(rec.duty) && x.f==="MSOR");
-  let next=trips.find(t=>{ const [h,m]=t.dep.split(":").map(Number); return (h*60+m)>curVal; });
+
+  let dText = formatDutyLabel(rec.duty, rec.tag, rec.station);
+  $("currentDutyBadge").textContent = dText;
+
+  if(!isNumericDuty(rec.duty)) { updateLayout(); return; }
+
+  $("cardActions").style.display = "flex";
+
+  const trips = TRIP_DATA.filter(x => x.d === String(rec.duty) && x.f === "MSOR" && x.t === "BICP");
+  
+  let next = null;
+  const now = new Date();
+  const curVal = now.getHours()*60 + now.getMinutes();
+  
+  for(let t of trips){
+    const [h,m] = t.dep.split(":").map(Number);
+    if((h*60 + m) > curVal){
+      next = t;
+      break;
+    }
+  }
+
   if(next){
-    $("nextTripText").innerHTML=`Next: <b>${next.dep}</b> MSOR→${next.t}`;
-    $("countdownBox").style.display="flex"; const tDate=new Date(); const [th,tm]=next.dep.split(":").map(Number); tDate.setHours(th,tm,0,0); nextTripTarget=tDate;
-  } else $("nextTripText").textContent="All trips completed";
+    $("nextTripText").innerHTML = `Next Dep: <b>${next.dep}</b>`; 
+    $("countdownBox").style.display = "flex";
+    
+    const tDate = new Date();
+    const [th, tm] = next.dep.split(":").map(Number);
+    tDate.setHours(th, tm, 0, 0);
+    nextTripTarget = tDate;
+  } else {
+    $("nextTripText").textContent = "No more MSOR→BICP trips";
+  }
   updateLayout();
 }
-function updateLayout(){ const h=$("fixedHeader").offsetHeight; $("homeContent").style.marginTop=(!$("fixedHeader").classList.contains("hidden"))?(h+5)+"px":"10px"; }
-window.addEventListener("resize",updateLayout);
+
 function startClock(){
+  // Request notification permission immediately
+  if ("Notification" in window && Notification.permission !== "granted") {
+    Notification.requestPermission();
+  }
+
   updateNextTripLogic();
   setInterval(()=>{
     const now=new Date();
-    $("liveDateTime").textContent=now.toLocaleTimeString("en-IN",{hour12:false,hour:"2-digit",minute:"2-digit"});
-    $("liveDate").textContent=now.toLocaleDateString("en-IN",{weekday:"short",day:"2-digit",month:"short"});
+    $("liveDateTime").textContent = now.toLocaleTimeString("en-IN",{hour12:false,hour:"2-digit",minute:"2-digit"});
+    $("liveDate").textContent = now.toLocaleDateString("en-IN",{weekday:"short",day:"2-digit",month:"short"});
+
     if(nextTripTarget){
-      const targetTime=new Date(nextTripTarget.getTime()-5*60000); const diff=targetTime-now;
-      if(diff>0){
-        const h=Math.floor(diff/3600000), m=Math.floor((diff%3600000)/60000), s=Math.floor((diff%60000)/1000);
-        $("countdownTimer").textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-        $("countdownBox").querySelector(".countdown-label").textContent="UNTIL 5 MIN BEFORE";
-      } else if(now<nextTripTarget) $("countdownTimer").textContent="BE READY"; else { $("countdownTimer").textContent="00:00:00"; updateNextTripLogic(); }
+      const diff = nextTripTarget - now;
+      if(diff > 0){
+        const h = Math.floor(diff/3600000);
+        const m = Math.floor((diff%3600000)/60000);
+        const s = Math.floor((diff%60000)/1000);
+        $("countdownTimer").textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      } else {
+        $("countdownTimer").textContent = "00:00:00";
+        updateNextTripLogic();
+      }
     }
-    if(data.alarm.time && !isAlarmRinging){ const aTime=new Date(data.alarm.time); if(now>=aTime && now<new Date(aTime.getTime()+60000)) triggerAlarm(); }
+    
+    if(data.alarm && data.alarm.time && !isAlarmRinging){
+      const aTime = new Date(data.alarm.time);
+      // Trigger if time passed within last minute
+      if(now >= aTime && now < new Date(aTime.getTime() + 60000)) triggerAlarm();
+    }
   },1000);
 }
 
-// --- PROFILES & SETTINGS ---
-function renderSettingsProfileCard(){
-  const p=data.profile||{}, firstName=(p.name||"Hello").split(" ")[0];
-  $("profileTitle").textContent="Hello "+firstName; $("stName").textContent=p.name||"User"; $("stRole").textContent=p.role||"Role not set";
-  $("stAvatar").textContent=p.name?p.name[0].toUpperCase():"U"; if(p.photo) $("stAvatar").style.backgroundImage=`url(${p.photo})`;
-  $("stRest").textContent=(p.restDay||"SUN").substring(0,3).toUpperCase();
-  $("stCL").textContent=p.cl||"0"; $("stRH").textContent=p.rh||"0"; $("stCR").textContent=data.availableCR?data.availableCR.length:0;
+// ----------------- NEW RENDERERS -----------------
+// ... (Renderers same as before) ...
+function renderProfileSummary(){
+  const p=data.profile||{};
+  $("psName").textContent = p.name || "—";
+  $("psEmpId").textContent = p.empId || "—";
+  $("psRole").textContent = p.role || "—";
+  $("psRest").textContent = p.restDay || "—";
+  $("psCR").textContent = data.availableCR ? data.availableCR.length : 0;
+  $("psCL").textContent = p.cl || "—";
+  $("psRH").textContent = p.rh || "—";
+  $("psConf").textContent = p.confirmDate || "—";
+  $("psPME").textContent = p.pmeDate || "—";
+  
+  if(p.name){
+    $("profileTitle").textContent = `Hello, ${p.name.split(" ")[0]}`;
+    $("profileAvatar").textContent = p.name[0].toUpperCase();
+    if(p.photo) $("profileAvatar").style.backgroundImage=`url(${p.photo})`;
+  }
 }
-$("editProfileBtn").onclick=()=>{
-  const p=data.profile||{}; $("pfName").value=p.name||""; $("pfEmpId").value=p.empId||""; $("pfRole").value=p.role||""; $("pfRest").value=p.restDay||""; $("pfConfirmDate").value=p.confirmDate||""; $("pfPmeDate").value=p.pmeDate||""; $("pfCL").value=p.cl||""; $("pfRH").value=p.rh||"";
-  showOverlay(); $("editProfileSheet").style.display="block";
-};
-$("saveProfileBtn").onclick=()=>{
-  data.profile={name:$("pfName").value.trim(),empId:$("pfEmpId").value.trim(),role:$("pfRole").value,restDay:$("pfRest").value,confirmDate:$("pfConfirmDate").value,pmeDate:$("pfPmeDate").value,cl:$("pfCL").value,rh:$("pfRH").value};
-  data.printData.profile=data.profile; saveData(); renderSettingsProfileCard(); hideAllSheets();
-};
-$("pfPhoto").addEventListener("change",e=>{const f=e.target.files[0],r=new FileReader();if(f){r.onload=ev=>{data.profile.photo=ev.target.result;saveData();renderSettingsProfileCard();};r.readAsDataURL(f);}});
 
-// --- HISTORY (Reverted to 6-Card Layout) ---
+function renderCurrentTrips(){
+  const today = todayISO();
+  const rec = data.records[today];
+  const tb = $("currentDutyTripsBody"); tb.innerHTML="";
+  
+  if(!rec || !isNumericDuty(rec.duty)) {
+      tb.innerHTML = "<tr><td colspan='4'>No numeric duty logged for today.</td></tr>";
+      return;
+  }
+
+  const trips = TRIP_DATA.filter(x => x.d === String(rec.duty) && x.f === "MSOR" && x.t === "BICP");
+  
+  const now = new Date();
+  const curVal = now.getHours()*60 + now.getMinutes();
+  
+  let foundNext = false;
+  trips.forEach(t=>{
+    const [h,m] = t.dep.split(":").map(Number);
+    const tVal = h*60+m;
+    const tr = document.createElement("tr");
+    if(tVal > curVal && !foundNext){
+      tr.className = "current-trip-row";
+      foundNext = true;
+    }
+    tr.innerHTML=`<td><b>${t.dep}</b></td><td>${t.f}</td><td>${t.t}</td><td>${t.tr}</td>`;
+    tb.appendChild(tr);
+  });
+  
+  if(trips.length === 0) tb.innerHTML = "<tr><td colspan='4'>No MSOR→BICP trips found.</td></tr>";
+}
+
+let tripChartFilter = "1";
+
+function renderTripSection(){
+  const container = $("tripFilterBottom");
+  if(container.innerHTML !== "") { 
+      renderTripTable(); 
+      return; 
+  }
+
+  const groups = [
+    ["1","2","3","4","5","6","8","9","10","11","12"],
+    ["15","16","17","18","19","20","22","23","24","25","26"]
+  ];
+
+  groups.forEach(grp => {
+      const row = document.createElement("div");
+      row.className = "trip-filter-row";
+      
+      grp.forEach(dutyNum => {
+         const chip = document.createElement("button");
+         chip.className = "trip-chip" + (String(dutyNum)===tripChartFilter ? " active" : "");
+         chip.textContent = dutyNum;
+         
+         chip.onclick = (e) => {
+             e.preventDefault(); 
+             tripChartFilter = String(dutyNum);
+             document.querySelectorAll(".trip-chip").forEach(el => el.classList.remove("active"));
+             chip.classList.add("active");
+             renderTripTable();
+         };
+         row.appendChild(chip);
+      });
+      container.appendChild(row);
+  });
+  
+  renderTripTable();
+}
+
+function renderTripTable(){
+  const container = $("tripSplitTableContainer"); 
+  container.innerHTML="";
+  
+  const allTrips = TRIP_DATA.filter(x => x.d === tripChartFilter);
+  
+  if(allTrips.length === 0){
+    container.innerHTML = "<div style='padding:1rem;text-align:center;color:var(--text-muted)'>No trips found for Duty "+tripChartFilter+"</div>";
+    return;
+  }
+
+  const msorToBicp = allTrips.filter(t => t.f === "MSOR" && t.t === "BICP");
+  const bicpToMsor = allTrips.filter(t => t.f === "BICP" && t.t === "MSOR");
+
+  const buildTable = (trips) => {
+    if(trips.length === 0) return "<div style='padding:0.5rem;font-size:0.8rem;'>No trips in this direction.</div>";
+    let html = `<table class="duty-table"><thead><tr><th>Dep</th><th>From</th><th>To</th><th>Train</th></tr></thead><tbody>`;
+    trips.forEach(r => {
+       html += `<tr><td><span class="time-highlight">${r.dep}</span></td><td>${r.f}</td><td>${r.t}</td><td>${r.tr}</td></tr>`;
+    });
+    html += `</tbody></table>`;
+    return html;
+  };
+
+  const section1 = document.createElement("div");
+  section1.innerHTML = `
+    <div class="split-header"><span>MSOR ⮕ BICP</span> <span>${msorToBicp.length} Trips</span></div>
+    ${buildTable(msorToBicp)}
+  `;
+  container.appendChild(section1);
+
+  const section2 = document.createElement("div");
+  section2.innerHTML = `
+    <div class="split-header"><span>BICP ⮕ MSOR</span> <span>${bicpToMsor.length} Trips</span></div>
+    ${buildTable(bicpToMsor)}
+  `;
+  container.appendChild(section2);
+}
+
+// ----------------- HANDLERS -----------------
+
+let profileExpanded=false;
+function renderProfile(){
+  const p=data.profile||{};
+  $("pfName").value = p.name || "";
+  $("pfEmpId").value = p.empId || "";
+  $("pfRole").value = p.role || "";
+  $("pfRest").value = p.restDay || "";
+  $("pfConfirmDate").value = p.confirmDate || "";
+  $("pfPmeDate").value = p.pmeDate || "";
+  $("pfCL").value = p.cl || "";
+  $("pfRH").value = p.rh || "";
+}
+
+function attachProfileHandlers(){
+  $("saveProfileBtn").addEventListener("click", ()=>{
+    data.profile={
+      name:$("pfName").value.trim(), empId:$("pfEmpId").value.trim(), role:$("pfRole").value,
+      restDay:$("pfRest").value, confirmDate:$("pfConfirmDate").value, pmeDate:$("pfPmeDate").value,
+      cl:$("pfCL").value, rh:$("pfRH").value
+    };
+    data.printData.profile = { name: data.profile.name || "", empId: data.profile.empId || "", confirmDate: data.profile.confirmDate || "" };
+    saveData(); renderProfileSummary(); alert("Profile saved!");
+  });
+  $("pfPhoto").addEventListener("change", e=>{
+    const f=e.target.files[0], r=new FileReader();
+    if(f) { r.onload=ev=>{ data.profile.photo=ev.target.result; saveData(); renderProfileSummary(); }; r.readAsDataURL(f); }
+  });
+}
+
+let currentTab="home", openHistoryDate=null;
+function setActiveTab(id){
+  currentTab=id;
+  document.querySelectorAll(".screen").forEach(el=>el.classList.toggle("active",el.id===id));
+  document.querySelectorAll(".nav-item").forEach(el=>el.classList.toggle("active",el.dataset.tab===id));
+  
+  if(id === "home"){
+    $("fixedHeader").classList.remove("hidden");
+    $("fabBtn").style.display = "flex";
+  } else {
+    $("fixedHeader").classList.add("hidden");
+    $("fabBtn").style.display = "none";
+  }
+  updateLayout(); 
+
+  hideAllSheets();
+  $("historySearchBar").style.display = id==="history"?"block":"none";
+  if(id==="history") renderHistory();
+  if(id==="trips") renderTripSection();
+  if(id==="home") setTimeout(updateNextTripLogic, 50); 
+}
+
+function attachNav(){
+  document.querySelectorAll(".nav-item").forEach(el=>el.addEventListener("click", ()=>setActiveTab(el.dataset.tab)));
+}
+
+let selectedLogDate=todayISO(), selectedDutyCode=null, selectedTrains=[], specialDutyOpen=false;
+let expandedDate=null, restEditMode=null, pendingRestOldDate=null;
+let selectedStation=null, selectedShiftCode=null;
+let selectedPayMonth=String(new Date().getMonth()+1).padStart(2,"0");
+let logMonthYear={year:new Date().getFullYear(), month:new Date().getMonth()};
+let currentMonthYear={year:new Date().getFullYear(), month:new Date().getMonth()};
+
+function showOverlay(){ $("overlay").style.display="block"; }
+function hideAllSheets(){
+  $("overlay").style.display="none";
+  document.querySelectorAll(".sheet").forEach(s => s.style.display="none");
+  restEditMode=null; pendingRestOldDate=null;
+}
+
+function renderInlineStationChips(){
+  const c=$("inlineStationChips"); c.innerHTML="";
+  STATION_LIST.forEach(code=>{
+    const b=document.createElement("button"); b.className="train-btn"; b.textContent=code; b.dataset.station=code;
+    if(selectedStation===code) b.classList.add("active");
+    b.addEventListener("click", e=>{
+      e.preventDefault(); selectedStation=code;
+      c.querySelectorAll(".train-btn").forEach(x=>x.classList.toggle("active", x.dataset.station===code));
+      updateDutyChipStates();
+    });
+    c.appendChild(b);
+  });
+}
+
+function handleDutySelection(dNo){
+  selectedDutyCode=dNo; selectedTrains=[];
+  const isShift = (dNo==="DCC"||dNo==="OCC"||dNo==="STN");
+  $("inlineShiftStationSelector").style.display = isShift ? "block" : "none";
+  $("trainField").style.display = (isNumericDuty(dNo)) ? "block" : "none";
+  if(isShift){
+    const r = data.records[selectedLogDate];
+    if(r && r.duty && r.duty.startsWith(dNo)){
+      selectedShiftCode = r.duty.split("-")[1] || null;
+      selectedStation = r.station || null;
+    } else { selectedShiftCode = null; selectedStation = null; }
+    document.querySelectorAll("#shiftChips button").forEach(b=>b.classList.toggle("active", b.dataset.shift===selectedShiftCode));
+    if(dNo==="STN"){ $("stationSelector").style.display="block"; renderInlineStationChips(); }
+    else { $("stationSelector").style.display="none"; }
+  } else { selectedStation = null; selectedShiftCode = null; }
+  updateDutyChipStates(); updateSpecialDutyStates();
+}
+
+function showFabLog(){
+  showOverlay(); $("logSheet").style.display="block";
+  renderLogMonthSelect(); renderLogDateChips(); renderDutyButtons();
+  renderSpecialDutyButtons(); renderTrainButtons();
+  $("inlineShiftStationSelector").style.display="none"; $("trainField").style.display="none";
+  selectedDutyCode=null; selectedTrains=[]; selectedStation=null; selectedShiftCode=null;
+}
+
+function showLogSheetFor(iso, rTag){
+  selectedLogDate=iso;
+  if(rTag==="R/S"){
+    if(!data.availableCR) data.availableCR=[];
+    data.availableCR.push(iso); saveData();
+    restEditMode=null; pendingRestOldDate=null;
+    showFabLog(); return;
+  }
+  const rec=data.records[iso];
+  if(rec){
+    selectedTrains=rec.trains||[];
+    if(isShiftDuty(rec.duty)){
+      const p=rec.duty.split("-"); selectedDutyCode=p[0]; selectedShiftCode=p[1]; selectedStation=rec.station||null;
+    } else { selectedDutyCode=rec.duty; selectedShiftCode=null; selectedStation=null; }
+  } else { selectedDutyCode=null; selectedTrains=[]; selectedShiftCode=null; selectedStation=null; }
+  if(rTag){
+    restEditMode=rTag; pendingRestOldDate=iso;
+    showOverlay(); $("restSheet").style.display="block"; $("restDateInput").value=iso;
+    return;
+  }
+  restEditMode=null; pendingRestOldDate=null;
+  showOverlay(); $("logSheet").style.display="block";
+  renderLogMonthSelect(); renderLogDateChips(); renderDutyButtons(); renderSpecialDutyButtons();
+  renderTrainButtons(); $("trainField").style.display=(selectedDutyCode&&isNumericDuty(selectedDutyCode))?"block":"none";
+  const isShiftNow = (selectedDutyCode==="DCC"||selectedDutyCode==="OCC"||selectedDutyCode==="STN");
+  $("inlineShiftStationSelector").style.display=isShiftNow?"block":"none";
+  if(isShiftNow){
+    renderInlineStationChips();
+    document.querySelectorAll("#shiftChips button").forEach(b=>b.classList.toggle("active",b.dataset.shift===selectedShiftCode));
+    if(selectedDutyCode==="STN") $("stationSelector").style.display="block"; else $("stationSelector").style.display="none";
+  }
+}
+
+function attachFabAndSheets(){
+  $("fabBtn").addEventListener("click", showFabLog);
+  $("overlay").addEventListener("click", hideAllSheets);
+  document.querySelectorAll(".sheet-close").forEach(b=>b.addEventListener("click", hideAllSheets));
+  
+  $("viewDutyTableBtn").addEventListener("click", ()=>{ showOverlay(); $("dutyTableSheet").style.display="block"; });
+  $("configPayBtn").addEventListener("click", ()=>{ showOverlay(); $("paySheet").style.display="block"; renderPayMonthChips(); });
+  $("viewProfileSummaryBtn").addEventListener("click", ()=>{ renderProfileSummary(); showOverlay(); $("profileSummarySheet").style.display="block"; });
+  $("viewCurrentTripsBtn").addEventListener("click", ()=>{ renderCurrentTrips(); showOverlay(); $("currentDutyTripsSheet").style.display="block"; });
+  $("alarmBtn").addEventListener("click", ()=>{ showOverlay(); $("alarmSheet").style.display="block"; });
+
+  document.querySelectorAll(".alarm-option").forEach(el => {
+    el.addEventListener("click", function(){
+      if(this.id==="turnOffAlarmBtn") clearAlarm();
+      else setAlarm(parseInt(this.dataset.min));
+    });
+  });
+
+  document.querySelectorAll("#shiftChips button").forEach(b => b.addEventListener("click", e=>{
+    e.preventDefault();
+    document.querySelectorAll("#shiftChips button").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active"); selectedShiftCode=b.dataset.shift;
+  }));
+
+  $("saveRestDateBtn").addEventListener("click", ()=>{
+    const val=$("restDateInput").value;
+    if(!val){ alert("Select date"); return; }
+    if(data.records[val]){ alert("Date has duty"); return; }
+    if(restEditMode==="R/C" && pendingRestOldDate){
+      data.records[pendingRestOldDate]={duty:"CR",tag:"R/C",trains:[],station:null};
+      data.manualRestDates[val]=true;
+      if(data.manualRestDates[pendingRestOldDate]) delete data.manualRestDates[pendingRestOldDate];
+      updatePrintRecord(pendingRestOldDate);
+    } else if(restEditMode==="R/S" && pendingRestOldDate){
+      data.records[pendingRestOldDate]={duty:"CR",tag:"R/S",trains:[],station:null};
+      updatePrintRecord(pendingRestOldDate);
+    } else { data.manualRestDates[val]=true; }
+    saveData(); hideAllSheets(); renderCalendar(); if(currentTab==="history") renderHistory();
+  });
+
+  $("savePayBtn").addEventListener("click", ()=>{
+    const amt=Number($("payAmountInput").value);
+    if(amt<0 || isNaN(amt)){ alert("Invalid amount"); return; }
+    data.pay[selectedPayMonth]=amt;
+    data.printData.pay[selectedPayMonth] = amt;
+    saveData(); hideAllSheets(); if(currentTab==="history") renderHistory();
+  });
+
+  $("saveDutyBtn").addEventListener("click", ()=>{
+    if(!selectedDutyCode){ alert("Select duty"); return; }
+    let code = selectedDutyCode; let st = null;
+    if(code === "DCC" || code === "OCC"){
+      if(!selectedShiftCode){ alert("Select shift"); return; }
+      code = `${code}-${selectedShiftCode}`; st = null;
+    } else if(code === "STN"){
+      if(!selectedShiftCode){ alert("Select shift"); return; }
+      if(!selectedStation){ alert("Select station"); return; }
+      code = `STN-${selectedShiftCode}`; st = selectedStation;
+    } else if(isNumericDuty(code)){
+      if(selectedTrains.length===0){ alert("Select train"); return; }
+      st = null;
+    } else { st = null; }
+
+    data.records[selectedLogDate] = { duty: code, tag: null, trains: isNumericDuty(code) ? selectedTrains.slice() : [], station: st };
+    if(restEditMode==="R/S" && pendingRestOldDate){
+      if(!data.availableCR) data.availableCR=[];
+      data.availableCR.push(pendingRestOldDate);
+      if(data.records[pendingRestOldDate] && data.records[pendingRestOldDate].duty==="CR") delete data.records[pendingRestOldDate];
+      updatePrintRecord(pendingRestOldDate);
+    }
+    if(data.manualRestDates[selectedLogDate]) delete data.manualRestDates[selectedLogDate];
+    updatePrintRecord(selectedLogDate);
+    saveData(); hideAllSheets(); renderCalendar(); if(currentTab==="history") renderHistory();
+    updateNextTripLogic();
+  });
+
+  $("specialDutyToggle").addEventListener("click", (e)=>{
+    e.preventDefault(); specialDutyOpen=!specialDutyOpen; renderSpecialDutyButtons();
+  });
+}
+
+function renderPayMonthChips(){
+  const c=$("payMonthChips"), names=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  c.innerHTML="";
+  names.forEach((nm,i)=>{
+    const m=String(i+1).padStart(2,"0"), d=document.createElement("div");
+    d.className="date-chip"+(selectedPayMonth===m?" active":"");
+    d.innerHTML=`<span class="date-chip-label">${nm}</span><span class="date-chip-secondary">${data.pay[m]?`₹${data.pay[m]}`:"Set"}</span>`;
+    d.addEventListener("click", ()=>{
+      selectedPayMonth=m; renderPayMonthChips();
+      $("payAmountInput").value=data.pay[m]||""; $("payInputLabel").textContent=`Pay for One Day in ${nm} (₹)`;
+    });
+    c.appendChild(d);
+  });
+}
+
+function renderLogMonthSelect(){
+  const s=$("logMonthSelect"); s.innerHTML="";
+  for(let m=0;m<12;m++){
+    const o=document.createElement("option"); o.value=`${logMonthYear.year}-${String(m+1).padStart(2,"0")}`;
+    o.textContent=new Date(logMonthYear.year,m,1).toLocaleDateString("en-IN",{month:"short",year:"numeric"});
+    if(m===logMonthYear.month) o.selected=true; s.appendChild(o);
+  }
+  s.onchange=function(){ const p=this.value.split("-"); logMonthYear.year=Number(p[0]); logMonthYear.month=Number(p[1])-1; renderLogDateChips(); };
+}
+function renderLogDateChips(){
+  const c=$("dateChips"), y=logMonthYear.year, m=logMonthYear.month, dim=new Date(y,m+1,0).getDate(), frag=document.createDocumentFragment();
+  c.innerHTML="";
+  for(let i=1;i<=dim;i++){
+    const iso=`${y}-${String(m+1).padStart(2,"0")}-${String(i).padStart(2,"0")}`;
+    const r=data.records[iso];
+    const txt=r?formatDutyLabel(r.duty,r.tag,r.station):(data.manualRestDates[iso]?"REST":"");
+    const d=document.createElement("div");
+    d.className=`date-chip${selectedLogDate===iso?" active":""}${iso===todayISO()?" today-chip":""}`;
+    d.innerHTML=`<span class="date-chip-label">${i}</span><span class="date-chip-secondary">${new Date(y,m,i).toLocaleDateString("en-IN",{weekday:"short"})} ${txt}</span>`;
+    d.onclick=()=>{
+      selectedLogDate=iso; renderLogDateChips();
+      if(data.records[iso]) showLogSheetFor(iso,null);
+      else {
+        selectedDutyCode=null; selectedTrains=[]; selectedStation=null; selectedShiftCode=null;
+        updateDutyChipStates(); updateSpecialDutyStates(); $("trainField").style.display="none"; $("inlineShiftStationSelector").style.display="none";
+      }
+    };
+    frag.appendChild(d);
+  }
+  c.appendChild(frag);
+}
+
+function renderDutyButtons(){
+  const c=$("dutyButtons"); c.innerHTML="";
+  [ ["1","2","3","4","5","6","8","9","10","11","12"], ["15","16","17","18","19","20","22","23","24","25","26"] ].forEach(grp=>{
+    const r=document.createElement("div"); r.className="duty-row";
+    grp.forEach(no=>{
+      const b=document.createElement("button"); b.className="duty-btn"; b.textContent=no; b.dataset.no=no;
+      b.onclick=e=>{ e.preventDefault(); handleDutySelection(no); updateTrainButtonStates(); };
+      r.appendChild(b);
+    });
+    c.appendChild(r);
+  });
+  updateDutyChipStates();
+}
+function updateDutyChipStates(){
+  document.querySelectorAll("#dutyButtons .duty-btn").forEach(b=>{
+    const no=b.dataset.no, act=isNumericDuty(no)?(selectedDutyCode===no):(selectedDutyCode && selectedDutyCode.split("-")[0]===no);
+    b.classList.toggle("active", act);
+  });
+  if($("inlineShiftStationSelector").style.display==="block") renderInlineStationChips();
+}
+function renderSpecialDutyButtons(){
+  const c=$("specialDutyContainer"); c.innerHTML="";
+  if(!specialDutyOpen){ c.style.display="none"; return; }
+  c.style.display="block";
+  const r=document.createElement("div"); r.className="special-duty-row";
+  SPECIAL_DUTIES.forEach(s=>{
+    const b=document.createElement("button"); b.className="special-duty-btn"; b.textContent=s.label; b.dataset.base=s.base;
+    b.onclick=e=>{
+      e.preventDefault();
+      if(s.code==="CR"){ openCRConsumeModal(); return; }
+      handleDutySelection(s.base); updateDutyChipStates(); updateSpecialDutyStates();
+    };
+    r.appendChild(b);
+  });
+  c.appendChild(r); updateSpecialDutyStates();
+}
+function updateSpecialDutyStates(){
+  document.querySelectorAll(".special-duty-btn").forEach(b=>{
+    let act=false;
+    if(selectedDutyCode && !isNumericDuty(selectedDutyCode) && selectedDutyCode.split("-")[0]===b.dataset.base) act=true;
+    b.classList.toggle("active", act);
+  });
+}
+function renderTrainButtons(){
+  const c=$("trainButtons"); c.innerHTML="";
+  for(let i=1;i<=10;i++){
+    const b=document.createElement("button"); b.className="train-btn"; b.textContent=i; b.dataset.no=i;
+    b.onclick=e=>{
+      e.preventDefault(); const idx=selectedTrains.indexOf(String(i));
+      if(idx>-1) selectedTrains.splice(idx,1); else selectedTrains.push(String(i));
+      selectedTrains.sort((a,b)=>Number(a)-Number(b)); updateTrainButtonStates();
+    };
+    c.appendChild(b);
+  }
+  updateTrainButtonStates();
+}
+function updateTrainButtonStates(){
+  document.querySelectorAll("#trainButtons .train-btn").forEach(b=>b.classList.toggle("active",selectedTrains.includes(b.dataset.no)));
+}
+
+function buildFinalPrintRecord(date, rec){
+  if(!rec) return null;
+  const out = { date: date };
+  const dutyCode = rec.duty || "";
+  out.duty = dutyCode;
+  const di = DUTY_TABLE[dutyCode] || DUTY_TABLE[dutyCode.split("-")[0]] || null;
+  let signOn = di && di.signOn ? di.signOn : "—";
+  let signOff = di && di.signOff ? di.signOff : "—";
+  let onPlace = di && di.onPlace ? di.onPlace : "—";
+  let offPlace = di && di.offPlace ? di.offPlace : "—";
+  let dutyHours = di && di.hours ? di.hours : "—";
+  if(rec.station && typeof onPlace === "string"){
+    onPlace = onPlace.replace(/STATION|DCC|OCC/g, rec.station);
+    offPlace = offPlace.replace(/STATION|DCC|OCC/g, rec.station);
+  }
+  if(isNoDetailSpecial(String(dutyCode).split("-")[0])){ signOn = "—"; signOff = "—"; dutyHours = "—"; }
+  const nightHours = (signOn==="—" || signOff==="—") ? 0 : computeNightHours(dutyCode, signOn, signOff);
+  const trains = (rec.trains && rec.trains.length>0) ? rec.trains.slice().map(String).sort((a,b)=>Number(a)-Number(b)) : [];
+  let shift = null;
+  if(String(dutyCode).includes("-")){ shift = dutyCode.split("-")[1] || null; }
+  out.signOnTime = signOn; out.signOffTime = signOff; out.dutyHours = dutyHours;
+  out.nightDutyHours = Number(nightHours); out.signOnPlace = onPlace; out.signOffPlace = offPlace;
+  out.trains = trains; out.shift = shift;
+  out.dutyType = isNoDetailSpecial(String(dutyCode).split("-")[0]) ? String(dutyCode).split("-")[0] : (String(dutyCode).split("-")[0] || dutyCode);
+  out.station = rec.station || null;
+  return out;
+}
+function updatePrintRecord(date){
+  data.printData = data.printData || { records:{}, profile:{}, pay:{} };
+  const rec = data.records[date];
+  if(!rec){ if(data.printData.records && data.printData.records[date]) delete data.printData.records[date]; return; }
+  const built = buildFinalPrintRecord(date, rec);
+  if(built) data.printData.records[date] = built;
+}
+
+function renderCalendar(){
+  const c=$("calendarRow"), y=currentMonthYear.year, m=currentMonthYear.month;
+  c.innerHTML="";
+  const dim=new Date(y,m+1,0).getDate(), today=todayISO(), frag=document.createDocumentFragment();
+  const restIdx=data.profile.restDay ? ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"].indexOf(data.profile.restDay) : -1;
+  let todayEl=null;
+  
+  for(let i=dim;i>=1;i--){
+    const iso=`${y}-${String(m+1).padStart(2,"0")}-${String(i).padStart(2,"0")}`;
+    const rec=data.records[iso];
+    const dow=new Date(y,m,i).getDay();
+    let isRest = (restIdx>-1 && dow===restIdx) || (data.manualRestDates && data.manualRestDates[iso]);
+    if(rec && rec.tag && (rec.tag==="R/S"||rec.tag==="R/C")) isRest=true; else if(rec) isRest=false;
+    
+    const ch=document.createElement("div"); ch.className="timeline-chip"; ch.dataset.date=iso;
+    const isToday=(iso===today);
+    if(isToday) ch.classList.add("today-chip");
+    else if(iso>today && (new Date(today).getFullYear()===y && new Date(today).getMonth()===m)) ch.classList.add("future-chip");
+    
+    let top=`<div class="timeline-chip-top"><span class="${isToday?'today-label-text':''}">${isToday?`TODAY ${String(i).padStart(2,"0")}<span class='today-icon'>⚡</span>`:new Date(y,m,i).toLocaleDateString("en-IN",{weekday:"short"})+' '+String(i).padStart(2,"0")}</span><span style="font-weight:700;font-size:0.8rem;">${rec?formatDutyLabel(rec.duty,rec.tag,rec.station):(isRest?"REST":"")}</span></div>`;
+    let bot=`<div class="timeline-chip-bottom">${rec?"Tap to view or edit":(isRest?"Weekly rest day – tap to edit":"Tap to add duty")}</div>`;
+    
+    if(rec) ch.classList.add("has-duty");
+    if(isRest && !rec) ch.classList.add("rest-chip");
+    if(rec && isRest) ch.classList.add("rest-chip-duty");
+    ch.innerHTML = top + bot + '<div class="date-expand" style="display:none"></div>';
+    ch.onclick=()=>handleDateClick(iso);
+    frag.appendChild(ch);
+    if(isToday) todayEl=ch;
+  }
+  c.appendChild(frag);
+  $("noDutiesMsg").style.display=Object.keys(data.records).length===0?"block":"none";
+  
+  if(todayEl) {
+    setTimeout(() => {
+       todayEl.scrollIntoView({behavior:'auto', block:'start'}); 
+    }, 50);
+  }
+}
+
+function handleDateClick(iso){
+  const ch=document.querySelector(`.timeline-chip[data-date="${iso}"]`);
+  if(expandedDate && expandedDate!==iso){
+    const p=document.querySelector(`.timeline-chip[data-date="${expandedDate}"]`);
+    if(p){ p.classList.remove("active"); p.querySelector(".date-expand").style.display="none"; }
+  }
+  if(expandedDate===iso){ expandedDate=null; ch.classList.remove("active"); ch.querySelector(".date-expand").style.display="none"; return; }
+  expandedDate=iso; ch.classList.add("active");
+  const ex=ch.querySelector(".date-expand"); ex.style.display="block"; ex.innerHTML="";
+  const rec=data.records[iso];
+  if(rec){
+    const d=DUTY_TABLE[rec.duty]||{};
+    let op=d.onPlace||"—", fp=d.offPlace||"—";
+    if(rec.station){ op=op.replace(/STATION|DCC|OCC/g,rec.station); fp=fp.replace(/STATION|DCC|OCC/g,rec.station); }
+    ex.innerHTML=`<div class="expand-block"><div><strong>${formatDateHuman(iso)}</strong></div><div>Duty: ${formatDutyLabel(rec.duty,rec.tag,rec.station)}</div><button class="edit-btn">Edit Duty</button></div>`;
+    ex.querySelector(".edit-btn").onclick=e=>{ e.stopPropagation(); showLogSheetFor(iso,null); };
+  } else if(ch.classList.contains("rest-chip")){
+    ex.innerHTML=`<div class="expand-block"><div><strong>${formatDateHuman(iso)}</strong></div><div>Scheduled Weekly Rest</div><div class="rest-actions"><button class="rest-btn rest-btn-rs" title="Rest Suspended">R/S</button><button class="rest-btn rest-btn-rc" title="Rest Changed">R/C</button></div></div>`;
+    ex.querySelector(".rest-btn-rs").onclick=e=>{ e.stopPropagation(); showLogSheetFor(iso,"R/S"); };
+    ex.querySelector(".rest-btn-rc").onclick=e=>{ e.stopPropagation(); showLogSheetFor(iso,"R/C"); };
+  } else { showLogSheetFor(iso,null); }
+}
+
 let historyFilterMonth="all";
-function renderHistory(){
+function renderHistoryMonthChips(){
   const c=$("historyMonthChips"), dates=Object.keys(data.records).sort().reverse();
   const months=[...new Set(dates.map(d=>d.substring(0,7)))];
   c.innerHTML=`<div class="history-month-chip${historyFilterMonth==='all'?' active':''}">All</div>`;
   c.firstChild.onclick=()=>{ historyFilterMonth="all"; renderHistory(); };
   months.forEach(m=>{
-    const d=document.createElement("div"); d.className=`history-month-chip${historyFilterMonth===m?' active':''}`;
-    d.textContent=new Date(m.split("-")[0],m.split("-")[1]-1,1).toLocaleDateString("en-IN",{month:"short",year:"numeric"});
-    d.onclick=()=>{ historyFilterMonth=m; renderHistory(); }; c.appendChild(d);
+    const d=document.createElement("div");
+    d.className=`history-month-chip${historyFilterMonth===m?' active':''}`;
+    d.textContent=new Date(m.split("-")[0], m.split("-")[1]-1, 1).toLocaleDateString("en-IN",{month:"short",year:"numeric"});
+    d.onclick=()=>{ historyFilterMonth=m; renderHistory(); };
+    c.appendChild(d);
   });
+}
+function renderHistory(){
+  renderHistoryMonthChips();
   const term=$("historySearchInput").value.toLowerCase().trim();
-  let fDates=dates; if(historyFilterMonth!=="all") fDates=fDates.filter(d=>d.startsWith(historyFilterMonth));
-  if(term) fDates=fDates.filter(d=>{ const r=data.records[d], dt=DUTY_TABLE[r.duty]||{}; return d.includes(term) || (r.duty||"").toLowerCase().includes(term) || (dt.onPlace||"").toLowerCase().includes(term); });
-  const l=$("historyList"); l.innerHTML=""; $("historySummary").innerHTML="";
-  if(fDates.length===0) { $("noHistoryMsg").style.display="block"; return; } $("noHistoryMsg").style.display="none";
-  
-  let sum={tot:0,cr:0,cl:0,rh:0,nh:0,ice:0,hda:0,nda:0,ndays:0};
-  fDates.forEach(d=>{ const r=data.records[d], di=DUTY_TABLE[r.duty]||{}; sum.tot++; if(r.duty==="CR") sum.cr++; if(r.duty==="CL") sum.cl++; if(r.duty==="RH") sum.rh++; sum.hda+=calculateHDA(r.duty); sum.ice+=calculateICE(r.duty,di.signOn,di.signOff); sum.nh+=computeNightHours(r.duty,di.signOn,di.signOff); });
-  const mPay=(historyFilterMonth!=="all" && data.pay[historyFilterMonth.split("-")[1]])||0;
-  if(mPay) { sum.ndays=sum.nh/24; sum.nda=sum.ndays*mPay; } const totAll=sum.hda+sum.ice+sum.nda;
-  
-  const add=(t,v,s)=>$("historySummary").innerHTML+=`<div class="history-summary-card"><div class="history-summary-label">${t}</div><div class="history-summary-value">${v}</div>${s?`<div class="history-summary-sub">${s}</div>`:""}</div>`;
-  add("Total Duties",sum.tot,`CR: ${sum.cr}, CL: ${sum.cl}, RH: ${sum.rh}`); 
-  add("Night Hours (A)",sum.nh.toFixed(1)+" hrs"); 
-  add("ICE",`₹ ${sum.ice}`);
-  add("HDA",`₹ ${sum.hda}`);
-  add("NDA",sum.nda?`₹ ${sum.nda.toFixed(0)}`:"—", sum.nda?`Night Days: ${sum.ndays.toFixed(1)}`:"Set 1-day pay");
-  add("Total Allowance",`₹ ${totAll.toFixed(0)}`);
-
-  fDates.forEach(d=>{
-    const r=data.records[d], di=DUTY_TABLE[r.duty]||{}, hda=calculateHDA(r.duty), ice=calculateICE(r.duty,di.signOn,di.signOff), nh=computeNightHours(r.duty,di.signOn,di.signOff);
-    let op=di.onPlace||"—", fp=di.offPlace||"—"; if(r.station){ op=op.replace(/STATION|DCC|OCC/g,r.station); fp=fp.replace(/STATION|DCC|OCC/g,r.station); }
-    const item=document.createElement("div"); item.className="history-item";
-    let meta=""; if(!isShiftDuty(r.duty) && !isNoDetailSpecial(r.duty)) meta=`<div class="history-meta">${di.signOn||'—'} @ ${op} – ${di.signOff||'—'} @ ${fp} (${di.hours||'—'})</div>`;
-    item.innerHTML=`<div class="history-header"><span>${formatDateHuman(d)}</span><span>${formatDutyLabel(r.duty,r.tag,r.station)}</span></div>${meta}
-    <div class="history-detail" style="display:none"><div>Hours: ${di.hours||'—'}</div><div>Trains: ${(r.trains||[]).join(", ")||'None'}</div><div>HDA: ₹${hda}</div><div>ICE: ₹${ice}</div><div>Night Hrs: ${nh}</div><button class="edit-btn" style="position:static;margin-top:.4rem;float:right">Edit Duty</button></div>`;
-    item.onclick=()=>{
-      const det=item.querySelector(".history-detail"); const isVis=det.style.display==="block";
-      document.querySelectorAll(".history-detail").forEach(x=>x.style.display="none"); document.querySelectorAll(".history-item").forEach(x=>x.classList.remove("active"));
-      if(!isVis){ det.style.display="block"; item.classList.add("active"); }
-    };
-    item.querySelector(".edit-btn").onclick=e=>{ e.stopPropagation(); showLogSheetFor(d,null); };
-    l.appendChild(item);
+  let dates=Object.keys(data.records).sort().reverse();
+  if(historyFilterMonth!=="all") dates=dates.filter(d=>d.startsWith(historyFilterMonth));
+  if(term) dates=dates.filter(d=>{
+    const r=data.records[d], dt=DUTY_TABLE[r.duty]||{};
+    return d.includes(term) || (r.duty||"").toLowerCase().includes(term) || (r.trains||[]).join(",").includes(term) ||
+           (dt.onPlace||"").toLowerCase().includes(term) || (dt.offPlace||"").toLowerCase().includes(term) ||
+           (r.station||"").toLowerCase().includes(term) || ["cl","gh","rh","cr"].includes(term) && r.duty.toLowerCase()===term;
   });
+  const sum={tot:0,cr:0,cl:0,gh:0,rh:0,hda:0,ice:0,nh:0,nda:0,ndays:0};
+  dates.forEach(d=>{
+    const r=data.records[d], di=DUTY_TABLE[r.duty]||{};
+    sum.tot++; if(r.duty==="CR") sum.cr++; else if(r.duty==="CL") sum.cl++; else if(r.duty==="GH") sum.gh++; else if(r.duty==="RH") sum.rh++;
+    sum.hda+=calculateHDA(r.duty); sum.ice+=calculateICE(r.duty,di.signOn,di.signOff); sum.nh+=computeNightHours(r.duty,di.signOn,di.signOff);
+  });
+  const mPay=(historyFilterMonth!=="all" && data.pay[historyFilterMonth.split("-")[1]]) || null;
+  if(mPay){ sum.ndays=sum.nh/24; sum.nda=sum.ndays*mPay; }
+  const totAll=sum.hda+sum.ice+(sum.nda||0);
+
+  const hs=$("historySummary"); hs.innerHTML="";
+  if(dates.length>0){
+    const add=(t,v,s)=>hs.innerHTML+=`<div class="history-summary-card"><div class="history-summary-label">${t}</div><div class="history-summary-value">${v}</div>${s?`<div class="history-summary-sub">${s}</div>`:""}</div>`;
+    add("Total Duties",sum.tot,`CR: ${sum.cr}, CL: ${sum.cl}, GH: ${sum.gh}, RH: ${sum.rh}`);
+    add("Night Hours (A)",sum.nh.toFixed(1)+" hrs",null);
+    add("ICE",`₹ ${sum.ice}`,null);
+    add("HDA",`₹ ${sum.hda}`,null);
+    add("NDA",sum.nda!==null?`₹ ${sum.nda.toFixed(0)}`:"—", sum.nda!==null?`Night Days: ${sum.ndays.toFixed(1)}`:"1-day pay not set or 'All'");
+    add("Total Allowance",`₹ ${totAll.toFixed(0)}`,null);
+  }
+  const l=$("historyList"); l.innerHTML="";
+  $("noHistoryMsg").style.display=dates.length===0?"block":"none";
+  const frag=document.createDocumentFragment();
+  dates.forEach(d=>{
+    const r=data.records[d], di=DUTY_TABLE[r.duty]||{}, hda=calculateHDA(r.duty), ice=calculateICE(r.duty,di.signOn,di.signOff), nh=computeNightHours(r.duty,di.signOn,di.signOff);
+    let op=di.onPlace||"—", fp=di.offPlace||"—";
+    if(r.station){ op=op.replace(/STATION|DCC|OCC/g,r.station); fp=fp.replace(/STATION|DCC|OCC/g,r.station); }
+    const item=document.createElement("div"); item.className=`history-item${openHistoryDate===d?' active':''}`;
+    item.onclick=()=>{ openHistoryDate=(openHistoryDate===d)?null:d; renderHistory(); };
+    let meta="";
+    if(!isShiftDuty(r.duty) && !isNoDetailSpecial(r.duty)) meta=`<div class="history-meta">${di.signOn||'—'} @ ${op} – ${di.signOff||'—'} @ ${fp} (${di.hours||'—'})</div>`;
+    item.innerHTML=`<div class="history-header"><span>${formatDateHuman(d)}</span><span>${formatDutyLabel(r.duty,r.tag,r.station)}</span></div>${meta}
+    <div class="history-detail" style="display:${openHistoryDate===d?'block':'none'}">
+      <div>Hours: ${di.hours||'—'}</div><div>Trains: ${(r.trains||[]).join(", ")||'None'}</div>
+      <div>HDA: ₹${hda}</div><div>ICE: ₹${ice}</div><div>Night Hrs: ${nh}</div>
+      <button class="edit-btn" style="position:static;margin-top:.4rem;float:right">Edit Duty</button>
+    </div>`;
+    item.querySelector(".edit-btn").onclick=e=>{ e.stopPropagation(); showLogSheetFor(d,null); };
+    frag.appendChild(item);
+  });
+  l.appendChild(frag);
 }
 $("historySearchInput").addEventListener("input", renderHistory);
 
-// --- TRIP CHART ---
-let tripChartFilter="1";
-function renderTripSection(){
-  const c=$("tripFilterChips"); if(c.innerHTML==="") for(let i=1;i<=26;i++){ if([7,13,14,21].includes(i))continue; const chip=document.createElement("div"); chip.className="trip-chip"+(String(i)===tripChartFilter?" active":""); chip.textContent=i; chip.onclick=()=>{ tripChartFilter=String(i); document.querySelectorAll(".trip-chip").forEach(e=>e.classList.remove("active")); chip.classList.add("active"); renderTripTable(); }; c.appendChild(chip); }
-  renderTripTable();
-}
-function renderTripTable(){
-  const tb=$("tripChartBody"); tb.innerHTML=""; const all=TRIP_DATA.filter(x=>x.d===tripChartFilter); if(!all.length){ tb.innerHTML="<tr><td colspan='4' style='text-align:center;padding:1rem;'>No trips.</td></tr>"; return; }
-  const ms=all.filter(t=>t.f==="MSOR"), bc=all.filter(t=>t.f==="BICP");
-  const add=(r)=>{ tb.innerHTML+=`<tr><td><span class="trip-time-highlight">${r.dep}</span></td><td>${r.f}</td><td>${r.t}</td><td>${r.tr}</td></tr>`; };
-  if(ms.length){ tb.innerHTML+=`<tr class="section-header"><td colspan="4">From Mansarovar</td></tr>`; ms.forEach(add); }
-  if(bc.length){ tb.innerHTML+=`<tr class="section-header"><td colspan="4">From Badi Chaupar</td></tr>`; bc.forEach(add); }
-}
-
-// --- HELPERS & NAV ---
-function formatDutyLabel(code,tag,st){
-  if(!code) return ""; let t=isNumericDuty(code)?`Duty ${code}`:code; 
-  if(code.includes("-")){ const p=code.split("-"), s=p[1]==="M"?"Morning":p[1]==="E"?"Evening":"Night"; t=st?`${s} @${st}`:s; }
-  if(tag==="R/S") t+=" (R/S)"; if(tag==="R/C") t+=" (R/C)"; return t;
-}
-function calculateHDA(c){return isNumericDuty(c)?100:0;}
-function calculateICE(c,so,sf){if(!isNumericDuty(c))return 0; const h1=parseTimeHour(so),h2=parseTimeHour(sf); if((h1!==-1&&(h1<6||h1>=22))||(h2!==-1&&(h2<6||h2>=22)))return 150; return 0;}
-function computeNightHours(c,so,sf){if(!c)return 0; if(String(c).endsWith("-N"))return 8; if(isNumericDuty(c)){const h1=parseTimeHour(so),h2=parseTimeHour(sf); if((h1!==-1&&h1<6)||(h2!==-1&&h2>=22))return 1;} return 0;}
-
-let currentTab="home", isFabMode=false;
-function setActiveTab(id){
-  currentTab=id; document.querySelectorAll(".screen").forEach(e=>e.classList.toggle("active",e.id===id));
-  document.querySelectorAll(".nav-item").forEach(e=>e.classList.toggle("active",e.dataset.tab===id));
-  $("fixedHeader").classList.toggle("hidden",id!=="home"); $("fabBtn").style.display=id==="home"?"flex":"none";
-  if(id==="home") updateNextTripLogic(); if(id==="history") { $("historySearchBar").style.display="block"; renderHistory(); } else $("historySearchBar").style.display="none";
-  if(id==="trips") renderTripSection(); if(id==="settings") renderSettingsProfileCard(); updateLayout(); hideAllSheets();
-}
-document.querySelectorAll(".nav-item").forEach(e=>e.addEventListener("click",()=>setActiveTab(e.dataset.tab)));
-function showOverlay(){$("overlay").style.display="block";}
-function hideAllSheets(){$("overlay").style.display="none";document.querySelectorAll(".sheet").forEach(e=>e.style.display="none");}
-$("overlay").onclick=hideAllSheets; document.querySelectorAll(".sheet-close").forEach(e=>e.onclick=hideAllSheets);
-
-// --- FAB LOGIC ---
-let selectedLogDate=todayISO(), selectedDutyCode=null, selectedTrains=[], selectedShiftCode=null, selectedStation=null, specialDutyOpen=false;
-let logMonthYear={year:new Date().getFullYear(), month:new Date().getMonth()};
-function showFabLog(){ isFabMode=true; showOverlay(); $("logSheet").style.display="block"; renderLogMonthSelect(); renderLogDateChips(); renderDutyButtons(); renderSpecialDutyButtons(); renderTrainButtons(); selectedDutyCode=null; selectedTrains=[]; selectedStation=null; selectedShiftCode=null; updateDutyChipStates(); updateSpecialDutyStates(); }
-$("fabBtn").onclick=showFabLog;
-
-function renderLogMonthSelect(){
-  const s=$("logMonthSelect"); s.innerHTML="";
-  for(let m=0;m<12;m++){ const o=document.createElement("option"); o.value=`${logMonthYear.year}-${String(m+1).padStart(2,"0")}`; o.textContent=new Date(logMonthYear.year,m,1).toLocaleDateString("en-IN",{month:"short",year:"numeric"}); if(m===logMonthYear.month) o.selected=true; s.appendChild(o); }
-  s.onchange=function(){ const p=this.value.split("-"); logMonthYear.year=Number(p[0]); logMonthYear.month=Number(p[1])-1; renderLogDateChips(); };
-}
-function renderLogDateChips(){
-  const c=$("dateChips"), y=logMonthYear.year, m=logMonthYear.month, dim=new Date(y,m+1,0).getDate(); c.innerHTML=""; const localToday=todayISO();
-  for(let i=1;i<=dim;i++){
-    const iso=`${y}-${String(m+1).padStart(2,"0")}-${String(i).padStart(2,"0")}`; const r=data.records[iso], txt=r?formatDutyLabel(r.duty,r.tag,r.station):(data.manualRestDates&&data.manualRestDates[iso]?"REST":"");
-    const d=document.createElement("div"); d.className=`date-chip${selectedLogDate===iso?" active":""}${iso===localToday?" today-chip":""}`;
-    d.innerHTML=`<span class="date-chip-label">${i}</span><span class="date-chip-secondary">${new Date(y,m,i).toLocaleDateString("en-IN",{weekday:"short"})} ${txt}</span>`;
-    d.onclick=()=>{ selectedLogDate=iso; renderLogDateChips(); if(data.records[iso]) showLogSheetFor(iso,null); }; c.appendChild(d);
-  }
-  setTimeout(()=>{const a=c.querySelector('.date-chip.active');if(a)c.scrollTo({left:a.offsetLeft-c.offsetWidth/2+a.offsetWidth/2,behavior:'smooth'});},50);
-}
-function renderDutyButtons(){
-  const c=$("dutyButtons"); c.innerHTML="";
-  [ ["1","2","3","4","5","6","8","9","10","11","12"], ["15","16","17","18","19","20","22","23","24","25","26"] ].forEach(grp=>{
-    const r=document.createElement("div"); r.className="duty-row";
-    grp.forEach(no=>{ const b=document.createElement("button"); b.className="duty-btn"; b.textContent=no; b.dataset.no=no; b.onclick=e=>{ e.preventDefault(); handleDutySelection(no); updateTrainButtonStates(); }; r.appendChild(b); }); c.appendChild(r);
-  }); updateDutyChipStates();
-}
-function handleDutySelection(dNo){
-  selectedDutyCode=dNo; selectedTrains=[]; const isShift=(dNo==="DCC"||dNo==="OCC"||dNo==="STN");
-  $("inlineShiftStationSelector").style.display=isShift?"block":"none"; $("trainField").style.display=isNumericDuty(dNo)?"block":"none";
-  if(isShift && dNo==="STN"){ $("stationSelector").style.display="block"; renderInlineStationChips(); } else $("stationSelector").style.display="none";
-  updateDutyChipStates(); updateSpecialDutyStates();
-}
-function renderInlineStationChips(){ const c=$("inlineStationChips"); c.innerHTML=""; STATION_LIST.forEach(code=>{ const b=document.createElement("button"); b.className="train-btn"; b.textContent=code; if(selectedStation===code) b.classList.add("active"); b.onclick=e=>{ e.preventDefault(); selectedStation=code; renderInlineStationChips(); }; c.appendChild(b); }); }
-function updateDutyChipStates(){ document.querySelectorAll("#dutyButtons .duty-btn").forEach(b=>{ const no=b.dataset.no, act=isNumericDuty(no)?(selectedDutyCode===no):(selectedDutyCode && selectedDutyCode.split("-")[0]===no); b.classList.toggle("active", act); }); document.querySelectorAll("#shiftChips button").forEach(b=>b.classList.toggle("active", b.dataset.shift===selectedShiftCode)); }
-document.querySelectorAll("#shiftChips button").forEach(b=>b.onclick=e=>{ e.preventDefault(); selectedShiftCode=b.dataset.shift; updateDutyChipStates(); });
-function renderSpecialDutyButtons(){ const c=$("specialDutyContainer"); c.innerHTML=""; if(!specialDutyOpen){ c.style.display="none"; return; } c.style.display="block"; const r=document.createElement("div"); r.className="special-duty-row"; SPECIAL_DUTIES.forEach(s=>{ const b=document.createElement("button"); b.className="special-duty-btn"; b.textContent=s.label; b.dataset.base=s.base; b.onclick=e=>{ e.preventDefault(); if(s.code==="CR"){ openCRConsumeModal(); return; } handleDutySelection(s.base); updateDutyChipStates(); updateSpecialDutyStates(); }; r.appendChild(b); }); c.appendChild(r); }
-function updateSpecialDutyStates(){ document.querySelectorAll(".special-duty-btn").forEach(b=>{ let act=false; if(selectedDutyCode && !isNumericDuty(selectedDutyCode) && selectedDutyCode.split("-")[0]===b.dataset.base) act=true; b.classList.toggle("active", act); }); }
-function renderTrainButtons(){ const c=$("trainButtons"); c.innerHTML=""; for(let i=1;i<=10;i++){ const b=document.createElement("button"); b.className="train-btn"; b.textContent=i; b.dataset.no=i; b.onclick=e=>{ e.preventDefault(); const idx=selectedTrains.indexOf(String(i)); if(idx>-1) selectedTrains.splice(idx,1); else selectedTrains.push(String(i)); selectedTrains.sort((a,b)=>Number(a)-Number(b)); updateTrainButtonStates(); }; c.appendChild(b); } updateTrainButtonStates(); }
-function updateTrainButtonStates(){ document.querySelectorAll("#trainButtons .train-btn").forEach(b=>b.classList.toggle("active",selectedTrains.includes(b.dataset.no))); }
-$("specialDutyToggle").onclick=()=>{ specialDutyOpen=!specialDutyOpen; renderSpecialDutyButtons(); };
-$("saveDutyBtn").onclick=()=>{
-  if(!selectedDutyCode){ alert("Select duty"); return; } let code=selectedDutyCode, st=null;
-  if(code==="DCC"||code==="OCC"||code==="STN"){ if(!selectedShiftCode){ alert("Select shift"); return; } code=`${code}-${selectedShiftCode}`; if(code.startsWith("STN")){ if(!selectedStation){ alert("Select station"); return; } st=selectedStation; } } else if(isNumericDuty(code)){ if(selectedTrains.length===0){ alert("Select train"); return; } }
-  data.records[selectedLogDate]={duty:code, tag:null, trains:isNumericDuty(code)?selectedTrains.slice():[], station:st};
-  if(data.manualRestDates && data.manualRestDates[selectedLogDate]) delete data.manualRestDates[selectedLogDate];
-  saveData(); renderCalendar(); updateNextTripLogic();
-  if(isFabMode){ const btn=$("saveDutyBtn"); const old=btn.textContent; btn.textContent="Saved! Add another?"; btn.style.background="#16a34a"; setTimeout(()=>{ btn.textContent=old; btn.style.background="var(--primary)"; },1500); } else hideAllSheets();
-};
-function showLogSheetFor(iso, rTag){
-  isFabMode=false; selectedLogDate=iso;
-  if(rTag==="R/S"){ if(!data.availableCR) data.availableCR=[]; data.availableCR.push(iso); saveData(); showFabLog(); return; }
-  const rec=data.records[iso];
-  if(rec){ selectedTrains=rec.trains||[]; if(isShiftDuty(rec.duty)){ const p=rec.duty.split("-"); selectedDutyCode=p[0]; selectedShiftCode=p[1]; selectedStation=rec.station||null; } else { selectedDutyCode=rec.duty; selectedShiftCode=null; selectedStation=null; } } else { selectedDutyCode=null; selectedTrains=[]; selectedShiftCode=null; selectedStation=null; }
-  if(rTag){ showOverlay(); $("restSheet").style.display="block"; $("restDateInput").value=iso; return; }
-  showOverlay(); $("logSheet").style.display="block";
-  renderLogMonthSelect(); renderLogDateChips(); renderDutyButtons(); renderSpecialDutyButtons(); renderTrainButtons();
-  const isShiftNow=(selectedDutyCode==="DCC"||selectedDutyCode==="OCC"||selectedDutyCode==="STN");
-  $("inlineShiftStationSelector").style.display=isShiftNow?"block":"none"; $("trainField").style.display=isNumericDuty(selectedDutyCode)?"block":"none";
-  if(isShiftNow){ renderInlineStationChips(); updateDutyChipStates(); }
-}
-
-// --- CALENDAR & TODAY TRIPS ---
-let currentMonthYear={year:new Date().getFullYear(), month:new Date().getMonth()};
-function renderCalendar(){
-  const c=$("calendarRow"), y=currentMonthYear.year, m=currentMonthYear.month; c.innerHTML=""; const dim=new Date(y,m+1,0).getDate(), today=todayISO(), frag=document.createDocumentFragment();
-  const restIdx=data.profile.restDay?["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"].indexOf(data.profile.restDay):-1; let todayEl=null;
-  for(let i=dim;i>=1;i--){
-    const iso=`${y}-${String(m+1).padStart(2,"0")}-${String(i).padStart(2,"0")}`; const rec=data.records[iso]; const dow=new Date(y,m,i).getDay();
-    let isRest=(restIdx>-1 && dow===restIdx) || (data.manualRestDates && data.manualRestDates[iso]); if(rec && rec.tag && (rec.tag==="R/S"||rec.tag==="R/C")) isRest=true; else if(rec) isRest=false;
-    const ch=document.createElement("div"); ch.className="timeline-chip"; ch.dataset.date=iso; const isToday=(iso===today); if(isToday) ch.classList.add("today-chip"); else if(iso>today) ch.classList.add("future-chip");
-    let top=`<div class="timeline-chip-top"><span class="${isToday?'today-label-text':''}">${isToday?`TODAY ${i}<span class='today-icon'>⚡</span>`:new Date(y,m,i).toLocaleDateString("en-IN",{weekday:"short"})+' '+String(i).padStart(2,"0")}</span><span style="font-weight:700;font-size:0.8rem;">${rec?formatDutyLabel(rec.duty,rec.tag,rec.station):(isRest?"REST":"")}</span></div>`;
-    let bot=`<div class="timeline-chip-bottom">${rec?"Tap to edit":(isRest?"Weekly rest":"Tap to add duty")}</div>`;
-    if(rec) ch.classList.add("has-duty"); if(isRest && !rec) ch.classList.add("rest-chip");
-    ch.innerHTML=top+bot+'<div class="date-expand" style="display:none"></div>'; ch.onclick=()=>handleDateClick(iso); frag.appendChild(ch); if(isToday) todayEl=ch;
-  }
-  c.appendChild(frag); if(todayEl) setTimeout(()=>todayEl.scrollIntoView({behavior:'auto',block:'start'}),50);
-}
-function handleDateClick(iso){
-  const ch=document.querySelector(`.timeline-chip[data-date="${iso}"]`); const ex=ch.querySelector(".date-expand");
-  if(ch.classList.contains("active")){ ch.classList.remove("active"); ex.style.display="none"; return; }
-  document.querySelectorAll(".timeline-chip.active").forEach(e=>{e.classList.remove("active"); e.querySelector(".date-expand").style.display="none";});
-  ch.classList.add("active"); ex.style.display="block";
-  const rec=data.records[iso];
-  if(rec){
-    const d=DUTY_TABLE[rec.duty]||{}; let op=d.onPlace||"—", fp=d.offPlace||"—"; if(rec.station){ op=op.replace(/STATION|DCC|OCC/g,rec.station); fp=fp.replace(/STATION|DCC|OCC/g,rec.station); }
-    ex.innerHTML=`<div class="expand-block"><div><strong>${formatDateHuman(iso)}</strong></div><div>Duty: ${formatDutyLabel(rec.duty,rec.tag,rec.station)}</div><button class="edit-btn">Edit</button></div>`; ex.querySelector(".edit-btn").onclick=e=>{e.stopPropagation(); showLogSheetFor(iso,null);};
-  } else if(ch.classList.contains("rest-chip")){
-    ex.innerHTML=`<div class="expand-block"><div>Rest Day</div><div class="rest-actions"><button class="rest-btn rest-btn-rs">R/S</button><button class="rest-btn rest-btn-rc">R/C</button></div></div>`;
-    ex.querySelector(".rest-btn-rs").onclick=e=>{e.stopPropagation(); showLogSheetFor(iso,"R/S");}; ex.querySelector(".rest-btn-rc").onclick=e=>{e.stopPropagation(); showLogSheetFor(iso,"R/C");};
-  } else showLogSheetFor(iso,null);
-}
-const ms=$("monthSelect"); const by=new Date().getFullYear(); for(let m=0;m<12;m++){ const o=document.createElement("option"); o.value=m; o.textContent=new Date(by,m,1).toLocaleDateString("en-IN",{month:"long"}); if(m===currentMonthYear.month) o.selected=true; ms.appendChild(o); }
-ms.onchange=function(){ currentMonthYear.month=Number(this.value); renderCalendar(); };
-
-// Today's Trips (MSOR Filter)
-function renderCurrentTrips(){
-  const today=todayISO(), rec=data.records[today]; const tb=$("currentDutyTripsBody"); tb.innerHTML="";
-  if(!rec || !isNumericDuty(rec.duty)) return;
-  const trips=TRIP_DATA.filter(x=>x.d===String(rec.duty) && x.f==="MSOR"); // STRICT FILTER
-  const now=new Date(), curVal=now.getHours()*60+now.getMinutes();
-  let nextFound=false;
-  trips.forEach(t=>{
-    const [h,m]=t.dep.split(":").map(Number), tVal=h*60+m, isNext=(!nextFound && tVal>curVal);
-    const tr=document.createElement("tr"); if(isNext){ tr.className="highlight-trip"; nextFound=true; } else if(tVal<=curVal) tr.className="current-trip-row";
-    let depHtml=isNext?`<span class="next-badge">NEXT</span><b>${t.dep}</b>`:t.dep;
-    tr.innerHTML=`<td>${depHtml}</td><td>${t.f}</td><td>${t.t}</td><td>${t.tr}</td>`; tb.appendChild(tr);
+function openCRConsumeModal(){
+  if(!data.availableCR || data.availableCR.length===0){ alert("No available CR"); return; }
+  showOverlay(); $("crConsumeModal").style.display="block";
+  const c=$("crList"); c.innerHTML="";
+  data.availableCR.forEach(date=>{
+    const d=document.createElement("div"); d.className="date-chip"; d.dataset.date=date;
+    d.innerHTML=`<span class="date-chip-label">${date.substring(8)}</span><span class="date-chip-secondary">${formatDateHuman(date)}</span>`;
+    d.onclick=()=>{ c.querySelectorAll(".date-chip").forEach(x=>x.classList.remove("active")); d.classList.add("active"); };
+    c.appendChild(d);
   });
 }
-$("viewCurrentTripsBtn").onclick=()=>{ renderCurrentTrips(); showOverlay(); $("currentDutyTripsSheet").style.display="block"; };
+function closeCRConsumeModal(){ hideOverlay(); $("crConsumeModal").style.display="none"; }
+$("useCRBtn").addEventListener("click", ()=>{
+  const ch=document.querySelector("#crList .date-chip.active");
+  if(!ch){ alert("Select a CR"); return; }
+  const crDate=ch.dataset.date;
+  data.records[selectedLogDate]={duty:"CR", tag:null, trains:[], station:null};
+  updatePrintRecord(selectedLogDate);
+  data.availableCR=data.availableCR.filter(d=>d!==crDate);
+  saveData(); closeCRConsumeModal(); renderCalendar(); if(currentTab==="history") renderHistory();
+});
 
-// Pay Chips
-let selectedPayMonth=String(new Date().getMonth()+1).padStart(2,"0");
-function renderPayMonthChips(){ const c=$("payMonthChips"), names=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]; c.innerHTML=""; names.forEach((nm,i)=>{ const m=String(i+1).padStart(2,"0"), d=document.createElement("div"); d.className="date-chip"+(selectedPayMonth===m?" active":""); d.innerHTML=`<span class="date-chip-label">${nm}</span><span class="date-chip-secondary">${data.pay[m]?`₹${data.pay[m]}`:"Set"}</span>`; d.onclick=()=>{ selectedPayMonth=m; renderPayMonthChips(); $("payAmountInput").value=data.pay[m]||""; }; c.appendChild(d); }); }
-$("savePayBtn").onclick=()=>{ const v=$("payAmountInput").value; if(v){ data.pay[selectedPayMonth]=Number(v); saveData(); renderPayMonthChips(); }};
-// CR Modal
-function openCRConsumeModal(){ if(!data.availableCR || !data.availableCR.length){ alert("No CR available"); return; } showOverlay(); $("crConsumeModal").style.display="block"; const c=$("crList"); c.innerHTML=""; data.availableCR.forEach(d=>{ const ch=document.createElement("div"); ch.className="date-chip"; ch.textContent=formatDateHuman(d); ch.onclick=()=>{ c.querySelectorAll(".active").forEach(x=>x.classList.remove("active")); ch.classList.add("active"); ch.dataset.sel=d; }; c.appendChild(ch); }); }
-function closeCRConsumeModal(){ $("crConsumeModal").style.display="none"; hideOverlay(); }
-$("useCRBtn").onclick=()=>{ const sel=$("#crList .active"); if(!sel){ alert("Select CR"); return; } const crDate=sel.dataset.sel; data.records[selectedLogDate]={duty:"CR",tag:null,trains:[],station:null}; data.availableCR=data.availableCR.filter(d=>d!==crDate); saveData(); closeCRConsumeModal(); renderCalendar(); };
-
-// Init One-time
-document.addEventListener("DOMContentLoaded",()=>{
-  startClock(); renderCalendar(); updateLayout(); renderSettingsProfileCard();
-  $("alarmBtn").onclick=()=>{ showOverlay(); $("alarmSheet").style.display="block"; };
-  $("viewDutyTableBtn").onclick=()=>{ showOverlay(); $("dutyTableSheet").style.display="block"; };
-  $("configPayBtn").onclick=()=>{ showOverlay(); $("paySheet").style.display="block"; renderPayMonthChips(); };
-  document.querySelectorAll(".alarm-option").forEach(el=>{ if(el.dataset.min) el.onclick=function(){ setAlarm(parseInt(this.dataset.min)); }; if(el.id==="turnOffAlarmBtn") el.onclick=clearAlarm; });
-  if(data.alarm.time) { $("alarmBtn").classList.add("active"); $("alarmBtnText").textContent="Alarm Set"; }
+function renderDutyTableFull(){
   const tb=$("dutyTableBody"); tb.innerHTML="";
-  const add=(k)=>{const d=DUTY_TABLE[k]; tb.innerHTML+=`<tr><td>${k}</td><td>${d.signOn||""}</td><td>${d.onPlace||""}</td><td>${d.signOff||""}</td><td>${d.offPlace||""}</td><td>${d.hours||""}</td></tr>`;};
-  tb.innerHTML="<tr class='section-header'><td colspan='6'>Standard</td></tr>";
+  const add=(k)=>{
+    const d=DUTY_TABLE[k], tr=document.createElement("tr");
+    tr.innerHTML=`<td>${k}</td><td>${d.signOn||""}</td><td>${d.onPlace||""}</td><td>${d.signOff||""}</td><td>${d.offPlace||""}</td><td>${d.hours||""}</td>`;
+    tb.appendChild(tr);
+  }
+  const tr1=document.createElement("tr"); tr1.innerHTML="<th colspan='6'>Standard Duties (1–26)</th>"; tb.appendChild(tr1);
   Object.keys(DUTY_TABLE).filter(k=>isNumericDuty(k)).sort((a,b)=>Number(a)-Number(b)).forEach(add);
-  tb.innerHTML+="<tr class='section-header'><td colspan='6'>Special</td></tr>";
+  const tr2=document.createElement("tr"); tr2.innerHTML="<th colspan='6'>Special Duties</th>"; tb.appendChild(tr2);
   Object.keys(DUTY_TABLE).filter(k=>!isNumericDuty(k)).sort().forEach(add);
+}
+
+document.addEventListener("DOMContentLoaded", ()=>{
+  startClock(); renderProfile(); attachProfileHandlers(); attachNav(); attachFabAndSheets();
+  renderDutyTableFull(); renderProfileSummary();
+  const s=$("monthSelect"); const by=new Date().getFullYear();
+  for(let m=0;m<12;m++){
+    const o=document.createElement("option"); o.value=m;
+    o.textContent=new Date(by,m,1).toLocaleDateString("en-IN",{month:"long"});
+    if(m===currentMonthYear.month) o.selected=true; s.appendChild(o);
+  }
+  s.onchange=function(){ currentMonthYear.month=Number(this.value); renderCalendar(); };
+  renderCalendar();
+  updateLayout();
+  if(data.alarm && data.alarm.time){
+    $("alarmBtn").classList.add("active");
+    $("alarmBtnText").textContent = "Alarm Set";
+  }
 });
 </script>
 </body>
