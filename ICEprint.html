@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Incidental Contingent Expenditure</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+/* 1. NDA PRINT STYLING */
+@page { size: A4; margin: 10mm; }
+html, body { margin: 0; padding: 0; background: #fff; }
+body {
+    width: 210mm;
+    transform: scale(0.70);
+    transform-origin: top center;
+    margin-left: auto; margin-right: auto;
+    font-family: "Times New Roman", serif;
+}
+
+.page { width:760px; margin:0 auto; padding:12px; }
+.logo { text-align:center; margin-bottom:6px; }
+.logo img { width:85px; height:auto; }
+
+h1 { text-align:center; font-size:18px; margin:4px 0; text-transform: uppercase; font-weight:bold; }
+.sub { text-align:center; font-size:11.5px; margin-bottom:10px; }
+
+/* TABLE STYLING */
+table { border-collapse:collapse; width:100%; table-layout:fixed; margin-top:12px; }
+th, td { border:1px solid #000; padding:6px; font-size:12px; text-align:center; }
+.meta th { background: #f0f0f0; }
+.duty th { font-weight:bold; background: #f0f0f0; }
+.total-row td { font-weight: bold; border-top: 2px solid #000; background: #fff; }
+
+/* 2. PDF SPECIFIC LAYOUT FOR CERTIFICATE */
+.cert-section { margin-top: 20px; font-size: 11px; line-height: 1.4; }
+.cert-title { text-align:center; font-weight:bold; text-decoration:underline; font-size:13px; margin-bottom:10px; }
+
+/* Signature of Train Operator (Right Side) */
+.to-sig-row { margin-top: 25px; overflow: hidden; }
+.to-sig-box { float: right; width: 200px; text-align: center; }
+.sig-line { border-top: 1px solid #000; margin-top:40px; padding-top: 5px; font-weight: bold; }
+
+/* Official Signatures Layout */
+.manager-row { margin-top: 30px; overflow: hidden; }
+.sanction-block { float: left; width: 40%; }
+.manager-to-block { float: right; width: 30%; text-align: center; margin-top: 40px; }
+
+.footer-note { margin-top: 20px; font-weight: bold; font-size: 11px; clear: both; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="logo"><img src="jaipur_logo.png" alt="JMRC Logo"></div>
+
+  <h1>Incidental Contingent Expenditure</h1>
+  <div class="sub">
+    (Compensatory Conveyance Hire Charges fixed @ Rs.150 per On/Off before 06:00 hrs and after 22:00 hrs to TOs)<br>
+    (To be submitted in duplicate, one copy for Operations deptt.and other copy for finance)
+  </div>
+
+  <table class="meta">
+    <tr>
+      <th>Name Of Train Operator</th>
+      <th>Emp. ID</th>
+      <th>Date of Confirmation</th>
+      <th>Month :-</th>
+    </tr>
+    <tr>
+      <td id="empName"></td>
+      <td id="empId"></td>
+      <td id="confirmDate"></td>
+      <td id="monthDisplay"></td>
+    </tr>
+  </table>
+
+  <table class="duty">
+    <thead>
+      <tr>
+        <th style="width:6%">S. No.</th>
+        <th style="width:16%">Date</th>
+        <th style="width:10%">Duty No.</th>
+        <th style="width:14%">Train Set No.</th>
+        <th style="width:15%">Sign ON/OFF Time</th>
+        <th style="width:15%">Sign ON/OFF Place</th>
+        <th>Remark</th>
+      </tr>
+    </thead>
+    <tbody id="iceBody"></tbody>
+    <tfoot id="iceFooter"></tfoot>
+  </table>
+
+  <div class="cert-section">
+    <div class="cert-title">Certificate</div>
+    
+    <p>
+      I, certify that the Compensatory Incidental Contingent Expenditure (Conveyance Hire Charges), as claimed in this bill is correct & due to me,and this claim was not submitted earlier.
+    </p>
+    
+    <div class="to-sig-row">
+      <div class="to-sig-box">
+   Signature of Train Operator</div>
+      </div>
+    </div>
+
+    <p style="margin-top:15px;">
+      As per sign on and sign off duty record, the above deatil submitted for the Incidental Contingent Expenditure (Conveyance Hire Charges) by the TO is certified & due to him/her.
+    </p>
+
+    <p style="font-weight:bold; margin-top:10px;">
+      Total Incidental Contingent Expenditure payable to the TO is Rs. <span id="totalAmountCert" style="text-decoration:underline;"></span>/-
+    </p>
+
+    <div class="manager-row">
+      
+      <div class="sanction-block">
+        <div style="font-weight:bold; margin-bottom:30px;">Sanctioned by:</div> <div style="font-weight:bold;">
+            General Manager/Operations<br>(Sign & Seal)
+        </div>
+      </div>
+
+      <div class="manager-to-block">
+        <div style=" padding-top:5px; font-weight:bold;">Signature of Manager (TO)</div>
+      </div>
+
+    </div>
+
+    <div class="footer-note">
+      Forward to: GM(Finance) JMRC for making payment
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  const raw = localStorage.getItem("dutyTrackerData");
+  const data = raw ? JSON.parse(raw) : { printData:{ records:{}, profile:{}, pay:{} } };
+  const printData = data.printData || {};
+  const profile = printData.profile || {};
+  
+  document.getElementById("empName").textContent = profile.name || "";
+  document.getElementById("empId").textContent = profile.empId || "";
+  document.getElementById("confirmDate").textContent = profile.confirmDate || "";
+
+  const selectedMonth = localStorage.getItem("selectedPrintMonth");
+  if(selectedMonth){
+    const d = new Date(selectedMonth + "-01");
+    document.getElementById("monthDisplay").textContent = d.toLocaleDateString("en-IN", { month:"long", year:"numeric" });
+  }
+
+  const records = printData.records || {};
+  const tbody = document.getElementById("iceBody");
+  const footer = document.getElementById("iceFooter");
+  const dates = Object.keys(records).filter(d => d.startsWith(selectedMonth)).sort();
+
+  let count = 0;
+  dates.forEach(date => {
+    const r = records[date];
+    const nightHrs = parseFloat(r.nightDutyHours || 0);
+
+    if(nightHrs > 0) {
+        const parseHour = (t) => {
+            if(!t || !t.includes(":")) return null;
+            return parseInt(t.split(":")[0]);
+        };
+        const sOn = parseHour(r.signOnTime);
+        const sOff = parseHour(r.signOffTime);
+
+        if(sOn !== null && sOn < 6) {
+            count++;
+            addRow(count, date, r.duty, r.trains, r.signOnTime, r.signOnPlace || "DCC");
+        }
+        if(sOff !== null && sOff >= 22) {
+            count++;
+            addRow(count, date, r.duty, r.trains, r.signOffTime, r.signOffPlace || "DCC");
+        }
+    }
+  });
+
+  function addRow(sno, date, duty, trains, time, place){
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${sno}</td>
+        <td>${new Date(date).toLocaleDateString("en-IN", {day:"numeric", month:"short", year:"numeric"})}</td>
+        <td>${duty}</td>
+        <td>${(trains || []).join(", ")}</td>
+        <td>${time}</td>
+        <td>${place}</td>
+        <td></td>
+      `;
+      tbody.appendChild(row);
+  }
+
+  const totalAmount = count * 150;
+
+  footer.innerHTML = `
+    <tr class="total-row">
+        <td colspan="5" style="text-align:right;">Total Instances: ${count}</td>
+        <td colspan="2" style="text-align:left;">Total: Rs. ${totalAmount}/-</td>
+    </tr>
+  `;
+
+  document.getElementById("totalAmountCert").textContent = totalAmount;
+
+  window.onload = () => setTimeout(()=>window.print(), 500);
+
+})();
+</script>
+</body>
+</html>

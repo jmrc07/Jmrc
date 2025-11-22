@@ -13,9 +13,20 @@
 
   select { padding:8px 12px; font-size:15px; border-radius:6px; border:1px solid #cbd5e1; margin-bottom:15px; width:100%; }
 
+  /* Filter Chips */
   .filter-chips { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:15px; }
-  .chip { padding:6px 12px; background:#e2e8f0; border:none; border-radius:20px; cursor:pointer; font-size:13px; }
+  .chip { padding:6px 12px; background:#e2e8f0; border:none; border-radius:20px; cursor:pointer; font-size:13px; transition: background 0.2s; }
+  .chip:hover { opacity: 0.9; }
   .chip.active { background:#2563eb; color:white; }
+
+  /* Action Buttons (Print) */
+  .action-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:15px; border-top: 1px dashed #cbd5e1; padding-top: 15px; }
+  .btn-print { padding:8px 15px; border:none; border-radius:6px; cursor:pointer; font-size:13px; color:white; font-weight:600; }
+  
+  .btn-summary { background:#475569; } /* Slate */
+  .btn-nda { background:#16a34a; }     /* Green */
+  .btn-hda { background:#ea580c; }     /* Orange */
+  .btn-ice { background:#7c3aed; }     /* Purple */
 
   .table-container { width:100%; overflow-x:auto; border-radius:8px; }
   table { width:100%; min-width:950px; border-collapse:collapse; font-size:13px; }
@@ -26,7 +37,7 @@
   .total-box { margin-top:20px; padding:12px; background:#f1f5f9; border-left:4px solid #2563eb; border-radius:8px; font-size:14px; }
 
   @media print {
-    select, .no-print, .filter-chips { display:none; }
+    select, .no-print, .filter-chips, .action-row { display:none; }
     body{ background:white; padding:0; }
     .container{ box-shadow:none; border-radius:0; }
   }
@@ -42,9 +53,11 @@
 
   <div class="profile-box" id="profileBox">Loading profile...</div>
 
-  <!-- FILTER CHIPS -->
   <div class="filter-chips no-print">
-    <button class="chip" data-filter="ALL">All</button>
+    <button class="chip active" data-filter="ALL">All</button>
+    <button class="chip" data-filter="MORNING">Morning</button>
+    <button class="chip" data-filter="EVENING">Evening</button>
+    <button class="chip" data-filter="NIGHT">Night</button>
     <button class="chip" data-filter="CR">CR</button>
     <button class="chip" data-filter="CL">CL</button>
     <button class="chip" data-filter="GH">GH</button>
@@ -53,14 +66,14 @@
     <button class="chip" data-filter="TRAIN">Train</button>
   </div>
 
-  <!-- MONTH DROPDOWN -->
   <select id="monthSelect"></select>
 
-  <!-- PRINT NDA BUTTON -->
-  <button class="chip no-print" id="printNDAButton" 
-    style="margin-bottom:15px; background:#16a34a; color:white;">
-    Print NDA
-  </button>
+  <div class="action-row no-print">
+    <button class="btn-print btn-summary" id="printSummaryBtn">Print Summary (All)</button>
+    <button class="btn-print btn-nda" id="printNDAButton">Print NDA</button>
+    <button class="btn-print btn-hda" id="printHDAButton">Print HDA</button>
+    <button class="btn-print btn-ice" id="printICEButton">Print ICE</button>
+  </div>
 
   <div class="table-container">
     <table>
@@ -162,13 +175,17 @@ function loadMonth(month){
     <strong>Total Duty Hours:</strong> ${totalHours} hrs<br>
     <strong>Total Night Hours:</strong> ${totalNight} hrs
   `;
+  
+  // Re-apply active filter if any
+  const activeBtn = document.querySelector('.chip.active');
+  if(activeBtn) applyFilter(activeBtn.dataset.filter);
 }
 
 // Filters
 const chips = document.querySelectorAll('.chip');
 chips.forEach(btn => {
   btn.addEventListener('click', ()=>{
-    chips.forEach(c=>c.classList.remove('active'));
+    chips.forEach(c=> c.classList.remove('active'));
     btn.classList.add('active');
     applyFilter(btn.dataset.filter);
   })
@@ -177,11 +194,19 @@ chips.forEach(btn => {
 function applyFilter(type){
   const rows = document.querySelectorAll('#reportBody tr');
   rows.forEach(r => {
-    const duty = r.children[1].textContent;
-    const trains = r.children[9].textContent;
-    let show = true;
+    const duty = r.children[1].textContent;      // Col 1: Duty Code
+    const shift = r.children[2].textContent;     // Col 2: Shift (M, E, N, —)
+    const signOn = r.children[3].textContent;    // Col 3: Sign On (HH:MM)
+    const nightHrs = parseFloat(r.children[8].textContent) || 0; // Col 8: Night Hours
+    const trains = r.children[9].textContent;    // Col 9: Trains
 
-    if(["CR","CL","GH","RH"].includes(type)){
+    let show = true;
+    const startHour = parseInt(signOn.split(":")[0]);
+
+    if(type === "ALL") {
+      show = true;
+    }
+    else if(["CR","CL","GH","RH"].includes(type)){
       show = duty === type;
     }
     else if(type === "STN"){
@@ -190,22 +215,47 @@ function applyFilter(type){
     else if(type === "TRAIN"){
       show = trains.trim() !== "";
     }
-    else if(type === "DUTY"){
-      const n = parseInt(duty);
-      show = !isNaN(n) && n>=1 && n<=26;
+    else if(type === "MORNING"){
+      show = (shift === "M") || (!isNaN(startHour) && startHour < 12 && !["CR","CL","GH","RH"].includes(duty));
     }
-
+    else if(type === "EVENING"){
+      show = (shift === "E") || (!isNaN(startHour) && startHour >= 12 && startHour < 20 && !["CR","CL","GH","RH"].includes(duty));
+    }
+    else if(type === "NIGHT"){
+      show = (shift === "N") || (!isNaN(startHour) && startHour >= 20) || (nightHrs > 0);
+    }
+    
     r.style.display = show ? "" : "none";
   });
 }
 
-// --- PRINT NDA BUTTON ---
-document.getElementById("printNDAButton").addEventListener("click", () => {
+// --- PRINT BUTTON EVENT LISTENERS ---
+
+// 1. Print Summary (Current view)
+document.getElementById("printSummaryBtn").addEventListener("click", () => {
+  window.print();
+});
+
+// Helper to save selection and open window
+function openReport(filename) {
   const selectedMonth = document.getElementById("monthSelect").value;
-
   localStorage.setItem("selectedPrintMonth", selectedMonth);
+  window.open(filename, "_blank");
+}
 
-  window.open("NDAprint.html", "_blank");
+// 2. Print NDA
+document.getElementById("printNDAButton").addEventListener("click", () => {
+  openReport("NDAprint.html");
+});
+
+// 3. Print HDA
+document.getElementById("printHDAButton").addEventListener("click", () => {
+  openReport("HDAprint.html");
+});
+
+// 4. Print ICE
+document.getElementById("printICEButton").addEventListener("click", () => {
+  openReport("ICEprint.html");
 });
 
 // INIT
