@@ -2,63 +2,75 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Duty Tracker v3.2 – Final Integration</title>
+<title>Duty Tracker v4.0</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <style>
 :root{--bg:#f8fafc;--primary:#2563eb;--primary-dark:#1d4ed8;--surface:#ffffff;--surface-alt:#eef2ff;--border:#e2e8f0;--border-strong:#cbd5e1;--text-primary:#0f172a;--text-muted:#64748b;--special-bg:#ede9fe;--special-bg-active:#ddd6fe;--special-text:#4c1d95;--rest-bg:#e5e7eb;--rest-text:#374151;--alarm:#ef4444}*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;background:var(--bg);color:var(--text-primary)}.app-container{max-width:720px;margin:0 auto;padding:0 .75rem 5.5rem}.screen{display:none}.screen.active{display:block}
 
-/* --- FIXED HEADER STYLES (Added) --- */
+/* --- FIXED HEADER STYLES (Compact & Dynamic) --- */
 .profile-card-wrapper {
   position: fixed; top: 0; left: 0; right: 0; z-index: 60;
   background: var(--bg);
-  padding: 0.75rem 0.75rem 0.5rem;
+  padding: 0.5rem 0.75rem 0.25rem; /* Compact padding */
   max-width: 720px; margin: 0 auto;
-  transition: height 0.2s ease;
+  transition: transform 0.3s ease;
 }
-/* Modified Profile Card to fit Fixed Layout */
-.profile-card{position:relative; padding:1.1rem; border-radius:1.25rem; background:linear-gradient(135deg,#1d4ed8 0%,#2563eb 40%,#3b82f6 100%); box-shadow:0 16px 40px rgba(37,99,235,.5); color:#eff6ff; overflow:hidden}
+.profile-card-wrapper.hidden { transform: translateY(-120%); pointer-events: none; }
+
+/* Compact Profile Card */
+.profile-card{position:relative; padding:0.75rem 0.9rem; border-radius:1rem; background:linear-gradient(135deg,#1d4ed8 0%,#2563eb 40%,#3b82f6 100%); box-shadow:0 8px 20px rgba(37,99,235,.4); color:#eff6ff; overflow:hidden}
 .profile-card::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at top right,rgba(255,255,255,.25),transparent 55%);pointer-events:none}
+
 .profile-header{position:relative;display:flex;align-items:center;justify-content:space-between;z-index:1}
-.profile-avatar{width:46px;height:46px;border-radius:999px;background:rgba(15,23,42,.15);border:1px solid rgba(191,219,254,.6);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;color:#eff6ff;background-size:cover;background-position:center}
-.profile-title{margin:0;font-size:1.35rem;font-weight:700}
-.profile-sub{margin:0;font-size:.8rem;opacity:.9}
-.profile-datetime{font-size:.8rem;font-weight:500;text-align:right}
+.profile-left { display: flex; align-items: center; gap: 10px; }
+.profile-avatar{width:32px;height:32px;border-radius:999px;background:rgba(15,23,42,.15);border:1px solid rgba(191,219,254,.6);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;color:#eff6ff;background-size:cover;background-position:center}
+.profile-title{margin:0;font-size:1.1rem;font-weight:700}
+.profile-datetime{font-size:.9rem;font-weight:600;text-align:right}
 .profile-date-sub { font-size: 0.7rem; opacity: 0.85; text-align: right; }
 
-/* Next Trip & Alarm UI */
-.duty-status-row { margin-top: 0.8rem; display: flex; justify-content: space-between; align-items: flex-end; position: relative; z-index: 2; }
-.duty-info { display: flex; flex-direction: column; }
-.current-duty-badge { background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; margin-bottom: 4px; align-self: flex-start; }
-.next-trip-info { font-size: 0.9rem; opacity: 0.9; }
-.countdown-box { text-align: right; }
-.countdown-timer { font-size: 1.4rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-.countdown-label { font-size: 0.65rem; opacity: 0.8; margin-top: 2px; }
-.card-actions { margin-top: 0.8rem; padding-top: 0.6rem; border-top: 1px dashed rgba(255,255,255,0.3); display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2; }
-.alarm-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 20px; padding: 4px 10px; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+/* Compact Next Trip & Alarm UI */
+.duty-status-row { margin-top: 0.5rem; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2; }
+.duty-info { display: flex; flex-direction: row; align-items: center; gap: 8px; }
+.current-duty-badge { background: rgba(255,255,255,0.25); padding: 1px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
+.next-trip-info { font-size: 0.8rem; opacity: 0.95; }
+.countdown-box { text-align: right; display: flex; flex-direction: column; align-items: flex-end;}
+.countdown-timer { font-size: 1.1rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+.countdown-label { font-size: 0.55rem; opacity: 0.8; margin-top: 1px; }
+
+.card-actions { margin-top: 0.4rem; padding-top: 0.4rem; border-top: 1px dashed rgba(255,255,255,0.3); display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2; }
+.alarm-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 15px; padding: 3px 8px; font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; gap: 4px; }
 .alarm-btn.active { background: #fff; color: var(--primary); font-weight: 600; }
-.view-trips-btn { background: none; border: none; color: #dbeafe; font-size: 0.78rem; cursor: pointer; text-decoration: underline; }
+.view-trips-btn { background: none; border: none; color: #dbeafe; font-size: 0.7rem; cursor: pointer; text-decoration: underline; }
 
-/* Content Padding helper */
-#homeContent { margin-top: 180px; }
+/* Page Padding Helper */
+/* Will be adjusted dynamically via JS based on visible header */
+#homeContent { margin-top: 10px; } 
 
-/* Existing Components */
-.card{margin-top:1rem;padding:.9rem;background:var(--surface);border-radius:1rem;border:1px solid var(--border);box-shadow:0 4px 10px rgba(15,23,42,.06)}.card-title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem}.card-title{font-size:.98rem;font-weight:600}.card-sub{font-size:.78rem;color:var(--text-muted)}.home-month-row{display:flex;justify-content:space-between;align-items:center;margin-top:.7rem;padding:0 .1rem}.home-month-hint{font-size:.78rem;color:var(--text-muted)}.home-month-select{font-size:.78rem;padding:.15rem .4rem;border-radius:.6rem;border:1px solid var(--border-strong);background:#fff}.timeline-row{display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem;max-height:420px;overflow-y:auto;padding-right:4px}.timeline-chip{position:relative;flex-shrink:0;width:100%;padding:.6rem .75rem;border-radius:.9rem;background:#fff;box-shadow:0 1px 4px rgba(15,23,42,.1);font-size:.8rem;display:flex;flex-direction:column;gap:.15rem;cursor:pointer;transition:box-shadow .12s ease;-webkit-tap-highlight-color:transparent}.timeline-chip-top{font-size:.8rem;font-weight:600;display:flex;justify-content:space-between;align-items:center}.timeline-chip-bottom{font-size:.76rem;color:var(--text-muted)}.timeline-chip.today-chip{background:#e0edff;box-shadow:0 0 0 2px rgba(37,99,235,.2)}.today-label-text{display:inline-flex;align-items:center;gap:4px}.today-icon{font-size:.9rem}.timeline-chip.future-chip{background:#fff7ce}.timeline-chip.has-duty{background:#dcfce7}.timeline-chip.has-duty .timeline-chip-bottom{color:#166534;font-weight:600}.timeline-chip.rest-chip{background:var(--rest-bg);color:var(--rest-text)}.timeline-chip.active{box-shadow:0 0 0 2px rgba(37,99,235,.35)}.date-expand{margin-top:.4rem}.expand-block{font-size:.8rem;border-top:1px dashed var(--border-strong);padding-top:.35rem;background:#fff!important;border-radius:.65rem;padding:.6rem .7rem;position:relative}.edit-btn{border:none;background:var(--primary);color:#fff;padding:.25rem .6rem;border-radius:14px;font-size:.72rem;font-weight:600;cursor:pointer;position:absolute;top:6px;right:6px}.rest-actions{margin-top:.45rem;display:flex;justify-content:flex-end;gap:.4rem}.rest-btn{border:none;border-radius:999px;font-size:.72rem;padding:.25rem .6rem;cursor:pointer}.rest-btn-rs{background:#facc15;color:#1f2937}.rest-btn-rc{background:#fb923c;color:#1f2937}.fab{position:fixed;right:18px;bottom:80px;width:56px;height:56px;border-radius:999px;border:none;background:var(--primary);color:#fff;font-size:1.9rem;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 28px rgba(37,99,235,.6);cursor:pointer;z-index:50}.overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;z-index:80}.sheet{position:fixed;left:0;right:0;bottom:0;max-width:720px;margin:0 auto;background:#fff;border-radius:16px 16px 0 0;padding:.9rem .9rem 1rem;box-shadow:0 -10px 30px rgba(15,23,42,.5);display:none;z-index:81}#logSheet{min-height:65vh;max-height:85vh;overflow-y:auto}
-/* Updated Sheet Z-Indexes for New Sheets */
-#dutyTableSheet,#tripChartSheet,#profileSummarySheet,#currentDutyTripsSheet{top:0;bottom:0;border-radius:0;padding-top:.9rem; max-height: 100vh; z-index: 85;}
+/* Common Components */
+.card{margin-top:1rem;padding:.9rem;background:var(--surface);border-radius:1rem;border:1px solid var(--border);box-shadow:0 4px 10px rgba(15,23,42,.06)}.card-title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem}.card-title{font-size:.98rem;font-weight:600}.card-sub{font-size:.78rem;color:var(--text-muted)}.home-month-row{display:flex;justify-content:space-between;align-items:center;margin-top:.7rem;padding:0 .1rem}.home-month-hint{font-size:.78rem;color:var(--text-muted)}.home-month-select{font-size:.78rem;padding:.15rem .4rem;border-radius:.6rem;border:1px solid var(--border-strong);background:#fff}.timeline-row{display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem;max-height:calc(100vh - 240px);overflow-y:auto;padding-right:4px}
+
+.timeline-chip{position:relative;flex-shrink:0;width:100%;padding:.6rem .75rem;border-radius:.9rem;background:#fff;box-shadow:0 1px 4px rgba(15,23,42,.1);font-size:.8rem;display:flex;flex-direction:column;gap:.15rem;cursor:pointer;transition:box-shadow .12s ease;-webkit-tap-highlight-color:transparent}.timeline-chip-top{font-size:.8rem;font-weight:600;display:flex;justify-content:space-between;align-items:center}.timeline-chip-bottom{font-size:.76rem;color:var(--text-muted)}.timeline-chip.today-chip{background:#e0edff;box-shadow:0 0 0 2px rgba(37,99,235,.2); z-index: 2;}.today-label-text{display:inline-flex;align-items:center;gap:4px}.today-icon{font-size:.9rem}.timeline-chip.future-chip{background:#fff; opacity: 0.9; border: 1px dashed var(--border);}.timeline-chip.has-duty{background:#dcfce7}.timeline-chip.has-duty .timeline-chip-bottom{color:#166534;font-weight:600}.timeline-chip.rest-chip{background:var(--rest-bg);color:var(--rest-text)}.timeline-chip.active{box-shadow:0 0 0 2px rgba(37,99,235,.35)}.date-expand{margin-top:.4rem}.expand-block{font-size:.8rem;border-top:1px dashed var(--border-strong);padding-top:.35rem;background:#fff!important;border-radius:.65rem;padding:.6rem .7rem;position:relative}.edit-btn{border:none;background:var(--primary);color:#fff;padding:.25rem .6rem;border-radius:14px;font-size:.72rem;font-weight:600;cursor:pointer;position:absolute;top:6px;right:6px}.rest-actions{margin-top:.45rem;display:flex;justify-content:flex-end;gap:.4rem}.rest-btn{border:none;border-radius:999px;font-size:.72rem;padding:.25rem .6rem;cursor:pointer}.rest-btn-rs{background:#facc15;color:#1f2937}.rest-btn-rc{background:#fb923c;color:#1f2937}.fab{position:fixed;right:18px;bottom:80px;width:56px;height:56px;border-radius:999px;border:none;background:var(--primary);color:#fff;font-size:1.9rem;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 28px rgba(37,99,235,.6);cursor:pointer;z-index:50}.overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;z-index:80}.sheet{position:fixed;left:0;right:0;bottom:0;max-width:720px;margin:0 auto;background:#fff;border-radius:16px 16px 0 0;padding:.9rem .9rem 1rem;box-shadow:0 -10px 30px rgba(15,23,42,.5);display:none;z-index:81}#logSheet{min-height:65vh;max-height:85vh;overflow-y:auto}
+#dutyTableSheet,#profileSummarySheet,#currentDutyTripsSheet{top:0;bottom:0;border-radius:0;padding-top:.9rem; max-height: 100vh; z-index: 85;}
 #restSheet,#paySheet,#alarmSheet{max-height:70vh;z-index:82}
-.sheet-handle{width:40px;height:4px;background:var(--border-strong);border-radius:999px;margin:0 auto .5rem}.sheet-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem}.sheet-title{font-size:.98rem;font-weight:600}.sheet-close{border:none;background:none;font-size:1.4rem;cursor:pointer}.field{margin-top:.6rem}.label{font-size:.78rem;font-weight:500;color:var(--text-muted);margin-bottom:.25rem;display:block}.input{width:100%;padding:.55rem .6rem;border-radius:.6rem;border:1px solid var(--border-strong);font-size:.88rem}.duty-field-header{display:flex;justify-content:space-between;align-items:center}.special-toggle-btn{border-radius:999px;border:1px solid var(--border-strong);background:#f3f4ff;font-size:.75rem;padding:.15rem .6rem;cursor:pointer;color:var(--special-text)}.date-chip-row{display:flex;gap:.35rem;overflow-x:auto;scrollbar-width:none;padding-bottom:.15rem}.date-chip-row::-webkit-scrollbar{display:none}.date-chip{flex-shrink:0;padding:.3rem .6rem;border-radius:999px;background:#fff;box-shadow:0 1px 4px rgba(15,23,42,.1);font-size:.78rem;cursor:pointer;white-space:nowrap}.date-chip-label{font-weight:600;margin-right:.2rem}.date-chip-secondary{font-size:.72rem;color:var(--text-muted)}.date-chip.active{background:var(--primary);color:#fff}.date-chip.active .date-chip-secondary{color:rgba(255,255,255,.8)}.duty-rows{display:flex;flex-direction:column;gap:.3rem}.duty-row{display:flex;gap:.3rem;overflow-x:auto;scrollbar-width:none}.duty-row::-webkit-scrollbar{display:none}.duty-btn{flex-shrink:0;min-width:40px;padding:.3rem .4rem;border-radius:999px;background:#fff;box-shadow:0 1px 4px rgba(15,23,42,.1);font-size:.8rem;cursor:pointer;text-align:center}.duty-btn.active{background:#dbeafe;box-shadow:0 1px 6px rgba(37,99,235,.5)}.train-row{display:flex;gap:.3rem;overflow-x:auto;scrollbar-width:none}.train-row::-webkit-scrollbar{display:none}.train-btn{flex-shrink:0;min-width:34px;padding:.3rem .35rem;border-radius:999px;background:#fff;box-shadow:0 1px 4px rgba(15,23,42,.1);font-size:.8rem;cursor:pointer;text-align:center}.train-btn.active{background:#dbeafe;box-shadow:0 1px 6px rgba(37,99,235,.5)}.special-duty-row{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.35rem}.special-duty-btn{flex-shrink:0;padding:.3rem .6rem;border-radius:999px;border:none;background:var(--special-bg);color:var(--special-text);font-size:.78rem;cursor:pointer;box-shadow:0 1px 4px rgba(76,29,149,.18)}.special-duty-btn.active{background:var(--special-bg-active);box-shadow:0 1px 6px rgba(76,29,149,.35)}.btn-primary{width:100%;margin-top:.6rem;padding:.6rem .7rem;border-radius:.7rem;border:none;background:var(--primary);color:#fff;font-size:.9rem;font-weight:600;cursor:pointer}.history-list{margin-top:.5rem;padding-bottom:4.8rem}.history-item{margin-top:.4rem;padding:.7rem .75rem;background:var(--surface);border-radius:.8rem;border:1px solid var(--border);font-size:.82rem;cursor:pointer}.history-item.active{border-color:var(--primary);background:#fff}.history-header{display:flex;justify-content:space-between;margin-bottom:.15rem;font-weight:600}.history-meta{font-size:.76rem;color:var(--text-muted)}.history-detail{margin-top:.35rem;border-top:1px dashed var(--border-strong);padding-top:.3rem;font-size:.78rem}.history-summary{margin-top:.4rem;display:flex;flex-wrap:wrap;gap:.4rem}.history-summary-card{flex:0 0 calc(50% - .22rem);background:var(--surface);color:var(--text-primary);border:1px solid var(--border);box-shadow:0 2px 6px rgba(15,23,42,.1);border-radius:.7rem;padding:.45rem .55rem;font-size:.78rem}.history-summary-label{font-size:.7rem;color:var(--text-muted)}.history-summary-value{font-size:.95rem;font-weight:600;margin-top:.1rem}.history-summary-sub{font-size:.68rem;color:var(--text-muted);margin-top:.05rem}.history-month-chips{margin-top:.4rem;display:flex;gap:.35rem;overflow-x:auto;scrollbar-width:none;padding-bottom:.15rem}.history-month-chips::-webkit-scrollbar{display:none}.history-month-chip{flex-shrink:0;padding:.3rem .6rem;border-radius:999px;background:var(--surface-alt);color:var(--text-primary);font-size:.78rem;cursor:pointer;white-space:nowrap}.history-month-chip.active{background:var(--primary);color:#fff}.history-search-bar{position:fixed;left:0;right:0;bottom:64px;display:none;z-index:45}.history-search-inner{max-width:720px;margin:0 auto;padding:.4rem .6rem;border-radius:.9rem .9rem 0 0;background:rgba(248,250,252,.96);box-shadow:0 -4px 12px rgba(15,23,42,.16);display:flex;gap:.4rem;align-items:center}.history-search-input{flex:1;border-radius:.6rem;border:1px solid var(--border-strong);padding:.4rem .6rem;font-size:.82rem}.profile-form .field{margin-top:.6rem}.profile-form label{display:block;font-size:.8rem;margin-bottom:.2rem}.profile-form input,.profile-form select{width:100%;padding:.55rem .6rem;border-radius:.55rem;border:1px solid var(--border-strong);font-size:.86rem}.duty-table-container{margin-top:.4rem;max-height:calc(100vh - 90px);overflow-y:auto}.duty-table{width:100%;border-collapse:collapse;font-size:0.8rem}.duty-table th,.duty-table td{border-bottom:1px solid var(--border);padding:.35rem .3rem;text-align:left}.duty-table th{font-weight:600;background:var(--surface-alt)}.bottom-bar{position:fixed;left:0;right:0;bottom:0;height:64px;background:#fff;border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:center;z-index:40}.nav-item{flex:1;text-align:center;font-size:.72rem;color:var(--text-muted);display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;cursor:pointer}.nav-item span.icon{font-size:1.3rem}.nav-item.active{color:var(--primary);font-weight:600}
+.sheet-handle{width:40px;height:4px;background:var(--border-strong);border-radius:999px;margin:0 auto .5rem}.sheet-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem}.sheet-title{font-size:.98rem;font-weight:600}.sheet-close{border:none;background:none;font-size:1.4rem;cursor:pointer}.field{margin-top:.6rem}.label{font-size:.78rem;font-weight:500;color:var(--text-muted);margin-bottom:.25rem;display:block}.input{width:100%;padding:.55rem .6rem;border-radius:.6rem;border:1px solid var(--border-strong);font-size:.88rem}.duty-field-header{display:flex;justify-content:space-between;align-items:center}.special-toggle-btn{border-radius:999px;border:1px solid var(--border-strong);background:#f3f4ff;font-size:.75rem;padding:.15rem .6rem;cursor:pointer;color:var(--special-text)}.date-chip-row{display:flex;gap:.35rem;overflow-x:auto;scrollbar-width:none;padding-bottom:.15rem}.date-chip-row::-webkit-scrollbar{display:none}.date-chip{flex-shrink:0;padding:.3rem .6rem;border-radius:999px;background:#fff;box-shadow:0 1px 4px rgba(15,23,42,.1);font-size:.78rem;cursor:pointer;white-space:nowrap}.date-chip-label{font-weight:600;margin-right:.2rem}.date-chip-secondary{font-size:.72rem;color:var(--text-muted)}.date-chip.active{background:var(--primary);color:#fff}.date-chip.active .date-chip-secondary{color:rgba(255,255,255,.8)}.duty-rows{display:flex;flex-direction:column;gap:.3rem}.duty-row{display:flex;gap:.3rem;overflow-x:auto;scrollbar-width:none}.duty-row::-webkit-scrollbar{display:none}.duty-btn{flex-shrink:0;min-width:40px;padding:.3rem .4rem;border-radius:999px;background:#fff;box-shadow:0 1px 4px rgba(15,23,42,.1);font-size:.8rem;cursor:pointer;text-align:center}.duty-btn.active{background:#dbeafe;box-shadow:0 1px 6px rgba(37,99,235,.5)}.train-row{display:flex;gap:.3rem;overflow-x:auto;scrollbar-width:none}.train-row::-webkit-scrollbar{display:none}.train-btn{flex-shrink:0;min-width:34px;padding:.3rem .35rem;border-radius:999px;background:#fff;box-shadow:0 1px 4px rgba(15,23,42,.1);font-size:.8rem;cursor:pointer;text-align:center}.train-btn.active{background:#dbeafe;box-shadow:0 1px 6px rgba(37,99,235,.5)}.special-duty-row{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.35rem}.special-duty-btn{flex-shrink:0;padding:.3rem .6rem;border-radius:999px;border:none;background:var(--special-bg);color:var(--special-text);font-size:.78rem;cursor:pointer;box-shadow:0 1px 4px rgba(76,29,149,.18)}.special-duty-btn.active{background:var(--special-bg-active);box-shadow:0 1px 6px rgba(76,29,149,.35)}.btn-primary{width:100%;margin-top:.6rem;padding:.6rem .7rem;border-radius:.7rem;border:none;background:var(--primary);color:#fff;font-size:.9rem;font-weight:600;cursor:pointer}.history-list{margin-top:.5rem;padding-bottom:4.8rem}.history-item{margin-top:.4rem;padding:.7rem .75rem;background:var(--surface);border-radius:.8rem;border:1px solid var(--border);font-size:.82rem;cursor:pointer}.history-item.active{border-color:var(--primary);background:#fff}.history-header{display:flex;justify-content:space-between;margin-bottom:.15rem;font-weight:600}.history-meta{font-size:.76rem;color:var(--text-muted)}.history-detail{margin-top:.35rem;border-top:1px dashed var(--border-strong);padding-top:.3rem;font-size:.78rem}.history-summary{margin-top:.4rem;display:flex;flex-wrap:wrap;gap:.4rem}.history-summary-card{flex:0 0 calc(50% - .22rem);background:var(--surface);color:var(--text-primary);border:1px solid var(--border);box-shadow:0 2px 6px rgba(15,23,42,.1);border-radius:.7rem;padding:.45rem .55rem;font-size:.78rem}.history-summary-label{font-size:.7rem;color:var(--text-muted)}.history-summary-value{font-size:.95rem;font-weight:600;margin-top:.1rem}.history-summary-sub{font-size:.68rem;color:var(--text-muted);margin-top:.05rem}.history-month-chips{margin-top:.4rem;display:flex;gap:.35rem;overflow-x:auto;scrollbar-width:none;padding-bottom:.15rem}.history-month-chips::-webkit-scrollbar{display:none}.history-month-chip{flex-shrink:0;padding:.3rem .6rem;border-radius:999px;background:var(--surface-alt);color:var(--text-primary);font-size:.78rem;cursor:pointer;white-space:nowrap}.history-month-chip.active{background:var(--primary);color:#fff}.history-search-bar{position:fixed;left:0;right:0;bottom:64px;display:none;z-index:45}.history-search-inner{max-width:720px;margin:0 auto;padding:.4rem .6rem;border-radius:.9rem .9rem 0 0;background:rgba(248,250,252,.96);box-shadow:0 -4px 12px rgba(15,23,42,.16);display:flex;gap:.4rem;align-items:center}.history-search-input{flex:1;border-radius:.6rem;border:1px solid var(--border-strong);padding:.4rem .6rem;font-size:.82rem}.profile-form .field{margin-top:.6rem}.profile-form label{display:block;font-size:.8rem;margin-bottom:.2rem}.profile-form input,.profile-form select{width:100%;padding:.55rem .6rem;border-radius:.55rem;border:1px solid var(--border-strong);font-size:.86rem}.duty-table-container{margin-top:.4rem;max-height:calc(100vh - 150px);overflow-y:auto}.duty-table{width:100%;border-collapse:collapse;font-size:0.8rem}.duty-table th,.duty-table td{border-bottom:1px solid var(--border);padding:.35rem .3rem;text-align:left}.duty-table th{font-weight:600;background:var(--surface-alt)}.bottom-bar{position:fixed;left:0;right:0;bottom:0;height:64px;background:#fff;border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:center;z-index:40}.nav-item{flex:1;text-align:center;font-size:.72rem;color:var(--text-muted);display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;cursor:pointer}.nav-item span.icon{font-size:1.3rem}.nav-item.active{color:var(--primary);font-weight:600}
 
-/* Added classes for summary & alarm */
 .profile-summary-list { margin-top: 1rem; }
 .profile-item { display: flex; justify-content: space-between; padding: 0.8rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
 .profile-item span:first-child { color: var(--text-muted); }
 .profile-item span:last-child { font-weight: 600; }
 .alarm-option { padding: 0.8rem; border-bottom: 1px solid var(--border); cursor: pointer; text-align: center; font-weight: 500; }
 .current-trip-row { background: #eff6ff; border-left: 3px solid var(--primary); }
+
+/* New Styles for Trip Chip Filter */
+.trip-filter-chips { display: flex; gap: 6px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; border-bottom: 1px solid var(--border); background: #fff; position: sticky; top: 0; z-index: 10; }
+.trip-filter-chips::-webkit-scrollbar { display: none; }
+.trip-chip { flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; background: #f1f5f9; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); cursor: pointer; }
+.trip-chip.active { background: var(--primary); color: #fff; border-color: var(--primary-dark); box-shadow: 0 2px 6px rgba(37,99,235,0.4); }
 </style>
 </head>
 <body>
 <div class="app-container">
+  
   <div class="profile-card-wrapper" id="fixedHeader">
     <div class="profile-card">
       <div class="profile-header">
@@ -97,7 +109,7 @@
   <section id="home" class="screen active">
     <div id="homeContent">
       <div class="home-month-row">
-        <div class="home-month-hint">Tap a date to view or add duty</div>
+        <div class="home-month-hint">Scrolling up for future dates</div>
         <select id="monthSelect" class="home-month-select"></select>
       </div>
       <div id="calendarRow" class="timeline-row"></div>
@@ -108,7 +120,7 @@
   </section>
 
   <section id="history" class="screen">
-    <div style="margin-top: 190px; padding-bottom:80px;">
+    <div style="margin-top: 20px; padding-bottom:80px;">
       <div class="card">
         <div class="card-title-row">
           <div class="card-title">History</div>
@@ -125,21 +137,45 @@
     </div>
   </section>
 
-  <section id="profile" class="screen">
-    <div style="margin-top: 190px; padding-bottom:80px;">
-      <div class="card profile-form">
+  <section id="trips" class="screen">
+    <div style="margin-top: 20px; padding-bottom:80px;">
+      <div class="card">
+         <div class="card-title-row">
+          <div class="card-title">Trip Chart</div>
+          <div class="card-sub">Filter by Duty No.</div>
+        </div>
+        <div class="trip-filter-chips" id="tripFilterChips"></div>
+        <div class="duty-table-container">
+          <table class="duty-table">
+            <thead><tr><th>Duty</th><th>Dep</th><th>From</th><th>To</th><th>Train</th></tr></thead>
+            <tbody id="tripChartBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="settings" class="screen">
+    <div style="margin-top: 20px; padding-bottom:80px;">
+      <div class="card">
         <div class="card-title-row">
-          <div class="card-title">Profile</div>
-          <div class="card-sub">Used in summaries</div>
+          <div class="card-title">Settings</div>
+          <div class="card-sub">Tools & reference</div>
         </div>
-        <div class="field">
-          <label for="pfName">Full Name</label>
-          <input type="text" id="pfName">
+        <button class="btn-primary" id="viewProfileSummaryBtn" style="margin-top:0.6rem; background:#4f46e5;">View Profile Summary</button>
+        <button class="btn-primary" id="viewDutyTableBtn" style="margin-top:0.6rem;">View Duty Table Reference</button>
+        <button class="btn-primary" id="configPayBtn" style="margin-top:0.6rem; background:#facc15; color:#1f2937;">
+          Configure One Day Pay
+        </button>
+      </div>
+
+      <div class="card profile-form" style="margin-top: 1rem;">
+        <div class="card-title-row">
+          <div class="card-title">Edit Profile</div>
+          <div class="card-sub">Update your details</div>
         </div>
-        <div class="field">
-          <label for="pfEmpId">Employee ID</label>
-          <input type="text" id="pfEmpId">
-        </div>
+        <div class="field"><label for="pfName">Full Name</label><input type="text" id="pfName"></div>
+        <div class="field"><label for="pfEmpId">Employee ID</label><input type="text" id="pfEmpId"></div>
         <div class="field">
           <label for="pfRole">Role</label>
           <select id="pfRole">
@@ -161,53 +197,12 @@
             <option value="Saturday">Saturday</option>
           </select>
         </div>
-        <div class="field">
-          <label for="pfPhoto">Profile Photo</label>
-          <input type="file" id="pfPhoto" accept="image/*">
-        </div>
-        <div class="field">
-          <label for="pfConfirmDate">Date of Confirmation</label>
-          <input type="date" id="pfConfirmDate">
-        </div>
-        <div class="field">
-          <label for="pfPmeDate">Date of PME</label>
-          <input type="date" id="pfPmeDate">
-        </div>
-        <div class="field">
-          <label for="pfScCompDate">Date of Competency (Station Controller)</label>
-          <input type="date" id="pfScCompDate">
-        </div>
-        <div class="field">
-          <label for="pfToCompDate">Date of Competency (Train Operator)</label>
-          <input type="date" id="pfToCompDate">
-        </div>
-        <div class="field">
-          <label for="pfCL">Remaining Casual Leave</label>
-          <input type="number" id="pfCL" min="0" step="1" placeholder="e.g. 8">
-        </div>
-        <div class="field">
-          <label for="pfRH">Remaining RH</label>
-          <input type="number" id="pfRH" min="0" step="1" placeholder="e.g. 4">
-        </div>
+        <div class="field"><label for="pfPhoto">Profile Photo</label><input type="file" id="pfPhoto" accept="image/*"></div>
+        <div class="field"><label for="pfConfirmDate">Date of Confirmation</label><input type="date" id="pfConfirmDate"></div>
+        <div class="field"><label for="pfPmeDate">Date of PME</label><input type="date" id="pfPmeDate"></div>
+        <div class="field"><label for="pfCL">Remaining CL</label><input type="number" id="pfCL" min="0" step="1"></div>
+        <div class="field"><label for="pfRH">Remaining RH</label><input type="number" id="pfRH" min="0" step="1"></div>
         <button class="btn-primary" id="saveProfileBtn">Save Profile</button>
-      </div>
-    </div>
-  </section>
-
-  <section id="settings" class="screen">
-    <div style="margin-top: 190px; padding-bottom:80px;">
-      <div class="card">
-        <div class="card-title-row">
-          <div class="card-title">Settings</div>
-          <div class="card-sub">Tools & duty reference</div>
-        </div>
-        <button class="btn-primary" id="viewProfileSummaryBtn" style="margin-top:0.6rem; background:#4f46e5;">View Profile Summary</button>
-        <button class="btn-primary" id="viewDutyTableBtn" style="margin-top:0.6rem;">View Duty Table</button>
-        <button class="btn-primary" id="viewTripChartBtn" style="margin-top:0.6rem; background:#3b82f6;">View Full Trip Chart</button>
-        
-        <button class="btn-primary" id="configPayBtn" style="margin-top:0.6rem; background:#facc15; color:#1f2937;">
-          Configure One Day Pay
-        </button>
       </div>
     </div>
   </section>
@@ -260,16 +255,12 @@
 
 <div class="sheet" id="dutyTableSheet">
   <div class="sheet-header">
-    <div class="sheet-title">Duty Table</div>
+    <div class="sheet-title">Duty Table Reference</div>
     <button class="sheet-close" id="dutyTableCloseBtn">✕</button>
   </div>
   <div class="duty-table-container">
     <table class="duty-table">
-      <thead>
-        <tr>
-          <th>Duty</th><th>Sign On</th><th>On Place</th><th>Sign Off</th><th>Off Place</th><th>Hours</th>
-        </tr>
-      </thead>
+      <thead><tr><th>Duty</th><th>Sign On</th><th>On Place</th><th>Sign Off</th><th>Off Place</th><th>Hours</th></tr></thead>
       <tbody id="dutyTableBody"></tbody>
     </table>
   </div>
@@ -277,49 +268,29 @@
 
 <div class="sheet" id="restSheet">
   <div class="sheet-handle"></div>
-  <div class="sheet-header">
-    <div class="sheet-title">Select New Rest Day</div>
-    <button class="sheet-close" id="restCloseBtn">✕</button>
-  </div>
-  <div class="field">
-    <label class="label">New Rest Date</label>
-    <input type="date" id="restDateInput" class="input" />
-  </div>
+  <div class="sheet-header"><div class="sheet-title">Select New Rest Day</div><button class="sheet-close" id="restCloseBtn">✕</button></div>
+  <div class="field"><label class="label">New Rest Date</label><input type="date" id="restDateInput" class="input" /></div>
   <button class="btn-primary" id="saveRestDateBtn">Save Rest Day</button>
 </div>
 
 <div class="sheet" id="paySheet">
   <div class="sheet-handle"></div>
-  <div class="sheet-header">
-    <div class="sheet-title">One Day Pay Configuration</div>
-    <button class="sheet-close" id="payCloseBtn">✕</button>
-  </div>
-  <div class="field">
-    <div id="payMonthChips" class="date-chip-row"></div>
-  </div>
-  <div class="field">
-    <label class="label" id="payInputLabel">Pay for One Day (₹)</label>
-    <input type="number" id="payAmountInput" class="input" min="0" step="1" />
-  </div>
+  <div class="sheet-header"><div class="sheet-title">One Day Pay Config</div><button class="sheet-close" id="payCloseBtn">✕</button></div>
+  <div class="field"><div id="payMonthChips" class="date-chip-row"></div></div>
+  <div class="field"><label class="label" id="payInputLabel">Pay for One Day (₹)</label><input type="number" id="payAmountInput" class="input" min="0" step="1" /></div>
   <button class="btn-primary" id="savePayBtn">Save Pay</button>
 </div>
 
 <div class="history-search-bar" id="historySearchBar">
   <div class="history-search-inner">
-    <input id="historySearchInput" class="history-search-input" type="text" placeholder="Search by date, duty, train, place..." />
+    <input id="historySearchInput" class="history-search-input" type="text" placeholder="Search..." />
   </div>
 </div>
 
 <div id="crConsumeModal" class="sheet" style="display:none;">
   <div class="sheet-handle"></div>
-  <div class="sheet-header">
-    <div class="sheet-title">Use Compensatory Rest</div>
-    <button class="sheet-close" onclick="closeCRConsumeModal()">✕</button>
-  </div>
-  <div class="field">
-    <label class="label">Available CR Dates</label>
-    <div id="crList" class="date-chip-row"></div>
-  </div>
+  <div class="sheet-header"><div class="sheet-title">Use CR</div><button class="sheet-close" onclick="closeCRConsumeModal()">✕</button></div>
+  <div class="field"><label class="label">Available CR Dates</label><div id="crList" class="date-chip-row"></div></div>
   <button class="btn-primary" id="useCRBtn">Use Selected CR</button>
 </div>
 
@@ -345,16 +316,8 @@
   </div>
 </div>
 
-<div class="sheet" id="tripChartSheet">
-  <div class="sheet-header"><div class="sheet-title">Full Trip Chart</div><button class="sheet-close" id="tripChartCloseBtn">✕</button></div>
-  <div style="padding-bottom:.5rem;"><select id="tripChartFilter" style="padding:.4rem;"><option value="all">All Duties</option></select></div>
-  <div class="duty-table-container">
-    <table class="duty-table"><thead><tr><th>Duty</th><th>Dep</th><th>From</th><th>To</th><th>Train</th></tr></thead><tbody id="tripChartBody"></tbody></table>
-  </div>
-</div>
-
 <div class="sheet" id="alarmSheet">
-  <div class="sheet-header"><div class="sheet-title">Set Trip Reminder</div><button class="sheet-close" id="alarmCloseBtn">✕</button></div>
+  <div class="sheet-header"><div class="sheet-title">Set Reminder</div><button class="sheet-close" id="alarmCloseBtn">✕</button></div>
   <div style="padding-bottom:1rem;">
     <div class="alarm-option" data-min="5">5 Minutes Before</div>
     <div class="alarm-option" data-min="10">10 Minutes Before</div>
@@ -367,13 +330,13 @@
 
 <div class="bottom-bar">
   <div class="nav-item active" data-tab="home"><span class="icon">🏠</span><span>Home</span></div>
+  <div class="nav-item" data-tab="trips"><span class="icon">🚆</span><span>Trip Chart</span></div>
   <div class="nav-item" data-tab="history"><span class="icon">📜</span><span>History</span></div>
-  <div class="nav-item" data-tab="profile"><span class="icon">👤</span><span>Profile</span></div>
   <div class="nav-item" data-tab="settings"><span class="icon">⚙️</span><span>Settings</span></div>
 </div>
 
 <script>
-// ======= DUTY TRACKER SCRIPT v2.4 + v3.2 Features =======
+// ======= DUTY TRACKER SCRIPT v4.0 =======
 
 const $ = id => document.getElementById(id);
 
@@ -414,7 +377,6 @@ const DUTY_TABLE = {
   "STN-N":{signOn:"22:00",onPlace:"STATION",signOff:"06:00",offPlace:"STATION",hours:"08:00"}
 };
 
-// TRIP DATA (Added for Trip Chart Feature)
 const TRIP_DATA = [
   {d:"1",f:"MSOR",dep:"05:20",t:"BICP",tr:"401"},{d:"1",f:"BICP",dep:"05:59",t:"MSOR",tr:"1801"},{d:"1",f:"MSOR",dep:"06:30",t:"BICP",tr:"401"},{d:"1",f:"BICP",dep:"06:59",t:"MSOR",tr:"1801"},{d:"1",f:"MSOR",dep:"08:00",t:"BICP",tr:"402"},{d:"1",f:"BICP",dep:"08:29",t:"MSOR",tr:"1802"},{d:"1",f:"MSOR",dep:"09:50",t:"BICP",tr:"405"},{d:"1",f:"BICP",dep:"10:19",t:"MSOR",tr:"1805"},{d:"1",f:"MSOR",dep:"10:50",t:"BICP",tr:"405"},{d:"1",f:"BICP",dep:"11:19",t:"MSOR",tr:"1805"},
   {d:"2",f:"MSOR",dep:"05:58",t:"BICP",tr:"402"},{d:"2",f:"BICP",dep:"06:29",t:"MSOR",tr:"1802"},{d:"2",f:"MSOR",dep:"07:00",t:"BICP",tr:"402"},{d:"2",f:"BICP",dep:"07:29",t:"MSOR",tr:"1802"},{d:"2",f:"MSOR",dep:"08:30",t:"BICP",tr:"401"},{d:"2",f:"BICP",dep:"08:59",t:"MSOR",tr:"1801"},{d:"2",f:"MSOR",dep:"09:30",t:"BICP",tr:"401"},{d:"2",f:"BICP",dep:"09:59",t:"MSOR",tr:"1801"},{d:"2",f:"MSOR",dep:"11:20",t:"BICP",tr:"404"},{d:"2",f:"BICP",dep:"11:49",t:"MSOR",tr:"1804"},
@@ -456,7 +418,6 @@ const NO_DETAIL_SPECIALS=["CL","RH","GH","CR"];
 let data = loadData();
 if(!data.availableCR) data.availableCR=[];
 if(!data.printData) data.printData = { records: {}, profile: {}, pay: {} };
-// Init Alarm Data
 if(!data.alarm) data.alarm = {time: null};
 
 function loadData(){
@@ -511,41 +472,75 @@ function computeNightHours(code, so, sf){
   return 0;
 }
 
-// ----------------- FIXED HEADER LAYOUT -----------------
+// ----------------- HEADER LAYOUT -----------------
 function updateLayout(){
   const h = $("fixedHeader").offsetHeight;
-  document.querySelectorAll("section > div").forEach(d => d.style.marginTop = (h + 10) + "px");
+  // Only add margin to Home Content, others have fixed padding
+  if(!$("fixedHeader").classList.contains("hidden")){
+     $("homeContent").style.marginTop = (h + 5) + "px";
+  } else {
+     $("homeContent").style.marginTop = "10px";
+  }
 }
 window.addEventListener("resize", updateLayout);
 
 // ----------------- ALARM & CLOCK LOGIC -----------------
 let nextTripTarget = null;
 let isAlarmRinging = false;
+let audioContext = null;
+
+// Unlock Audio Context on first interaction (FIX FOR NO SOUND)
+function unlockAudio() {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    // Play a silent buffer to unlock
+    const buffer = audioContext.createBuffer(1, 1, 22050);
+    const source = audioContext.createSource();
+    source.buffer = buffer;
+    source.connect(audioContext.destination);
+    source.start(0);
+  } else if (audioContext.state === 'suspended') {
+    audioContext.resume();
+  }
+  // Remove listener after first interaction
+  document.removeEventListener('click', unlockAudio);
+  document.removeEventListener('touchstart', unlockAudio);
+}
+
+document.addEventListener('click', unlockAudio);
+document.addEventListener('touchstart', unlockAudio);
 
 function beep(){
+  if(!audioContext) unlockAudio();
+  if(!audioContext) return; 
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(880, ctx.currentTime);
-    osc.connect(ctx.destination);
+    const osc = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    osc.type = "square";
+    osc.frequency.setValueAtTime(880, audioContext.currentTime); // A5
+    osc.frequency.exponentialRampToValueAtTime(440, audioContext.currentTime + 0.1);
+    gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+    osc.connect(gainNode);
+    gainNode.connect(audioContext.destination);
     osc.start();
-    setTimeout(()=>osc.stop(), 200);
-  } catch(e){}
+    osc.stop(audioContext.currentTime + 0.2);
+  } catch(e){ console.error(e); }
 }
 
 function triggerAlarm(){
   isAlarmRinging = true;
-  const interval = setInterval(beep, 500);
+  const interval = setInterval(beep, 500); // Beep every 500ms
+  // Use timeout to avoid infinite loop if user is away
   setTimeout(()=>{
-    if(confirm("ALARM: Trip Departing Soon! Click OK to stop.")){
+    if(isAlarmRinging && confirm("ALARM: Trip Departing Soon! Click OK to stop.")){
       clearInterval(interval);
       clearAlarm();
     } else {
-      clearInterval(interval); 
+      clearInterval(interval);
     }
     isAlarmRinging = false;
-  }, 100);
+  }, 100); // Prompt immediately blocks, loop runs in background in some browsers
 }
 
 function clearAlarm(){
@@ -564,7 +559,7 @@ function setAlarm(min){
   $("alarmBtn").classList.add("active");
   $("alarmBtnText").textContent = `${min}m`;
   hideAllSheets();
-  alert("Alarm set!");
+  alert("Alarm set for " + trig.toLocaleTimeString());
 }
 
 // ----------------- NEXT TRIP CALC -----------------
@@ -603,8 +598,8 @@ function updateNextTripLogic(){
   }
 
   if(next){
-    $("nextTripText").innerHTML = `Next: <b>${next.f}</b> <span style="opacity:0.7">to</span> <b>${next.t}</b>`;
-    $("countdownBox").style.display = "block";
+    $("nextTripText").innerHTML = `Next: <b>${next.dep}</b> ${next.f}→${next.t}`;
+    $("countdownBox").style.display = "flex";
     
     const tDate = new Date();
     const [th, tm] = next.dep.split(":").map(Number);
@@ -638,7 +633,8 @@ function startClock(){
     
     if(data.alarm && data.alarm.time && !isAlarmRinging){
       const aTime = new Date(data.alarm.time);
-      if(now >= aTime) triggerAlarm();
+      // Trigger if time passed within last minute
+      if(now >= aTime && now < new Date(aTime.getTime() + 60000)) triggerAlarm();
     }
   },1000);
 }
@@ -688,14 +684,56 @@ function renderCurrentTrips(){
   });
 }
 
-// ----------------- EXISTING v2.4 HANDLERS (Unchanged Logic) -----------------
+// TRIP CHART SECTION LOGIC
+let tripChartFilter = "1";
+
+function renderTripSection(){
+  // Render Chips 1-26
+  const c = $("tripFilterChips");
+  if(c.innerHTML === "") {
+    for(let i=1; i<=26; i++) {
+      // Skip missing numbers if any, based on DUTY_TABLE or just numeric
+      if([7,13,14,21].includes(i)) continue; // Gaps in original data provided
+      const chip = document.createElement("div");
+      chip.className = "trip-chip" + (String(i)===tripChartFilter ? " active" : "");
+      chip.textContent = i;
+      chip.onclick = () => {
+        tripChartFilter = String(i);
+        document.querySelectorAll(".trip-chip").forEach(el => el.classList.remove("active"));
+        chip.classList.add("active");
+        renderTripTable();
+      };
+      c.appendChild(chip);
+    }
+  }
+  renderTripTable();
+}
+
+function renderTripTable(){
+  const tb = $("tripChartBody"); tb.innerHTML="";
+  const filtered = TRIP_DATA.filter(x => x.d === tripChartFilter);
+  if(filtered.length === 0){
+    tb.innerHTML = "<tr><td colspan='5' style='text-align:center;padding:1rem;'>No trips found for Duty "+tripChartFilter+"</td></tr>";
+    return;
+  }
+  filtered.forEach(r=>{
+    tb.innerHTML+=`<tr><td>${r.d}</td><td>${r.dep}</td><td>${r.f}</td><td>${r.t}</td><td>${r.tr}</td></tr>`;
+  });
+}
+
+// ----------------- HANDLERS -----------------
 
 let profileExpanded=false;
 function renderProfile(){
-  // Kept for compatibility with Profile Edit screen logic
   const p=data.profile||{};
   $("pfName").value = p.name || "";
-  // ... (rest of inputs populated in start listeners)
+  $("pfEmpId").value = p.empId || "";
+  $("pfRole").value = p.role || "";
+  $("pfRest").value = p.restDay || "";
+  $("pfConfirmDate").value = p.confirmDate || "";
+  $("pfPmeDate").value = p.pmeDate || "";
+  $("pfCL").value = p.cl || "";
+  $("pfRH").value = p.rh || "";
 }
 
 function attachProfileHandlers(){
@@ -703,7 +741,7 @@ function attachProfileHandlers(){
     data.profile={
       name:$("pfName").value.trim(), empId:$("pfEmpId").value.trim(), role:$("pfRole").value,
       restDay:$("pfRest").value, confirmDate:$("pfConfirmDate").value, pmeDate:$("pfPmeDate").value,
-      scCompDate:$("pfScCompDate").value, toCompDate:$("pfToCompDate").value, cl:$("pfCL").value, rh:$("pfRH").value
+      cl:$("pfCL").value, rh:$("pfRH").value
     };
     data.printData.profile = { name: data.profile.name || "", empId: data.profile.empId || "", confirmDate: data.profile.confirmDate || "" };
     saveData(); renderProfileSummary(); alert("Profile saved!");
@@ -719,17 +757,29 @@ function setActiveTab(id){
   currentTab=id;
   document.querySelectorAll(".screen").forEach(el=>el.classList.toggle("active",el.id===id));
   document.querySelectorAll(".nav-item").forEach(el=>el.classList.toggle("active",el.dataset.tab===id));
-  $("fabBtn").style.display = id==="home"?"flex":"none";
+  
+  // Toggle Header based on tab
+  if(id === "home"){
+    $("fixedHeader").classList.remove("hidden");
+    $("fabBtn").style.display = "flex";
+  } else {
+    $("fixedHeader").classList.add("hidden");
+    $("fabBtn").style.display = "none";
+  }
+  updateLayout(); // Recalculate margins
+
   hideAllSheets();
   $("historySearchBar").style.display = id==="history"?"block":"none";
   if(id==="history") renderHistory();
-  if(id==="home") setTimeout(updateNextTripLogic, 50); // Refresh layout
+  if(id==="trips") renderTripSection();
+  if(id==="home") setTimeout(updateNextTripLogic, 50); 
 }
+
 function attachNav(){
   document.querySelectorAll(".nav-item").forEach(el=>el.addEventListener("click", ()=>setActiveTab(el.dataset.tab)));
 }
 
-// App state (same as v2.4)
+// App state
 let selectedLogDate=todayISO(), selectedDutyCode=null, selectedTrains=[], specialDutyOpen=false;
 let expandedDate=null, restEditMode=null, pendingRestOldDate=null;
 let selectedStation=null, selectedShiftCode=null;
@@ -825,20 +875,12 @@ function attachFabAndSheets(){
   $("overlay").addEventListener("click", hideAllSheets);
   document.querySelectorAll(".sheet-close").forEach(b=>b.addEventListener("click", hideAllSheets));
   
-  // Sheet Openers
   $("viewDutyTableBtn").addEventListener("click", ()=>{ showOverlay(); $("dutyTableSheet").style.display="block"; });
   $("configPayBtn").addEventListener("click", ()=>{ showOverlay(); $("paySheet").style.display="block"; renderPayMonthChips(); });
-  // NEW Openers
   $("viewProfileSummaryBtn").addEventListener("click", ()=>{ renderProfileSummary(); showOverlay(); $("profileSummarySheet").style.display="block"; });
   $("viewCurrentTripsBtn").addEventListener("click", ()=>{ renderCurrentTrips(); showOverlay(); $("currentDutyTripsSheet").style.display="block"; });
-  $("viewTripChartBtn").addEventListener("click", ()=>{ 
-     const tb = $("tripChartBody"); tb.innerHTML="";
-     TRIP_DATA.forEach(r=>tb.innerHTML+=`<tr><td>${r.d}</td><td>${r.dep}</td><td>${r.f}</td><td>${r.t}</td><td>${r.tr}</td></tr>`);
-     showOverlay(); $("tripChartSheet").style.display="block"; 
-  });
   $("alarmBtn").addEventListener("click", ()=>{ showOverlay(); $("alarmSheet").style.display="block"; });
 
-  // Alarm Options
   document.querySelectorAll(".alarm-option").forEach(el => {
     el.addEventListener("click", function(){
       if(this.id==="turnOffAlarmBtn") clearAlarm();
@@ -846,14 +888,12 @@ function attachFabAndSheets(){
     });
   });
 
-  // Shift Selector
   document.querySelectorAll("#shiftChips button").forEach(b => b.addEventListener("click", e=>{
     e.preventDefault();
     document.querySelectorAll("#shiftChips button").forEach(x=>x.classList.remove("active"));
     b.classList.add("active"); selectedShiftCode=b.dataset.shift;
   }));
 
-  // Save Rest
   $("saveRestDateBtn").addEventListener("click", ()=>{
     const val=$("restDateInput").value;
     if(!val){ alert("Select date"); return; }
@@ -870,7 +910,6 @@ function attachFabAndSheets(){
     saveData(); hideAllSheets(); renderCalendar(); if(currentTab==="history") renderHistory();
   });
 
-  // Save Pay
   $("savePayBtn").addEventListener("click", ()=>{
     const amt=Number($("payAmountInput").value);
     if(amt<0 || isNaN(amt)){ alert("Invalid amount"); return; }
@@ -879,7 +918,6 @@ function attachFabAndSheets(){
     saveData(); hideAllSheets(); if(currentTab==="history") renderHistory();
   });
 
-  // Save Duty
   $("saveDutyBtn").addEventListener("click", ()=>{
     if(!selectedDutyCode){ alert("Select duty"); return; }
     let code = selectedDutyCode; let st = null;
@@ -906,6 +944,10 @@ function attachFabAndSheets(){
     updatePrintRecord(selectedLogDate);
     saveData(); hideAllSheets(); renderCalendar(); if(currentTab==="history") renderHistory();
     updateNextTripLogic();
+  });
+
+  $("specialDutyToggle").addEventListener("click", (e)=>{
+    e.preventDefault(); specialDutyOpen=!specialDutyOpen; renderSpecialDutyButtons();
   });
 }
 
@@ -1055,8 +1097,6 @@ function updatePrintRecord(date){
   if(built) data.printData.records[date] = built;
 }
 
-// special toggle logic attached in main init
-
 // Calendar
 function renderCalendar(){
   const c=$("calendarRow"), y=currentMonthYear.year, m=currentMonthYear.month;
@@ -1064,7 +1104,9 @@ function renderCalendar(){
   const dim=new Date(y,m+1,0).getDate(), today=todayISO(), frag=document.createDocumentFragment();
   const restIdx=data.profile.restDay ? ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"].indexOf(data.profile.restDay) : -1;
   let todayEl=null;
-  for(let i=1;i<=dim;i++){
+  
+  // Loop backwards for Descending order (31 -> 1)
+  for(let i=dim;i>=1;i--){
     const iso=`${y}-${String(m+1).padStart(2,"0")}-${String(i).padStart(2,"0")}`;
     const rec=data.records[iso];
     const dow=new Date(y,m,i).getDay();
@@ -1089,7 +1131,14 @@ function renderCalendar(){
   }
   c.appendChild(frag);
   $("noDutiesMsg").style.display=Object.keys(data.records).length===0?"block":"none";
-  if(todayEl) todayEl.scrollIntoView({behavior:'smooth',block:'center'});
+  
+  // Scroll to Today (Top of screen logic)
+  if(todayEl) {
+    // Wait for DOM paint then scroll
+    setTimeout(() => {
+       todayEl.scrollIntoView({behavior:'auto', block:'start'}); 
+    }, 50);
+  }
 }
 
 function handleDateClick(iso){
@@ -1234,7 +1283,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
   }
   s.onchange=function(){ currentMonthYear.month=Number(this.value); renderCalendar(); };
   renderCalendar();
-  updateLayout(); // Fix header height padding
+  updateLayout();
   if(data.alarm && data.alarm.time){
     $("alarmBtn").classList.add("active");
     $("alarmBtnText").textContent = "Alarm Set";
