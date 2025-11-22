@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Duty Tracker v5.1</title>
+<title>Duty Tracker v5.2</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <style>
 :root{--bg:#f8fafc;--primary:#2563eb;--primary-dark:#1d4ed8;--surface:#ffffff;--surface-alt:#eef2ff;--border:#e2e8f0;--border-strong:#cbd5e1;--text-primary:#0f172a;--text-muted:#64748b;--special-bg:#ede9fe;--special-bg-active:#ddd6fe;--special-text:#4c1d95;--rest-bg:#e5e7eb;--rest-text:#374151;--alarm:#ef4444;--success:#16a34a;--gold-bg:#fffbeb;--gold-border:#fbbf24;--gold-text:#92400e}*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;background:var(--bg);color:var(--text-primary)}.app-container{max-width:720px;margin:0 auto;padding:0 .75rem 5.5rem}.screen{display:none}.screen.active{display:block}
@@ -38,6 +38,7 @@
 .timeline-chip-top{font-size:.8rem;font-weight:600;display:flex;justify-content:space-between;align-items:center}
 .timeline-chip-bottom{font-size:.76rem;color:var(--text-muted)}
 .timeline-chip.today-chip{background:#e0edff;box-shadow:0 0 0 2px rgba(37,99,235,.2); z-index: 2;}
+/* Future Gold */
 .timeline-chip.future-chip{background:var(--gold-bg); border: 1px solid var(--gold-border); opacity: 1; }
 .timeline-chip.future-chip .timeline-chip-top { color: var(--gold-text); }
 .timeline-chip.has-duty{background:#dcfce7}.timeline-chip.has-duty .timeline-chip-bottom{color:#166534;font-weight:600}
@@ -162,9 +163,11 @@
         </div>
         <div id="historyMonthChips" class="history-month-chips"></div>
         <div id="historySummary" class="history-summary"></div>
-        <button class="btn-primary" onclick="window.print()" style="margin-top:0.6rem;">Print Report</button>
+        <div style="margin-top:0.6rem;">
+          <button class="btn-primary" onclick="window.print()">Print Report</button>
+        </div>
         <div id="historyList" class="history-list"></div>
-        <div id="noHistoryMsg">No records found.</div>
+        <div id="noHistoryMsg">No records found. Log a duty to see history.</div>
       </div>
     </div>
   </section>
@@ -419,7 +422,7 @@ $("saveProfileBtn").onclick=()=>{
 };
 $("pfPhoto").addEventListener("change",e=>{const f=e.target.files[0],r=new FileReader();if(f){r.onload=ev=>{data.profile.photo=ev.target.result;saveData();renderSettingsProfileCard();};r.readAsDataURL(f);}});
 
-// --- HISTORY (Reverted) ---
+// --- HISTORY (Reverted to 6-Card Layout) ---
 let historyFilterMonth="all";
 function renderHistory(){
   const c=$("historyMonthChips"), dates=Object.keys(data.records).sort().reverse();
@@ -437,13 +440,18 @@ function renderHistory(){
   const l=$("historyList"); l.innerHTML=""; $("historySummary").innerHTML="";
   if(fDates.length===0) { $("noHistoryMsg").style.display="block"; return; } $("noHistoryMsg").style.display="none";
   
-  let sum={tot:0,cr:0,cl:0,rh:0,nh:0,ice:0,hda:0,nda:0};
+  let sum={tot:0,cr:0,cl:0,rh:0,nh:0,ice:0,hda:0,nda:0,ndays:0};
   fDates.forEach(d=>{ const r=data.records[d], di=DUTY_TABLE[r.duty]||{}; sum.tot++; if(r.duty==="CR") sum.cr++; if(r.duty==="CL") sum.cl++; if(r.duty==="RH") sum.rh++; sum.hda+=calculateHDA(r.duty); sum.ice+=calculateICE(r.duty,di.signOn,di.signOff); sum.nh+=computeNightHours(r.duty,di.signOn,di.signOff); });
   const mPay=(historyFilterMonth!=="all" && data.pay[historyFilterMonth.split("-")[1]])||0;
-  if(mPay) sum.nda=(sum.nh/24)*mPay; const totAll=sum.hda+sum.ice+sum.nda;
+  if(mPay) { sum.ndays=sum.nh/24; sum.nda=sum.ndays*mPay; } const totAll=sum.hda+sum.ice+sum.nda;
   
   const add=(t,v,s)=>$("historySummary").innerHTML+=`<div class="history-summary-card"><div class="history-summary-label">${t}</div><div class="history-summary-value">${v}</div>${s?`<div class="history-summary-sub">${s}</div>`:""}</div>`;
-  add("Total Duties",sum.tot,`CR:${sum.cr} CL:${sum.cl} RH:${sum.rh}`); add("Night Hours",sum.nh.toFixed(1)); add("ICE / HDA",`₹${sum.ice} / ₹${sum.hda}`); add("Total Allowance",`₹${totAll.toFixed(0)}`,`Inc NDA: ₹${sum.nda.toFixed(0)}`);
+  add("Total Duties",sum.tot,`CR: ${sum.cr}, CL: ${sum.cl}, RH: ${sum.rh}`); 
+  add("Night Hours (A)",sum.nh.toFixed(1)+" hrs"); 
+  add("ICE",`₹ ${sum.ice}`);
+  add("HDA",`₹ ${sum.hda}`);
+  add("NDA",sum.nda?`₹ ${sum.nda.toFixed(0)}`:"—", sum.nda?`Night Days: ${sum.ndays.toFixed(1)}`:"Set 1-day pay");
+  add("Total Allowance",`₹ ${totAll.toFixed(0)}`);
 
   fDates.forEach(d=>{
     const r=data.records[d], di=DUTY_TABLE[r.duty]||{}, hda=calculateHDA(r.duty), ice=calculateICE(r.duty,di.signOn,di.signOff), nh=computeNightHours(r.duty,di.signOn,di.signOff);
