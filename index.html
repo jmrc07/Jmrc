@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Duty Tracker v4.3</title>
+<title>Duty Tracker v4.3 (Updated)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <style>
 :root{--bg:#f8fafc;--primary:#2563eb;--primary-dark:#1d4ed8;--surface:#ffffff;--surface-alt:#eef2ff;--border:#e2e8f0;--border-strong:#cbd5e1;--text-primary:#0f172a;--text-muted:#64748b;--special-bg:#ede9fe;--special-bg-active:#ddd6fe;--special-text:#4c1d95;--rest-bg:#e5e7eb;--rest-text:#374151;--alarm:#ef4444}*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;background:var(--bg);color:var(--text-primary)}.app-container{max-width:720px;margin:0 auto;padding:0 .75rem 5.5rem}.screen{display:none}.screen.active{display:block}
@@ -237,7 +237,7 @@
   </div>
   <div class="field">
     <div class="duty-field-header">
-      <span class="label">Duty Number (1–26)</span>
+      <span class="label">Duty Number</span>
       <button class="special-toggle-btn" id="specialDutyToggle">Special ▾</button>
     </div>
     <div class="duty-rows" id="dutyButtons"></div>
@@ -347,7 +347,7 @@
 </div>
 
 <script>
-// ======= DUTY TRACKER SCRIPT v4.3 =======
+// ======= DUTY TRACKER SCRIPT v4.3 (UPDATED) =======
 
 const $ = id => document.getElementById(id);
 
@@ -375,6 +375,11 @@ const DUTY_TABLE = {
   "24": { signOn:"15:55", onPlace:"MSOR SCR", signOff:"23:05", offPlace:"BICP SCR", hours:"07:10" },
   "25": { signOn:"16:05", onPlace:"MSOR SCR", signOff:"23:20", offPlace:"DEPOT", hours:"07:15" },
   "26": { signOn:"14:00", onPlace:"MSOR SCR", signOff:"23:00", offPlace:"DEPOT", hours:"09:00" },
+  
+  // NEW DUTIES
+  "26A": { signOn:"16:00", onPlace:"MSOR SCR", signOff:"01:00", offPlace:"DEPOT", hours:"09:00" },
+  "TO Night": { signOn:"22:00", onPlace:"MSOR SCR", signOff:"06:00", offPlace:"DEPOT", hours:"08:00" },
+
   "TRAINING":{signOn:"09:00",onPlace:"Training",signOff:"17:00",offPlace:"Training",hours:"08:00"},
   "GENERAL":{signOn:"09:30",onPlace:"Office",signOff:"17:30",offPlace:"Office",hours:"08:00"},
   "DCC-M":{signOn:"06:00",onPlace:"DCC",signOff:"14:00",offPlace:"DCC",hours:"08:00"},
@@ -412,6 +417,9 @@ const TRIP_DATA = [
 ];
 
 const SPECIAL_DUTIES = [
+  {code:"REST",label:"Rest",type:"simple",base:"REST"},
+  {code:"PL",label:"PL",type:"simple",base:"PL"},
+  {code:"MEDICAL",label:"Medical",type:"simple",base:"MEDICAL"},
   {code:"CR",label:"CR",type:"simple",base:"CR"},
   {code:"CL",label:"CL",type:"simple",base:"CL"},
   {code:"GH",label:"GH",type:"simple",base:"GH"},
@@ -424,7 +432,7 @@ const SPECIAL_DUTIES = [
 ];
 
 const STATION_LIST=["MSOR","NAMT","VKVR","SMNR","RMNR","CLJP","MRSN","SICP","CDPE","CTCP","BICP"];
-const NO_DETAIL_SPECIALS=["CL","RH","GH","CR"];
+const NO_DETAIL_SPECIALS=["CL","RH","GH","CR","REST","PL","MEDICAL"];
 
 let data = loadData();
 if(!data.availableCR) data.availableCR=[];
@@ -438,7 +446,6 @@ function loadData(){
 function saveData(){ localStorage.setItem("dutyTrackerData", JSON.stringify(data)); }
 
 // ----------------- HELPERS -----------------
-// FIX FOR DATE DISPLAY ISSUE (Uses Local Time)
 function todayISO(){ 
   const d = new Date();
   const year = d.getFullYear();
@@ -447,7 +454,11 @@ function todayISO(){
   return `${year}-${month}-${day}`;
 }
 function formatDateHuman(isoDate){ return new Date(isoDate).toLocaleDateString("en-IN",{weekday:"short",day:"2-digit",month:"short",year:"numeric"}); }
-function isNumericDuty(code){ return code!==undefined && !isNaN(code) && String(code).length > 0 && Number(code)>=1 && Number(code)<=26; }
+function isNumericDuty(code){ 
+    // Allow 26A and TO Night to behave like numeric duties for grid/train logic
+    if(code === "26A" || code === "TO Night") return true;
+    return code!==undefined && !isNaN(code) && String(code).length > 0 && Number(code)>=1 && Number(code)<=26; 
+}
 function isShiftDuty(code){ return code && (code.startsWith("DCC-") || code.startsWith("OCC-") || code.startsWith("STN-")); }
 function isNoDetailSpecial(code){ return code && NO_DETAIL_SPECIALS.indexOf(code) !== -1; }
 function parseTimeHour(t){ return (t && t.length===5) ? parseInt(t.substring(0,2),10) : -1; }
@@ -463,7 +474,7 @@ function formatDutyLabel(code, tag, stationCode){
     if(parts[1]==="N") shiftName="Night";
   }
   if(isNumericDuty(code)) baseText = `Duty ${code}`;
-  else if(["CR","CL","GH","RH"].includes(code)) baseText = code;
+  else if(NO_DETAIL_SPECIALS.includes(code)) baseText = code;
   else if(code==="TRAINING") baseText = "Trng";
   else if(code==="GENERAL") baseText = "Gen";
   else if(shiftName) baseText = stationCode ? `${shiftName} @${stationCode}` : shiftName;
@@ -472,7 +483,7 @@ function formatDutyLabel(code, tag, stationCode){
   return baseText;
 }
 
-function calculateHDA(code){ return (isNumericDuty(code) && Number(code)>=1 && Number(code)<=26) ? 100 : 0; }
+function calculateHDA(code){ return (isNumericDuty(code) && code !== "TO Night") ? 100 : 0; }
 function calculateICE(code, so, sf){
   if(!isNumericDuty(code)) return 0;
   const h1 = parseTimeHour(so), h2 = parseTimeHour(sf);
@@ -481,6 +492,10 @@ function calculateICE(code, so, sf){
 }
 function computeNightHours(code, so, sf){
   if(!code) return 0;
+  // Fixed Night Hours per request
+  if(code === "26A") return 3;
+  if(code === "TO Night") return 8;
+
   if(String(code).endsWith("-N")) return 8;
   if(String(code).endsWith("-M") || String(code).endsWith("-E")) return 0;
   if(isNumericDuty(code)){
@@ -506,7 +521,6 @@ let nextTripTarget = null;
 let isAlarmRinging = false;
 let audioContext = null;
 
-// FORCE UNLOCK AUDIO ON BUTTON TAP
 function unlockAudio() {
   if (!audioContext) {
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -522,7 +536,6 @@ function unlockAudio() {
   }
 }
 
-// Request Wake Lock (Keep Screen On)
 async function requestWakeLock() {
   try {
     if ('wakeLock' in navigator) {
@@ -554,15 +567,10 @@ function beep(){
 
 function triggerAlarm(){
   isAlarmRinging = true;
-  
-  // 1. Try Notification
   if(Notification.permission === "granted"){
     new Notification("DUTY TRACKER ALERT", { body: "Train Departing Soon!", vibrate: [200, 100, 200] });
   }
-
-  // 2. Play Audio Loop
   const interval = setInterval(beep, 500); 
-  
   setTimeout(()=>{
     if(isAlarmRinging && confirm("ALARM: Trip Departing Soon! Click OK to stop.")){
       clearInterval(interval);
@@ -583,10 +591,8 @@ function clearAlarm(){
 }
 
 function setAlarm(min){
-  // Fix: Force audio unlock immediately when user taps SET
   unlockAudio();
-  requestWakeLock(); // Request screen to stay on
-
+  requestWakeLock();
   if(!nextTripTarget){ alert("No next trip found."); return; }
   const trig = new Date(nextTripTarget.getTime() - min*60000);
   data.alarm.time = trig.toISOString();
@@ -599,7 +605,7 @@ function setAlarm(min){
 
 // ----------------- NEXT TRIP CALC -----------------
 function updateNextTripLogic(){
-  const today = todayISO(); // Use fixed date function
+  const today = todayISO(); 
   const rec = data.records[today];
   
   $("cardActions").style.display = "none";
@@ -613,6 +619,9 @@ function updateNextTripLogic(){
   let dText = formatDutyLabel(rec.duty, rec.tag, rec.station);
   $("currentDutyBadge").textContent = dText;
 
+  // Only numeric duties (standard train duties) have trips
+  // 26A and TO Night might not have scheduled trips in the TRIP_DATA array
+  // If they do, they will show. If not, logic holds.
   if(!isNumericDuty(rec.duty)) { updateLayout(); return; }
 
   $("cardActions").style.display = "flex";
@@ -640,17 +649,17 @@ function updateNextTripLogic(){
     tDate.setHours(th, tm, 0, 0);
     nextTripTarget = tDate;
   } else {
-    $("nextTripText").textContent = "No more MSOR→BICP trips";
+    // Check if trips existed at all
+    if(trips.length > 0) $("nextTripText").textContent = "No more MSOR→BICP trips";
+    else $("nextTripText").textContent = ""; // No trips data for this duty (e.g. 26A)
   }
   updateLayout();
 }
 
 function startClock(){
-  // Request notification permission immediately
   if ("Notification" in window && Notification.permission !== "granted") {
     Notification.requestPermission();
   }
-
   updateNextTripLogic();
   setInterval(()=>{
     const now=new Date();
@@ -672,14 +681,12 @@ function startClock(){
     
     if(data.alarm && data.alarm.time && !isAlarmRinging){
       const aTime = new Date(data.alarm.time);
-      // Trigger if time passed within last minute
       if(now >= aTime && now < new Date(aTime.getTime() + 60000)) triggerAlarm();
     }
   },1000);
 }
 
-// ----------------- NEW RENDERERS -----------------
-// ... (Renderers same as before) ...
+// ----------------- RENDERERS -----------------
 function renderProfileSummary(){
   const p=data.profile||{};
   $("psName").textContent = p.name || "—";
@@ -705,7 +712,7 @@ function renderCurrentTrips(){
   const tb = $("currentDutyTripsBody"); tb.innerHTML="";
   
   if(!rec || !isNumericDuty(rec.duty)) {
-      tb.innerHTML = "<tr><td colspan='4'>No numeric duty logged for today.</td></tr>";
+      tb.innerHTML = "<tr><td colspan='4'>No train duty logged for today.</td></tr>";
       return;
   }
 
@@ -734,10 +741,7 @@ let tripChartFilter = "1";
 
 function renderTripSection(){
   const container = $("tripFilterBottom");
-  if(container.innerHTML !== "") { 
-      renderTripTable(); 
-      return; 
-  }
+  if(container.innerHTML !== "") { renderTripTable(); return; }
 
   const groups = [
     ["1","2","3","4","5","6","8","9","10","11","12"],
@@ -747,12 +751,10 @@ function renderTripSection(){
   groups.forEach(grp => {
       const row = document.createElement("div");
       row.className = "trip-filter-row";
-      
       grp.forEach(dutyNum => {
          const chip = document.createElement("button");
          chip.className = "trip-chip" + (String(dutyNum)===tripChartFilter ? " active" : "");
          chip.textContent = dutyNum;
-         
          chip.onclick = (e) => {
              e.preventDefault(); 
              tripChartFilter = String(dutyNum);
@@ -808,7 +810,6 @@ function renderTripTable(){
 }
 
 // ----------------- HANDLERS -----------------
-
 let profileExpanded=false;
 function renderProfile(){
   const p=data.profile||{};
@@ -1010,7 +1011,8 @@ function attachFabAndSheets(){
       if(!selectedStation){ alert("Select station"); return; }
       code = `STN-${selectedShiftCode}`; st = selectedStation;
     } else if(isNumericDuty(code)){
-      if(selectedTrains.length===0){ alert("Select train"); return; }
+      // For standard duties allow train selection
+      // For 26A and TO Night, train selection is optional or allowed
       st = null;
     } else { st = null; }
 
@@ -1081,7 +1083,13 @@ function renderLogDateChips(){
 
 function renderDutyButtons(){
   const c=$("dutyButtons"); c.innerHTML="";
-  [ ["1","2","3","4","5","6","8","9","10","11","12"], ["15","16","17","18","19","20","22","23","24","25","26"] ].forEach(grp=>{
+  // Added 26A and TO Night to the second array
+  const groups = [ 
+    ["1","2","3","4","5","6","8","9","10","11","12"], 
+    ["15","16","17","18","19","20","22","23","24","25","26", "26A", "TO Night"] 
+  ];
+  
+  groups.forEach(grp=>{
     const r=document.createElement("div"); r.className="duty-row";
     grp.forEach(no=>{
       const b=document.createElement("button"); b.className="duty-btn"; b.textContent=no; b.dataset.no=no;
@@ -1260,7 +1268,7 @@ function renderHistory(){
     const r=data.records[d], dt=DUTY_TABLE[r.duty]||{};
     return d.includes(term) || (r.duty||"").toLowerCase().includes(term) || (r.trains||[]).join(",").includes(term) ||
            (dt.onPlace||"").toLowerCase().includes(term) || (dt.offPlace||"").toLowerCase().includes(term) ||
-           (r.station||"").toLowerCase().includes(term) || ["cl","gh","rh","cr"].includes(term) && r.duty.toLowerCase()===term;
+           (r.station||"").toLowerCase().includes(term) || ["cl","gh","rh","cr","rest","pl","medical"].includes(term) && r.duty.toLowerCase()===term;
   });
   const sum={tot:0,cr:0,cl:0,gh:0,rh:0,hda:0,ice:0,nh:0,nda:0,ndays:0};
   dates.forEach(d=>{
