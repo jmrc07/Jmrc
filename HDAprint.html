@@ -5,85 +5,46 @@
 <title>Hard Duty Allowance Bill</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <style>
-/* 1. NDA PRINT STYLING */
 @page { size: A4; margin: 10mm; }
 html, body { margin: 0; padding: 0; background: #fff; }
-body {
-    width: 210mm;
-    transform: scale(0.70);
-    transform-origin: top center;
-    margin-left: auto; margin-right: auto;
-    font-family: "Times New Roman", serif;
-}
-
+body { width: 210mm; transform: scale(0.70); transform-origin: top center; margin: 0 auto; font-family: "Times New Roman", serif; }
 .page { width:760px; margin:0 auto; padding:12px; }
 .logo { text-align:center; margin-bottom:6px; }
 .logo img { width:85px; height:auto; }
-
 h1 { text-align:center; font-size:18px; margin:4px 0; text-transform: uppercase; font-weight:bold; }
 .sub { text-align:center; font-size:11.5px; margin-bottom:10px; }
-
-/* TABLE STYLING */
 table { border-collapse:collapse; width:100%; table-layout:fixed; margin-top:12px; }
 th, td { border:1px solid #000; padding:6px; font-size:12px; text-align:center; }
 .meta th { background: #f0f0f0; }
 .duty th { font-weight:bold; background: #f0f0f0; }
 .total-row td { font-weight: bold; border-top: 2px solid #000; background: #fff; }
-
-/* 2. PDF SPECIFIC LAYOUT FOR CERTIFICATE */
 .cert-section { margin-top: 20px; font-size: 11px; line-height: 1.4; }
 .cert-title { text-align:center; font-weight:bold; text-decoration:underline; font-size:13px; margin-bottom:10px; }
-
-/* Signature of Train Operator (Right Side) */
 .to-sig-row { margin-top: 25px; overflow: hidden; }
 .to-sig-box { float: right; width: 200px; text-align: center; }
-.sig-line { border-top: 1px solid #000; margin-top:40px; padding-top: 5px; font-weight: bold; }
-
-/* Official Signatures Layout */
 .manager-row { margin-top: 30px; overflow: hidden; }
 .sanction-block { float: left; width: 40%; }
 .manager-to-block { float: right; width: 30%; text-align: center; margin-top: 40px; }
-
 .footer-note { margin-top: 20px; font-weight: bold; font-size: 11px; clear: both; }
 </style>
 </head>
 <body>
-
 <div class="page">
   <div class="logo"><img src="jaipur_logo.png" alt="JMRC Logo"></div>
-
   <h1>Hard Duty Allowance Bill</h1>
-  <div class="sub">
-    As per Rule 9.2 (e) of JMRC Recruitment Rules, 2012<br>
-    (To be submitted in duplicate, one copy for Operations deptt and other copy for finance)
-  </div>
+  <div class="sub">As per Rule 9.2 (e) of JMRC Recruitment Rules, 2012<br>(To be submitted in duplicate...)</div>
 
   <table class="meta">
-    <tr>
-      <th>Name of Train Operator</th>
-      <th>Emp. ID</th>
-      <th>Date of Confirmation</th>
-      <th>Month :-</th>
-    </tr>
-    <tr>
-      <td id="empName"></td>
-      <td id="empId"></td>
-      <td id="confirmDate"></td>
-      <td id="monthDisplay"></td>
-    </tr>
+    <tr><th>Name of Train Operator</th><th>Emp. ID</th><th>Date of Confirmation</th><th>Month :-</th></tr>
+    <tr><td id="empName"></td><td id="empId"></td><td id="confirmDate"></td><td id="monthDisplay"></td></tr>
   </table>
 
   <table class="duty">
     <thead>
       <tr>
-        <th style="width:6%">S. No.</th>
-        <th style="width:14%">Date</th>
-        <th style="width:14%">Train Set No.</th>
-        <th style="width:12%">Sign On Time</th>
-        <th style="width:12%">Sign Off Time</th>
-        <th style="width:12%">Duty Hours</th>
-        <th style="width:12%">Approx. Kms</th>
-        <th>Remark</th>
+        <th style="width:6%">S. No.</th><th style="width:14%">Date</th><th style="width:14%">Train Set No.</th>
+        <th style="width:12%">Sign On Time</th><th style="width:12%">Sign Off Time</th>
+        <th style="width:12%">Duty Hours</th><th style="width:12%">Approx. Kms</th><th>Remark</th>
       </tr>
     </thead>
     <tbody id="hdaBody"></tbody>
@@ -92,53 +53,39 @@ th, td { border:1px solid #000; padding:6px; font-size:12px; text-align:center; 
 
   <div class="cert-section">
     <div class="cert-title">Certificate</div>
-    
-    <p>
-      1. I, certify that the hard duty allowance, as claimed in this bill is correct & due to me,and this claim was not submitted earlier.
-    </p>
-    
-    <div class="to-sig-row">
-      <div class="to-sig-box">
-         Signature of Train Operator
-      </div>
-    </div>
-
-    <p style="margin-top:15px;">
-      2. As per sign on and sign off duty record at Crew Control/Duty register at MSOR/CDPE/BICP stations, etc., the above details submitted for the hard duty allowance by the TO is certified & due to him/her.
-    </p>
-
-    <p style="font-weight:bold; margin-top:10px;">
-      Total Hard Duty Allowance payable to the TO for <span id="totalDutiesCert" style="text-decoration:underline;"></span> SIGN ON is Rs. <span id="totalAmountCert" style="text-decoration:underline;"></span>/-
-    </p>
+    <p>1. I, certify that the hard duty allowance, as claimed in this bill is correct & due to me, and this claim was not submitted earlier.</p>
+    <div class="to-sig-row"><div class="to-sig-box">Signature of Train Operator</div></div>
+    <p style="margin-top:15px;">2. As per sign on and sign off duty record at Crew Control/Duty register at MSOR/CDPE/BICP stations, etc., the above details submitted for the hard duty allowance by the TO is certified & due to him/her.</p>
+    <p style="font-weight:bold; margin-top:10px;">Total Hard Duty Allowance payable to the TO for <span id="totalDutiesCert" style="text-decoration:underline;"></span> SIGN ON is Rs. <span id="totalAmountCert" style="text-decoration:underline;"></span>/-</p>
 
     <div class="manager-row">
-      
-      <div class="sanction-block">
-        <div style="font-weight:bold; margin-bottom:30px;">Sanctioned (As per clause E18 of SOP, JMRC) by:</div> 
-        <div style="font-weight:bold;">
-            General Manager/Operations<br>(Sign & Seal)
-        </div>
-      </div>
-
-      <div class="manager-to-block">
-        <div style="padding-top:5px; font-weight:bold;">Signature of Manager (TO)</div>
-      </div>
-
+      <div class="sanction-block"><div style="font-weight:bold; margin-bottom:30px;">Sanctioned (As per clause E18 of SOP, JMRC) by:</div><div style="font-weight:bold;">General Manager/Operations<br>(Sign & Seal)</div></div>
+      <div class="manager-to-block"><div style="padding-top:5px; font-weight:bold;">Signature of Manager (TO)</div></div>
     </div>
-
-    <div class="footer-note">
-      Forward to: GM(Finance) JMRC for making payment
-    </div>
+    <div class="footer-note">Forward to: GM(Finance) JMRC for making payment</div>
   </div>
-
 </div>
 
 <script>
+const DUTY_TABLE={
+  "1":{signOn:"04:55",signOff:"11:55",hours:"07:00"},"2":{signOn:"04:55",signOff:"12:25",hours:"07:30"},
+  "3":{signOn:"04:55",signOff:"12:05",hours:"07:10"},"4":{signOn:"05:05",signOff:"12:45",hours:"07:40"},
+  "5":{signOn:"07:15",signOff:"14:35",hours:"07:20"},"6":{signOn:"05:00",signOff:"14:00",hours:"09:00"},
+  "8":{signOn:"04:30",signOff:"12:15",hours:"07:45"},"9":{signOn:"04:50",signOff:"12:35",hours:"07:45"},
+  "10":{signOn:"07:25",signOff:"14:55",hours:"07:30"},"11":{signOn:"07:35",signOff:"15:05",hours:"07:30"},
+  "12":{signOn:"11:35",signOff:"18:45",hours:"07:10"},"15":{signOn:"11:45",signOff:"19:05",hours:"07:20"},
+  "16":{signOn:"12:25",signOff:"20:35",hours:"08:10"},"17":{signOn:"12:55",signOff:"20:45",hours:"07:50"},
+  "18":{signOn:"13:05",signOff:"20:55",hours:"07:50"},"19":{signOn:"14:35",signOff:"22:48",hours:"08:13"},
+  "20":{signOn:"14:45",signOff:"22:54",hours:"08:09"},"22":{signOn:"15:25",signOff:"23:10",hours:"07:45"},
+  "23":{signOn:"15:05",signOff:"23:10",hours:"08:05"},"24":{signOn:"15:55",signOff:"23:05",hours:"07:10"},
+  "25":{signOn:"16:05",signOff:"23:20",hours:"07:15"},"26":{signOn:"14:00",signOff:"23:00",hours:"09:00"}
+};
+
 (function(){
   const raw = localStorage.getItem("dutyTrackerData");
-  const data = raw ? JSON.parse(raw) : { printData:{ records:{}, profile:{}, pay:{} } };
-  const printData = data.printData || {};
-  const profile = printData.profile || {};
+  const data = raw ? JSON.parse(raw) : {};
+  const records = data.records || {};
+  const profile = data.profile || {};
   
   document.getElementById("empName").textContent = profile.name || "";
   document.getElementById("empId").textContent = profile.empId || "";
@@ -150,49 +97,42 @@ th, td { border:1px solid #000; padding:6px; font-size:12px; text-align:center; 
     document.getElementById("monthDisplay").textContent = d.toLocaleDateString("en-IN", { month:"long", year:"numeric" });
   }
 
-  const records = printData.records || {};
   const tbody = document.getElementById("hdaBody");
-  const footer = document.getElementById("hdaFooter");
   const dates = Object.keys(records).filter(d => d.startsWith(selectedMonth)).sort();
-
   let count = 0;
 
   dates.forEach(date => {
-    const r = records[date];
-    // Logic: Standard numeric duties 1-26 qualify for HDA
-    const dutyNum = parseInt(r.duty);
+    // Flatten Array
+    const entries = Array.isArray(records[date]) ? records[date] : [records[date]];
     
-    if(!isNaN(dutyNum) && dutyNum >= 1 && dutyNum <= 26){
-      count++;
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${count}</td>
-        <td>${new Date(date).toLocaleDateString("en-IN", {day:"numeric", month:"short", year:"numeric"})}</td>
-        <td>${(r.trains || []).join(", ")}</td>
-        <td>${r.signOnTime}</td>
-        <td>${r.signOffTime}</td>
-        <td>${r.dutyHours}</td>
-        <td>115</td>
-        <td></td>
-      `;
-      tbody.appendChild(row);
-    }
+    entries.forEach(r => {
+        const dutyNum = parseInt(r.duty);
+        // Only duties 1-26 get HDA
+        if(!isNaN(dutyNum) && dutyNum >= 1 && dutyNum <= 26){
+            count++;
+            const info = DUTY_TABLE[r.duty] || {};
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${count}</td>
+                <td>${new Date(date).toLocaleDateString("en-IN", {day:"numeric", month:"short", year:"numeric"})}</td>
+                <td>${(r.trains || []).join(", ")}</td>
+                <td>${info.signOn || r.signOnTime || ""}</td>
+                <td>${info.signOff || r.signOffTime || ""}</td>
+                <td>${info.hours || r.dutyHours || ""}</td>
+                <td>115</td>
+                <td></td>
+            `;
+            tbody.appendChild(row);
+        }
+    });
   });
 
   const totalAmount = count * 100;
-
-  footer.innerHTML = `
-    <tr class="total-row">
-        <td colspan="7" style="text-align:right;">Total Claimed Amount (Rs. 100 x ${count}) = </td>
-        <td style="text-align:center;">Rs. ${totalAmount}/-</td>
-    </tr>
-  `;
-
+  document.getElementById("hdaFooter").innerHTML = `<tr class="total-row"><td colspan="7" style="text-align:right;">Total Claimed Amount (Rs. 100 x ${count}) = </td><td style="text-align:center;">Rs. ${totalAmount}/-</td></tr>`;
   document.getElementById("totalDutiesCert").textContent = count;
   document.getElementById("totalAmountCert").textContent = totalAmount;
 
   window.onload = () => setTimeout(()=>window.print(), 500);
-
 })();
 </script>
 </body>
