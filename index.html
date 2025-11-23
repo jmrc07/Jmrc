@@ -508,13 +508,15 @@ function formatDutyLabel(code, tag, stationCode){
   return baseText;
 }
 
-function calculateHDA(code){ return (isNumericDuty(code) && code !== "TO Night") ? 100 : 0; }
+function calculateHDA(code){ return (isNumericDuty(code)) ? 100 : 0; }
+
 function calculateICE(code, so, sf){
-  if(!isNumericDuty(code)) return 0;
+  if(!isNumericDuty(code) || code === "TO Night") return 0;
   const h1 = parseTimeHour(so), h2 = parseTimeHour(sf);
   if((h1!==-1 && (h1<6 || h1>=22)) || (h2!==-1 && (h2<6 || h2>=22))) return 150;
   return 0;
 }
+
 function computeNightHours(code, so, sf){
   if(!code) return 0;
   if(code === "26A") return 3;
