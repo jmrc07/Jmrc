@@ -5,7 +5,7 @@
 <title>Incidental Contingent Expenditure</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <style>
-/* 1. Aggressive Margins and Scaling (Same as NDA/HDA Compact) */
+/* 1. Ultra Compact Vertical Fit */
 @page { size: A4; margin: 5mm; }
 html, body { margin: 0; padding: 0; background: #fff; }
 body { 
@@ -17,26 +17,26 @@ body {
 }
 .page { width:760px; margin:0 auto; padding:0; }
 
-/* 2. Tight Header */
+/* 2. Header */
 .logo { text-align:center; margin-bottom:2px; }
 .logo img { width:65px; height:auto; }
 h1 { text-align:center; font-size:16px; margin:2px 0; text-transform: uppercase; font-weight:bold; }
 .sub { text-align:center; font-size:10px; margin-bottom:4px; }
 
-/* 3. Compact Tables */
+/* 3. Tables */
 table { border-collapse:collapse; width:100%; table-layout:fixed; margin-top:4px; }
 th, td { border:1px solid #000; padding:2px 3px; font-size:10px; text-align:center; vertical-align:middle; }
 .meta th { background: #f0f0f0; }
 .duty th { font-weight:bold; background: #f0f0f0; }
 .total-row td { font-weight: bold; border-top: 2px solid #000; background: #fff; }
 
-/* 4. Compact Certificate Section */
+/* 4. Certificate */
 .cert-section { margin-top: 8px; font-size: 10px; line-height: 1.2; }
 .cert-title { text-align:center; font-weight:bold; text-decoration:underline; font-size:11px; margin-bottom:4px; }
 .to-sig-row { margin-top: 10px; overflow: hidden; }
 .to-sig-box { float: right; width: 200px; text-align: center; }
 
-/* 5. Compact Manager Block */
+/* 5. Manager & Footer */
 .manager-row { margin-top: 10px; overflow: hidden; }
 .sanction-block { float: left; width: 45%; }
 .manager-to-block { float: right; width: 30%; text-align: center; margin-top: 20px; }
@@ -85,7 +85,7 @@ th, td { border:1px solid #000; padding:2px 3px; font-size:10px; text-align:cent
 </div>
 
 <script>
-// DUTY TABLE CONFIG
+// DUTY TABLE CONFIG - Including 26A explicitly
 const DUTY_TABLE={
   "1":{signOn:"04:55",onPlace:"MSOR SCR",signOff:"11:55",offPlace:"MSOR SCR"},
   "2":{signOn:"04:55",onPlace:"BICP SCR",signOff:"12:25",offPlace:"MSOR SCR"},
@@ -113,20 +113,25 @@ const DUTY_TABLE={
   "TO Night":{signOn:"22:00",onPlace:"MSOR SCR",signOff:"06:00",offPlace:"DEPOT"}
 };
 
-// Summary Basis Logic Helpers
+// HELPER: Parse "HH" from "HH:MM"
 function parseTimeHour(t){ return (t && t.length===5) ? parseInt(t.substring(0,2),10) : -1; }
 
-function isNumericOr26A(code){
-  if(code === "26A") return true;
-  if(code === "TO Night") return false; // Explicitly excluded from ICE
-  const n = parseInt(code);
+// LOGIC: Filter which duties are eligible for check
+function isEligibleForICE(code){
+  const s = String(code).toUpperCase();
+  if(s === "26A") return true; 
+  if(s === "TO NIGHT") return false; // Explicitly excluded from ICE
+  const n = parseInt(s);
+  // Numeric duties 1-26 are eligible
   return !isNaN(n) && n>=1 && n<=26;
 }
 
-function calculateICECondition(so, sf){
-  // Logic from Index.html: (Start < 6 or Start >= 22) OR (End < 6 or End >= 22)
-  const h1 = parseTimeHour(so), h2 = parseTimeHour(sf);
-  if((h1!==-1 && (h1<6 || h1>=22)) || (h2!==-1 && (h2<6 || h2>=22))) return true;
+// LOGIC: Check time (Before 06:00 OR After 22:00)
+function checkTimeCondition(so, sf){
+  const h1 = parseTimeHour(so);
+  const h2 = parseTimeHour(sf);
+  // SignOn < 6 OR SignOn >= 22 OR SignOff < 6 OR SignOff >= 22
+  if( (h1!==-1 && (h1<6 || h1>=22)) || (h2!==-1 && (h2<6 || h2>=22)) ) return true;
   return false;
 }
 
@@ -151,30 +156,30 @@ function calculateICECondition(so, sf){
   let count = 0;
 
   dates.forEach(date => {
-    // Handle Array of duties
+    // Flatten Array
     const entries = Array.isArray(records[date]) ? records[date] : [records[date]];
 
     entries.forEach(r => {
         const dStr = String(r.duty);
         
-        // 1. Check if duty type allows ICE (Numeric or 26A, NOT TO Night)
-        if(isNumericOr26A(dStr)){
+        // 1. Check Eligibility (1-26, 26A)
+        if(isEligibleForICE(dStr)){
             const info = DUTY_TABLE[dStr] || {};
             
-            // Use time from table or custom override
+            // Get Times (Prioritize table, fallback to record)
             const sOn = info.signOn || r.signOnTime || "";
             const sOff = info.signOff || r.signOffTime || "";
             const pOn = info.onPlace || r.signOnPlace || "DEPOT";
             const pOff = info.offPlace || r.signOffPlace || "DEPOT";
 
             // 2. Check Time Condition (Summary Basis)
-            if(calculateICECondition(sOn, sOff)){
-                count++; // One claim per eligible duty
+            if(checkTimeCondition(sOn, sOff)){
+                count++; 
                 
                 const row = document.createElement("tr");
                 let placeStr = pOn;
                 if(pOn !== pOff) placeStr += " / " + pOff;
-                if(placeStr.includes("STATION")) placeStr = "STATION"; // Simplify
+                if(placeStr.includes("STATION")) placeStr = "STATION"; // Simplify for print
 
                 row.innerHTML = `
                     <td>${count}</td>
