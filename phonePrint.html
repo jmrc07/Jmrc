@@ -7,8 +7,8 @@
 <style>
 /* --- SCREEN STYLES (UI) --- */
 :root { --primary: #2563eb; --bg: #f1f5f9; --border: #cbd5e1; --surface: #ffffff; }
-body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: var(--bg); }
-.app-container { max-width: 600px; margin: 0 auto; padding: 12px; padding-bottom: 80px; }
+body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: var(--bg); padding-bottom: 80px; }
+.app-container { max-width: 600px; margin: 0 auto; padding: 12px; }
 
 /* General Card Style */
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
@@ -27,7 +27,7 @@ input, select { width: 100%; padding: 8px; border: 1px solid var(--border); bord
 .row-2 { display: flex; gap: 8px; }
 .row-2 > div { flex: 1; }
 
-/* Month Chips - 2 Compact Scrollable Rows */
+/* Month Chips */
 .month-scroll-container { display: grid; grid-template-rows: repeat(2, 1fr); grid-auto-flow: column; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
 .month-scroll-container::-webkit-scrollbar { display: none; }
 .chip { padding: 6px 16px; background: #e2e8f0; border-radius: 999px; font-size: 0.75rem; font-weight: 600; cursor: pointer; white-space: nowrap; text-align: center; color: #475569; transition: all 0.2s; }
@@ -54,33 +54,17 @@ input:checked + .slider:before { transform: translateX(14px); }
 .btn-primary { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 600; font-size: 0.95rem; cursor: pointer; margin-top: 8px; box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
 .btn-save { background: #0f172a; margin-top: 5px; padding: 10px; font-size: 0.85rem; }
 
-/* --- PRINT STYLES (COMPACTED FOR 1 PAGE) --- */
+/* --- PRINT STYLES --- */
 @media print {
-  @page { size: A4; margin: 5mm; } /* Tight Margins */
+  @page { size: A4; margin: 5mm; }
   .app-container { display: none !important; }
-  
-  body { 
-      background: #fff; 
-      margin: 0; 
-      padding: 0;
-  }
-
-  .print-page { 
-      display: block !important; 
-      width: 210mm;
-      /* Scaling content down to 85% to ensure single page fit */
-      transform: scale(0.85); 
-      transform-origin: top center; 
-      margin: 0 auto; 
-      font-family: "Times New Roman", serif; 
-      color: #000; 
-  }
+  body { background: #fff; margin: 0; padding: 0; }
+  .print-page { display: block !important; width: 210mm; transform: scale(0.85); transform-origin: top center; margin: 0 auto; font-family: "Times New Roman", serif; color: #000; }
   
   .p-header { text-align: center; margin-bottom: 10px; }
   .p-header img { width: 60px; height: auto; display: block; margin: 0 auto 2px; }
   .p-header h2 { font-size: 14px; font-weight: bold; margin: 2px 0; text-transform: uppercase; }
   .p-header p { font-size: 10px; margin: 2px 0; }
-  
   .p-title { text-align: center; font-weight: bold; font-size: 12px; text-decoration: underline; margin: 8px 0; }
   .p-rule { text-align: center; font-size: 10px; margin-bottom: 10px; }
 
@@ -92,14 +76,10 @@ input:checked + .slider:before { transform: translateX(14px); }
   .p-table th { background: #f0f0f0; font-weight: bold; }
   
   .p-cert { margin-top: 10px; font-size: 11px; }
-  
-  /* Reduced vertical gap for signature */
   .p-sig-row { margin-top: 20px; display: flex; justify-content: flex-end; }
-  
   .p-office { margin-top: 15px; border-top: 1px solid #000; padding-top: 5px; }
   .p-office h3 { text-align: center; font-size: 12px; text-decoration: underline; margin: 0 0 5px 0; }
   .p-office p { font-size: 11px; margin: 4px 0; line-height: 1.3; }
-  
   .p-footer-sig { margin-top: 30px; display: flex; justify-content: space-between; font-weight: bold; font-size: 11px; }
 }
 .print-page { display: none; }
@@ -245,7 +225,7 @@ input:checked + .slider:before { transform: translateX(14px); }
 // --- LOGIC ---
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 let userProfile = {};
-let config = { basic: "", sanction: "", claimedAmt: "", start: 26, end: 25 };
+let config = { basic: "", sanction: "", claimedAmt: "", start: 26, end: 25, commonBillAmt: "" };
 let currentYear = new Date().getFullYear();
 let selectedMonths = []; 
 
@@ -269,6 +249,13 @@ function init(){
   document.getElementById("claimedAmtConfig").value = config.claimedAmt || "";
   document.getElementById("cycleStart").value = config.start;
   document.getElementById("cycleEnd").value = config.end;
+  document.getElementById("commonAmountInput").value = config.commonBillAmt || ""; // LOAD COMMON AMT
+
+  // 3. Listeners for auto-saving common bill amount
+  document.getElementById("commonAmountInput").addEventListener("input", function(e){
+      config.commonBillAmt = e.target.value;
+      localStorage.setItem("telephonePrintData", JSON.stringify(config));
+  });
 
   renderMonthChips();
 }
@@ -279,6 +266,7 @@ function saveConfigAndCollapse(){
   config.claimedAmt = document.getElementById("claimedAmtConfig").value;
   config.start = document.getElementById("cycleStart").value || 26;
   config.end = document.getElementById("cycleEnd").value || 25;
+  config.commonBillAmt = document.getElementById("commonAmountInput").value;
   
   localStorage.setItem("telephonePrintData", JSON.stringify(config));
   showConfigView();
@@ -341,7 +329,6 @@ function renderRows(){
   }
 
   selectedMonths.forEach(mIdx => {
-    // Cycle Date Calculation
     const endDate = new Date(currentYear, mIdx, config.end);
     const startDate = new Date(currentYear, mIdx - 1, config.start);
     const dateStr = `${startDate.getDate()}/${startDate.getMonth()+1} - ${endDate.getDate()}/${endDate.getMonth()+1}`;
