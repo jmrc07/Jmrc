@@ -5,7 +5,7 @@
 <title>Incidental Contingent Expenditure</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <style>
-/* 1. Aggressive Margins and Scaling */
+/* 1. Aggressive Margins and Scaling (Same as NDA/HDA Compact) */
 @page { size: A4; margin: 5mm; }
 html, body { margin: 0; padding: 0; background: #fff; }
 body { 
@@ -85,7 +85,7 @@ th, td { border:1px solid #000; padding:2px 3px; font-size:10px; text-align:cent
 </div>
 
 <script>
-// DUTY TABLE CONFIG (Includes 26A & TO Night)
+// DUTY TABLE CONFIG
 const DUTY_TABLE={
   "1":{signOn:"04:55",onPlace:"MSOR SCR",signOff:"11:55",offPlace:"MSOR SCR"},
   "2":{signOn:"04:55",onPlace:"BICP SCR",signOff:"12:25",offPlace:"MSOR SCR"},
@@ -110,11 +110,25 @@ const DUTY_TABLE={
   "25":{signOn:"16:05",onPlace:"MSOR SCR",signOff:"23:20",offPlace:"DEPOT"},
   "26":{signOn:"14:00",onPlace:"MSOR SCR",signOff:"23:00",offPlace:"DEPOT"},
   "26A":{signOn:"16:00",onPlace:"MSOR SCR",signOff:"01:00",offPlace:"DEPOT"},
-  "TO Night":{signOn:"22:00",onPlace:"MSOR SCR",signOff:"06:00",offPlace:"DEPOT"},
-  "DCC-N":{signOn:"22:00",onPlace:"DCC",signOff:"06:00",offPlace:"DCC"},
-  "OCC-N":{signOn:"22:00",onPlace:"OCC",signOff:"06:00",offPlace:"OCC"},
-  "STN-N":{signOn:"22:00",onPlace:"STATION",signOff:"06:00",offPlace:"STATION"}
+  "TO Night":{signOn:"22:00",onPlace:"MSOR SCR",signOff:"06:00",offPlace:"DEPOT"}
 };
+
+// Summary Basis Logic Helpers
+function parseTimeHour(t){ return (t && t.length===5) ? parseInt(t.substring(0,2),10) : -1; }
+
+function isNumericOr26A(code){
+  if(code === "26A") return true;
+  if(code === "TO Night") return false; // Explicitly excluded from ICE
+  const n = parseInt(code);
+  return !isNaN(n) && n>=1 && n<=26;
+}
+
+function calculateICECondition(so, sf){
+  // Logic from Index.html: (Start < 6 or Start >= 22) OR (End < 6 or End >= 22)
+  const h1 = parseTimeHour(so), h2 = parseTimeHour(sf);
+  if((h1!==-1 && (h1<6 || h1>=22)) || (h2!==-1 && (h2<6 || h2>=22))) return true;
+  return false;
+}
 
 (function(){
   const raw = localStorage.getItem("dutyTrackerData");
@@ -142,38 +156,40 @@ const DUTY_TABLE={
 
     entries.forEach(r => {
         const dStr = String(r.duty);
-        const info = DUTY_TABLE[dStr] || {};
         
-        // Use custom time if available, else standard time
-        const sOnTime = info.signOn || r.signOnTime;
-        const sOffTime = info.signOff || r.signOffTime;
-        
-        if(!sOnTime && !sOffTime) return; 
+        // 1. Check if duty type allows ICE (Numeric or 26A, NOT TO Night)
+        if(isNumericOr26A(dStr)){
+            const info = DUTY_TABLE[dStr] || {};
+            
+            // Use time from table or custom override
+            const sOn = info.signOn || r.signOnTime || "";
+            const sOff = info.signOff || r.signOffTime || "";
+            const pOn = info.onPlace || r.signOnPlace || "DEPOT";
+            const pOff = info.offPlace || r.signOffPlace || "DEPOT";
 
-        const parseHour = (t) => t ? parseInt(t.split(":")[0]) : null;
-        const sOn = parseHour(sOnTime);
-        const sOff = parseHour(sOffTime);
+            // 2. Check Time Condition (Summary Basis)
+            if(calculateICECondition(sOn, sOff)){
+                count++; // One claim per eligible duty
+                
+                const row = document.createElement("tr");
+                let placeStr = pOn;
+                if(pOn !== pOff) placeStr += " / " + pOff;
+                if(placeStr.includes("STATION")) placeStr = "STATION"; // Simplify
 
-        // Logic: ICE is for SignOn < 6 or SignOff >= 22
-        if(sOn !== null && sOn < 6) {
-            count++;
-            addRow(count, date, dStr, r.trains, sOnTime, info.onPlace || r.signOnPlace || "DEPOT");
-        }
-        if(sOff !== null && sOff >= 22) {
-            count++;
-            addRow(count, date, dStr, r.trains, sOffTime, info.offPlace || r.signOffPlace || "DEPOT");
+                row.innerHTML = `
+                    <td>${count}</td>
+                    <td>${new Date(date).toLocaleDateString("en-IN", {day:"numeric", month:"short", year:"numeric"})}</td>
+                    <td>${dStr}</td>
+                    <td>${(r.trains || []).join(", ")}</td>
+                    <td>${sOn} / ${sOff}</td>
+                    <td>${placeStr}</td>
+                    <td>150</td>
+                `;
+                tbody.appendChild(row);
+            }
         }
     });
   });
-
-  function addRow(sno, date, duty, trains, time, place){
-      const row = document.createElement("tr");
-      // Clean up place names
-      if(place.includes("STATION")) place = "STATION"; // Simplified for layout if needed, or keep full
-      
-      row.innerHTML = `<td>${sno}</td><td>${new Date(date).toLocaleDateString("en-IN", {day:"numeric", month:"short", year:"numeric"})}</td><td>${duty}</td><td>${(trains || []).join(", ")}</td><td>${time}</td><td>${place}</td><td></td>`;
-      tbody.appendChild(row);
-  }
 
   const totalAmount = count * 150;
   document.getElementById("iceFooter").innerHTML = `<tr class="total-row"><td colspan="5" style="text-align:right;">Total Instances: ${count}</td><td colspan="2" style="text-align:left;">Total: Rs. ${totalAmount}/-</td></tr>`;
