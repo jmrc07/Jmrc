@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Telephone Reimbursement Claim</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+/* --- SCREEN STYLES (UI) --- */
+:root { --primary: #2563eb; --bg: #f1f5f9; --border: #cbd5e1; --surface: #ffffff; }
+body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: var(--bg); }
+.app-container { max-width: 600px; margin: 0 auto; padding: 12px; padding-bottom: 80px; }
+
+/* General Card Style */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+
+/* Compact Config Summary Card */
+.config-compact-card { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid var(--primary); border-radius: 10px; padding: 10px 12px; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1); }
+.config-details { font-size: 0.8rem; color: #334155; line-height: 1.4; }
+.config-label { font-weight: 600; color: #64748b; font-size: 0.7rem; text-transform: uppercase; }
+.config-val { font-weight: 700; color: #0f172a; margin-right: 8px; }
+.btn-edit { background: #eff6ff; color: var(--primary); border: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; cursor: pointer; }
+
+/* Edit Mode Inputs */
+.config-header-edit { font-weight: 600; font-size: 0.9rem; margin-bottom: 10px; color: #334155; }
+label { display: block; font-size: 0.75rem; color: #64748b; margin-bottom: 3px; font-weight: 500; }
+input, select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; margin-bottom: 8px; box-sizing: border-box; background: #fff; }
+.row-2 { display: flex; gap: 8px; }
+.row-2 > div { flex: 1; }
+
+/* Month Chips - 2 Compact Scrollable Rows */
+.month-scroll-container { display: grid; grid-template-rows: repeat(2, 1fr); grid-auto-flow: column; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+.month-scroll-container::-webkit-scrollbar { display: none; }
+.chip { padding: 6px 16px; background: #e2e8f0; border-radius: 999px; font-size: 0.75rem; font-weight: 600; cursor: pointer; white-space: nowrap; text-align: center; color: #475569; transition: all 0.2s; }
+.chip.active { background: var(--primary); color: #fff; box-shadow: 0 2px 5px rgba(37,99,235,0.3); }
+
+/* Bill Row Cards */
+.bill-card { background: #fff; border-radius: 8px; padding: 10px; margin-bottom: 6px; border: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+.bill-info { width: 85px; flex-shrink: 0; }
+.bill-month { font-weight: 700; font-size: 0.9rem; color: #1e293b; }
+.bill-date { font-size: 0.65rem; color: #64748b; margin-top: 1px; }
+.bill-inputs { flex: 1; display: flex; gap: 6px; }
+.bill-input-field { margin: 0 !important; padding: 6px !important; font-size: 0.85rem !important; }
+
+/* Toggle */
+.toggle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 2px; }
+.switch { position: relative; display: inline-block; width: 32px; height: 18px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--primary); }
+input:checked + .slider:before { transform: translateX(14px); }
+
+/* Buttons */
+.btn-primary { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 600; font-size: 0.95rem; cursor: pointer; margin-top: 8px; box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+.btn-save { background: #0f172a; margin-top: 5px; padding: 10px; font-size: 0.85rem; }
+
+/* --- PRINT STYLES (COMPACTED FOR 1 PAGE) --- */
+@media print {
+  @page { size: A4; margin: 5mm; } /* Tight Margins */
+  .app-container { display: none !important; }
+  
+  body { 
+      background: #fff; 
+      margin: 0; 
+      padding: 0;
+  }
+
+  .print-page { 
+      display: block !important; 
+      width: 210mm;
+      /* Scaling content down to 85% to ensure single page fit */
+      transform: scale(0.85); 
+      transform-origin: top center; 
+      margin: 0 auto; 
+      font-family: "Times New Roman", serif; 
+      color: #000; 
+  }
+  
+  .p-header { text-align: center; margin-bottom: 10px; }
+  .p-header img { width: 60px; height: auto; display: block; margin: 0 auto 2px; }
+  .p-header h2 { font-size: 14px; font-weight: bold; margin: 2px 0; text-transform: uppercase; }
+  .p-header p { font-size: 10px; margin: 2px 0; }
+  
+  .p-title { text-align: center; font-weight: bold; font-size: 12px; text-decoration: underline; margin: 8px 0; }
+  .p-rule { text-align: center; font-size: 10px; margin-bottom: 10px; }
+
+  .p-details { width: 100%; margin-bottom: 8px; font-size: 11px; }
+  .p-details td { padding: 2px 0; }
+  
+  .p-table { width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 5px; }
+  .p-table th, .p-table td { border: 1px solid #000; padding: 3px; text-align: center; vertical-align: middle; }
+  .p-table th { background: #f0f0f0; font-weight: bold; }
+  
+  .p-cert { margin-top: 10px; font-size: 11px; }
+  
+  /* Reduced vertical gap for signature */
+  .p-sig-row { margin-top: 20px; display: flex; justify-content: flex-end; }
+  
+  .p-office { margin-top: 15px; border-top: 1px solid #000; padding-top: 5px; }
+  .p-office h3 { text-align: center; font-size: 12px; text-decoration: underline; margin: 0 0 5px 0; }
+  .p-office p { font-size: 11px; margin: 4px 0; line-height: 1.3; }
+  
+  .p-footer-sig { margin-top: 30px; display: flex; justify-content: space-between; font-weight: bold; font-size: 11px; }
+}
+.print-page { display: none; }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  
+  <div style="margin-bottom:12px;">
+    <div id="configEditMode" class="card">
+        <div class="config-header-edit">Setup Configuration</div>
+        <div class="row-2">
+            <div><label>Basic Pay (₹)</label><input type="number" id="basicPay"></div>
+            <div><label>Sanctioned (₹)</label><input type="number" id="sanctionedAmt"></div>
+        </div>
+        <div class="row-2">
+            <div><label>Claimed Amt (₹)</label><input type="number" id="claimedAmtConfig" placeholder="Auto-fill print"></div>
+            <div><label>Cycle Start / End</label>
+                 <div style="display:flex; gap:4px;">
+                    <input type="number" id="cycleStart" placeholder="26">
+                    <input type="number" id="cycleEnd" placeholder="25">
+                 </div>
+            </div>
+        </div>
+        <button class="btn-primary btn-save" onclick="saveConfigAndCollapse()">Save & Minimize</button>
+    </div>
+
+    <div id="configViewMode" style="display:none;">
+        <div class="config-compact-card">
+            <div class="config-details">
+                <div><span class="config-label">Basic:</span> <span class="config-val" id="viewBasic"></span> <span class="config-label">Sanction:</span> <span class="config-val" id="viewSanction"></span></div>
+                <div><span class="config-label">Claimed:</span> <span class="config-val" id="viewClaimed"></span> <span class="config-label">Cycle:</span> <span class="config-val"><span id="viewStart"></span>-<span id="viewEnd"></span></span></div>
+            </div>
+            <button class="btn-edit" onclick="showConfigEdit()">Edit</button>
+        </div>
+    </div>
+  </div>
+
+  <div class="card" style="padding: 8px;">
+    <div class="month-scroll-container" id="monthChips"></div>
+  </div>
+
+  <div style="margin-bottom: 20px;">
+    <div class="toggle-row">
+      <span style="font-size:0.8rem; font-weight:600; color:#334155;">Bill Details</span>
+      <div style="display:flex; align-items:center; gap:6px;">
+          <span style="font-size:0.75rem; color:#64748b;">Same Amount?</span>
+          <label class="switch">
+            <input type="checkbox" id="commonAmtToggle" checked onchange="toggleCommonAmount()">
+            <span class="slider"></span>
+          </label>
+      </div>
+    </div>
+    
+    <div id="commonAmtBox" style="margin-bottom:8px;">
+      <input type="number" id="commonAmountInput" placeholder="Enter Bill Amount (e.g. 500)" style="border:1px dashed var(--primary);">
+    </div>
+
+    <div id="rowsContainer"></div>
+  </div>
+
+  <button class="btn-primary" onclick="prepareAndPrint()">Generate Print</button>
+</div>
+
+<div class="print-page" id="printArea">
+  <div class="p-header">
+    <img src="jaipur_logo.png" alt="Logo">
+    <h2>Jaipur Metro Rail Corporation Limited</h2>
+    <p>(A Government of Rajasthan Undertaking)</p>
+    <p>Registered Office: Admin Building, Metro Depot, Bhrigu Path, Mansarovar, Jaipur - 302020</p>
+  </div>
+
+  <div class="p-title">Claim for reimbursement of Telephone/Mobile/ Land- Line/Data Card Expense</div>
+  <div class="p-rule">(As per rule No 9.3 (a) of JMRC recruitment rules, 2012)</div>
+
+  <table class="p-details">
+    <tr>
+      <td width="15%"><b>Name:</b></td>
+      <td width="35%" id="pName"></td>
+      <td width="15%"><b>Employee ID:</b></td>
+      <td width="35%" id="pEmpId"></td>
+    </tr>
+    <tr>
+      <td><b>Post:</b></td>
+      <td>SC/TO</td>
+      <td><b>Basic Pay:</b></td>
+      <td id="pBasic"></td>
+    </tr>
+    <tr>
+      <td><b>Sanctioned Amt:</b></td>
+      <td colspan="3"><span id="pSanction"></span> P.M.</td>
+    </tr>
+  </table>
+
+  <div style="font-size:12px; margin-top:5px; margin-bottom:5px;"><b>Details of Claim:</b></div>
+
+  <table class="p-table">
+    <thead>
+      <tr>
+        <th width="8%">S. No.</th>
+        <th width="40%">Period of Claim</th>
+        <th width="15%">Bill No.</th>
+        <th width="15%">Bill Amount</th>
+        <th width="22%">Claimed Amount</th>
+      </tr>
+    </thead>
+    <tbody id="pTableBody"></tbody>
+    <tfoot>
+      <tr>
+        <td colspan="3" style="text-align:right; font-weight:bold;">Total</td>
+        <td id="pTotalBill" style="font-weight:bold;"></td>
+        <td id="pTotalClaim" style="font-weight:bold;"></td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="p-cert">
+    <p>It is certified that above claim have actually paid by me & not been claimed earlier.</p>
+    <p>Encl.: Above Bills</p>
+  </div>
+
+  <div class="p-sig-row">
+    <div style="text-align:center; width:150px;">
+      <div style="height:30px;"></div>
+      <div style="border-top:1px solid #000; padding-top:2px;"><b>Signature of Claimant</b></div>
+    </div>
+  </div>
+
+  <div class="p-office">
+    <h3>For Office Use</h3>
+    <p>Necessary entry has been made in concerning register at page No. ........... for Rs. ......................... in words ....................................................................</p>
+    <p>Total reimbursement of Rs. <span id="pOfficeTotal" style="font-weight:bold;"></span> has been made to above claimant in current financial year including this claim and not exceeding the yearly sanctioned limit.</p>
+  </div>
+
+  <div class="p-footer-sig">
+    <div>E.O (Payment)</div>
+    <div>Drawing & Disbursing Officer</div>
+  </div>
+</div>
+
+<script>
+// --- LOGIC ---
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+let userProfile = {};
+let config = { basic: "", sanction: "", claimedAmt: "", start: 26, end: 25 };
+let currentYear = new Date().getFullYear();
+let selectedMonths = []; 
+
+function init(){
+  // 1. Load Data
+  const rawData = localStorage.getItem("dutyTrackerData");
+  if(rawData) userProfile = JSON.parse(rawData).profile || {};
+
+  const savedConfig = localStorage.getItem("telephonePrintData");
+  if(savedConfig) {
+      config = JSON.parse(savedConfig);
+      if(config.basic && config.sanction) showConfigView();
+      else showConfigEdit();
+  } else {
+      showConfigEdit();
+  }
+
+  // 2. Populate Inputs
+  document.getElementById("basicPay").value = config.basic;
+  document.getElementById("sanctionedAmt").value = config.sanction;
+  document.getElementById("claimedAmtConfig").value = config.claimedAmt || "";
+  document.getElementById("cycleStart").value = config.start;
+  document.getElementById("cycleEnd").value = config.end;
+
+  renderMonthChips();
+}
+
+function saveConfigAndCollapse(){
+  config.basic = document.getElementById("basicPay").value;
+  config.sanction = document.getElementById("sanctionedAmt").value;
+  config.claimedAmt = document.getElementById("claimedAmtConfig").value;
+  config.start = document.getElementById("cycleStart").value || 26;
+  config.end = document.getElementById("cycleEnd").value || 25;
+  
+  localStorage.setItem("telephonePrintData", JSON.stringify(config));
+  showConfigView();
+  renderRows();
+}
+
+function showConfigView(){
+    document.getElementById("configEditMode").style.display = "none";
+    document.getElementById("configViewMode").style.display = "block";
+    document.getElementById("viewBasic").textContent = config.basic;
+    document.getElementById("viewSanction").textContent = config.sanction;
+    document.getElementById("viewClaimed").textContent = config.claimedAmt || "—";
+    document.getElementById("viewStart").textContent = config.start;
+    document.getElementById("viewEnd").textContent = config.end;
+}
+
+function showConfigEdit(){
+    document.getElementById("configEditMode").style.display = "block";
+    document.getElementById("configViewMode").style.display = "none";
+}
+
+function renderMonthChips(){
+  const c = document.getElementById("monthChips");
+  c.innerHTML = "";
+  MONTHS.forEach((m, idx) => {
+    const chip = document.createElement("div");
+    chip.className = "chip";
+    chip.textContent = m;
+    chip.onclick = () => toggleMonth(idx, chip);
+    c.appendChild(chip);
+  });
+}
+
+function toggleMonth(idx, el){
+  if(selectedMonths.includes(idx)){
+    selectedMonths = selectedMonths.filter(i => i !== idx);
+    el.classList.remove("active");
+  } else {
+    selectedMonths.push(idx);
+    selectedMonths.sort((a,b)=>a-b);
+    el.classList.add("active");
+  }
+  renderRows();
+}
+
+function toggleCommonAmount(){
+    const isCommon = document.getElementById("commonAmtToggle").checked;
+    document.getElementById("commonAmtBox").style.display = isCommon ? "block" : "none";
+    renderRows();
+}
+
+function renderRows(){
+  const container = document.getElementById("rowsContainer");
+  const isCommon = document.getElementById("commonAmtToggle").checked;
+  container.innerHTML = "";
+
+  if(selectedMonths.length === 0){
+      container.innerHTML = "<div style='text-align:center; color:#94a3b8; font-size:0.8rem; padding:10px;'>No months selected</div>";
+      return;
+  }
+
+  selectedMonths.forEach(mIdx => {
+    // Cycle Date Calculation
+    const endDate = new Date(currentYear, mIdx, config.end);
+    const startDate = new Date(currentYear, mIdx - 1, config.start);
+    const dateStr = `${startDate.getDate()}/${startDate.getMonth()+1} - ${endDate.getDate()}/${endDate.getMonth()+1}`;
+    
+    const card = document.createElement("div");
+    card.className = "bill-card";
+    
+    let html = `
+      <div class="bill-info">
+        <div class="bill-month">${MONTHS[mIdx]}</div>
+        <div class="bill-date">${dateStr}</div>
+      </div>
+      <div class="bill-inputs">
+        <input type="text" class="bill-input-field bill-no" data-idx="${mIdx}" placeholder="Bill No.">
+    `;
+    
+    if(!isCommon){
+        html += `<input type="number" class="bill-input-field bill-amt" data-idx="${mIdx}" placeholder="₹">`;
+    }
+    
+    html += `</div>`;
+    card.innerHTML = html;
+    container.appendChild(card);
+  });
+}
+
+function prepareAndPrint(){
+  if(selectedMonths.length === 0) { alert("Please select at least one month."); return; }
+  
+  // Fill Header
+  document.getElementById("pName").textContent = userProfile.name || "";
+  document.getElementById("pEmpId").textContent = userProfile.empId || "";
+  document.getElementById("pBasic").textContent = config.basic;
+  document.getElementById("pSanction").textContent = config.sanction;
+
+  const isCommon = document.getElementById("commonAmtToggle").checked;
+  const commonAmtVal = document.getElementById("commonAmountInput").value || 0;
+  
+  const billNos = {};
+  const billAmts = {};
+  document.querySelectorAll(".bill-no").forEach(el => billNos[el.dataset.idx] = el.value);
+  if(!isCommon){
+      document.querySelectorAll(".bill-amt").forEach(el => billAmts[el.dataset.idx] = el.value);
+  }
+
+  const tbody = document.getElementById("pTableBody");
+  tbody.innerHTML = "";
+  
+  let totalBill = 0;
+  let totalClaim = 0;
+  const claimPerMonth = parseFloat(config.claimedAmt) || 0;
+
+  selectedMonths.forEach((mIdx, i) => {
+    const endDate = new Date(currentYear, mIdx, config.end);
+    const startDate = new Date(currentYear, mIdx - 1, config.start);
+    const dateStr = `${startDate.toLocaleDateString("en-GB")} to ${endDate.toLocaleDateString("en-GB")}`;
+    
+    const bAmt = isCommon ? commonAmtVal : (billAmts[mIdx] || 0);
+    const bAmtNum = parseFloat(bAmt) || 0;
+    
+    totalBill += bAmtNum;
+    totalClaim += claimPerMonth;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${i+1}</td>
+      <td>${dateStr}</td>
+      <td>${billNos[mIdx] || ""}</td>
+      <td>${bAmt}</td>
+      <td>${claimPerMonth}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById("pTotalBill").textContent = totalBill;
+  document.getElementById("pTotalClaim").textContent = totalClaim;
+  document.getElementById("pOfficeTotal").textContent = totalClaim;
+
+  setTimeout(() => window.print(), 300);
+}
+
+window.onload = init;
+</script>
+</body>
+</html>

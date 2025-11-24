@@ -193,6 +193,8 @@
         <button class="btn-primary" id="configPayBtn" style="margin-top:0.6rem; background:#facc15; color:#1f2937;">
           Configure One Day Pay
         </button>
+        <button class="btn-primary" onclick="window.open('phonePrint.html','_blank')" style="margin-top:0.6rem; background:#0ea5e9;">Telephone bill</button>
+        
       </div>
 
       <div class="card profile-form" style="margin-top: 1rem;">
@@ -259,7 +261,13 @@
     <div id="specialDutyContainer" style="display:none;"></div>
   </div>
   <div id="inlineShiftStationSelector" style="display:none; margin-top:0.6rem; padding:0.6rem; border:1px solid var(--border); border-radius:0.7rem;">
-    <div id="shiftSelector" style="margin-bottom: 0.6rem;">
+    
+    <div id="stationSelector" style="margin-bottom: 0.6rem;">
+      <label class="label">Select Station</label>
+      <div id="inlineStationChips" class="duty-row" style="flex-wrap: wrap; gap: 0.4rem;"></div>
+    </div>
+
+    <div id="shiftSelector">
       <label class="label">Select Shift</label>
       <div id="shiftChips" class="duty-row" style="flex-wrap: wrap; gap: 0.4rem;">
         <button type="button" class="duty-btn" data-shift="M">Morning</button>
@@ -267,11 +275,9 @@
         <button type="button" class="duty-btn" data-shift="N">Night</button>
       </div>
     </div>
-    <div id="stationSelector">
-      <label class="label">Select Station</label>
-      <div id="inlineStationChips" class="duty-row" style="flex-wrap: wrap; gap: 0.4rem;"></div>
-    </div>
+
   </div>
+
   <div class="field" id="trainField">
     <label class="label">Train Sets (1–10)</label>
     <div class="train-row" id="trainButtons"></div>
