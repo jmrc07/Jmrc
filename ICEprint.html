@@ -5,27 +5,42 @@
 <title>Incidental Contingent Expenditure</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <style>
-@page { size: A4; margin: 10mm; }
+/* 1. Aggressive Margins and Scaling */
+@page { size: A4; margin: 5mm; }
 html, body { margin: 0; padding: 0; background: #fff; }
-body { width: 210mm; transform: scale(0.70); transform-origin: top center; margin: 0 auto; font-family: "Times New Roman", serif; }
-.page { width:760px; margin:0 auto; padding:12px; }
-.logo { text-align:center; margin-bottom:6px; }
-.logo img { width:85px; height:auto; }
-h1 { text-align:center; font-size:18px; margin:4px 0; text-transform: uppercase; font-weight:bold; }
-.sub { text-align:center; font-size:11.5px; margin-bottom:10px; }
-table { border-collapse:collapse; width:100%; table-layout:fixed; margin-top:12px; }
-th, td { border:1px solid #000; padding:6px; font-size:12px; text-align:center; }
+body { 
+    width: 210mm; 
+    transform: scale(0.72); 
+    transform-origin: top center; 
+    margin: 0 auto; 
+    font-family: "Times New Roman", serif; 
+}
+.page { width:760px; margin:0 auto; padding:0; }
+
+/* 2. Tight Header */
+.logo { text-align:center; margin-bottom:2px; }
+.logo img { width:65px; height:auto; }
+h1 { text-align:center; font-size:16px; margin:2px 0; text-transform: uppercase; font-weight:bold; }
+.sub { text-align:center; font-size:10px; margin-bottom:4px; }
+
+/* 3. Compact Tables */
+table { border-collapse:collapse; width:100%; table-layout:fixed; margin-top:4px; }
+th, td { border:1px solid #000; padding:2px 3px; font-size:10px; text-align:center; vertical-align:middle; }
 .meta th { background: #f0f0f0; }
 .duty th { font-weight:bold; background: #f0f0f0; }
 .total-row td { font-weight: bold; border-top: 2px solid #000; background: #fff; }
-.cert-section { margin-top: 20px; font-size: 11px; line-height: 1.4; }
-.cert-title { text-align:center; font-weight:bold; text-decoration:underline; font-size:13px; margin-bottom:10px; }
-.to-sig-row { margin-top: 25px; overflow: hidden; }
+
+/* 4. Compact Certificate Section */
+.cert-section { margin-top: 8px; font-size: 10px; line-height: 1.2; }
+.cert-title { text-align:center; font-weight:bold; text-decoration:underline; font-size:11px; margin-bottom:4px; }
+.to-sig-row { margin-top: 10px; overflow: hidden; }
 .to-sig-box { float: right; width: 200px; text-align: center; }
-.manager-row { margin-top: 30px; overflow: hidden; }
-.sanction-block { float: left; width: 40%; }
-.manager-to-block { float: right; width: 30%; text-align: center; margin-top: 40px; }
-.footer-note { margin-top: 20px; font-weight: bold; font-size: 11px; clear: both; }
+
+/* 5. Compact Manager Block */
+.manager-row { margin-top: 10px; overflow: hidden; }
+.sanction-block { float: left; width: 45%; }
+.manager-to-block { float: right; width: 30%; text-align: center; margin-top: 20px; }
+.footer-note { margin-top: 8px; font-weight: bold; font-size: 10px; clear: both; }
 </style>
 </head>
 <body>
@@ -53,12 +68,16 @@ th, td { border:1px solid #000; padding:6px; font-size:12px; text-align:center; 
   <div class="cert-section">
     <div class="cert-title">Certificate</div>
     <p>I, certify that the Compensatory Incidental Contingent Expenditure (Conveyance Hire Charges), as claimed in this bill is correct & due to me, and this claim was not submitted earlier.</p>
-    <div class="to-sig-row"><div class="to-sig-box">Signature of Train Operator</div></div>
-    <p style="margin-top:15px;">As per sign on and sign off duty record, the above deatil submitted for the Incidental Contingent Expenditure (Conveyance Hire Charges) by the TO is certified & due to him/her.</p>
-    <p style="font-weight:bold; margin-top:10px;">Total Incidental Contingent Expenditure payable to the TO is Rs. <span id="totalAmountCert" style="text-decoration:underline;"></span>/-</p>
+    
+    <div class="to-sig-row">
+      <div class="to-sig-box">Signature of Train Operator</div>
+    </div>
+    
+    <p style="margin-top:8px;">As per sign on and sign off duty record, the above detail submitted for the Incidental Contingent Expenditure (Conveyance Hire Charges) by the TO is certified & due to him/her.</p>
+    <p style="font-weight:bold; margin-top:5px;">Total Incidental Contingent Expenditure payable to the TO is Rs. <span id="totalAmountCert" style="text-decoration:underline;"></span>/-</p>
 
     <div class="manager-row">
-      <div class="sanction-block"><div style="font-weight:bold; margin-bottom:30px;">Sanctioned by:</div><div style="font-weight:bold;">General Manager/Operations<br>(Sign & Seal)</div></div>
+      <div class="sanction-block"><div style="font-weight:bold; margin-bottom:15px;">Sanctioned by:</div><div style="font-weight:bold;">General Manager/Operations<br>(Sign & Seal)</div></div>
       <div class="manager-to-block"><div style="padding-top:5px; font-weight:bold;">Signature of Manager (TO)</div></div>
     </div>
     <div class="footer-note">Forward to: GM(Finance) JMRC for making payment</div>
@@ -66,7 +85,7 @@ th, td { border:1px solid #000; padding:6px; font-size:12px; text-align:center; 
 </div>
 
 <script>
-// INCLUDE DUTY TABLE FOR TIME LOOKUP
+// DUTY TABLE CONFIG (Includes 26A & TO Night)
 const DUTY_TABLE={
   "1":{signOn:"04:55",onPlace:"MSOR SCR",signOff:"11:55",offPlace:"MSOR SCR"},
   "2":{signOn:"04:55",onPlace:"BICP SCR",signOff:"12:25",offPlace:"MSOR SCR"},
@@ -91,7 +110,10 @@ const DUTY_TABLE={
   "25":{signOn:"16:05",onPlace:"MSOR SCR",signOff:"23:20",offPlace:"DEPOT"},
   "26":{signOn:"14:00",onPlace:"MSOR SCR",signOff:"23:00",offPlace:"DEPOT"},
   "26A":{signOn:"16:00",onPlace:"MSOR SCR",signOff:"01:00",offPlace:"DEPOT"},
-  "TO Night":{signOn:"22:00",onPlace:"MSOR SCR",signOff:"06:00",offPlace:"DEPOT"}
+  "TO Night":{signOn:"22:00",onPlace:"MSOR SCR",signOff:"06:00",offPlace:"DEPOT"},
+  "DCC-N":{signOn:"22:00",onPlace:"DCC",signOff:"06:00",offPlace:"DCC"},
+  "OCC-N":{signOn:"22:00",onPlace:"OCC",signOff:"06:00",offPlace:"OCC"},
+  "STN-N":{signOn:"22:00",onPlace:"STATION",signOff:"06:00",offPlace:"STATION"}
 };
 
 (function(){
@@ -115,31 +137,40 @@ const DUTY_TABLE={
   let count = 0;
 
   dates.forEach(date => {
-    // Flatten Array
+    // Handle Array of duties
     const entries = Array.isArray(records[date]) ? records[date] : [records[date]];
 
     entries.forEach(r => {
-        const info = DUTY_TABLE[r.duty] || {};
-        if(!info.signOn) return; // Skip if no time data
+        const dStr = String(r.duty);
+        const info = DUTY_TABLE[dStr] || {};
+        
+        // Use custom time if available, else standard time
+        const sOnTime = info.signOn || r.signOnTime;
+        const sOffTime = info.signOff || r.signOffTime;
+        
+        if(!sOnTime && !sOffTime) return; 
 
         const parseHour = (t) => t ? parseInt(t.split(":")[0]) : null;
-        const sOn = parseHour(info.signOn);
-        const sOff = parseHour(info.signOff);
+        const sOn = parseHour(sOnTime);
+        const sOff = parseHour(sOffTime);
 
         // Logic: ICE is for SignOn < 6 or SignOff >= 22
         if(sOn !== null && sOn < 6) {
             count++;
-            addRow(count, date, r.duty, r.trains, info.signOn, info.onPlace || r.signOnPlace || "DEPOT");
+            addRow(count, date, dStr, r.trains, sOnTime, info.onPlace || r.signOnPlace || "DEPOT");
         }
         if(sOff !== null && sOff >= 22) {
             count++;
-            addRow(count, date, r.duty, r.trains, info.signOff, info.offPlace || r.signOffPlace || "DEPOT");
+            addRow(count, date, dStr, r.trains, sOffTime, info.offPlace || r.signOffPlace || "DEPOT");
         }
     });
   });
 
   function addRow(sno, date, duty, trains, time, place){
       const row = document.createElement("tr");
+      // Clean up place names
+      if(place.includes("STATION")) place = "STATION"; // Simplified for layout if needed, or keep full
+      
       row.innerHTML = `<td>${sno}</td><td>${new Date(date).toLocaleDateString("en-IN", {day:"numeric", month:"short", year:"numeric"})}</td><td>${duty}</td><td>${(trains || []).join(", ")}</td><td>${time}</td><td>${place}</td><td></td>`;
       tbody.appendChild(row);
   }
