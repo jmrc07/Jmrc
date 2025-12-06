@@ -5,7 +5,7 @@
 <title>Hard Duty Allowance Bill</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <style>
-/* CENTRE FIT, NO OVERLAP, DATE FORMAT UPDATED */
+/* OPTIMIZED FOR SINGLE PAGE FIT */
 @page { size: A4 portrait; margin: 10mm 20mm; }
 html, body { margin: 0; padding: 0; background: #fff; }
 
@@ -19,44 +19,49 @@ body {
     margin: 0 auto; 
 }
 
-.logo { text-align:center; margin-bottom: 5px; }
-.logo img { width: 65px; height: auto; }
-h1 { text-align:center; font-size: 18px; margin: 5px 0; text-transform: uppercase; font-weight:bold; }
-.sub { text-align:center; font-size: 12px; margin-bottom: 10px; }
+/* Header - Reduced margins */
+.logo { text-align:center; margin-bottom: 2px; }
+.logo img { width: 60px; height: auto; }
+h1 { text-align:center; font-size: 16px; margin: 2px 0; text-transform: uppercase; font-weight:bold; }
+.sub { text-align:center; font-size: 11px; margin-bottom: 5px; }
 
+/* Tables - Tighter padding */
 table { 
     border-collapse: collapse; 
     width: 100%; 
     table-layout: fixed; 
-    margin: 5px auto; 
+    margin: 2px auto; 
 }
 th, td { 
     border: 1px solid #000; 
-    padding: 4px 1px; 
-    font-size: 12px; 
+    padding: 2px 1px; /* Reduced padding from 4px to 2px */
+    font-size: 11px;  /* Reduced font from 12px to 11px */
     text-align: center; 
 }
 
 /* --- FIXED META COLUMNS --- */
 .meta th { font-weight:bold; background: #f0f0f0; }
-.meta th:nth-child(1) { width: 35%; } /* Name */
-.meta th:nth-child(2) { width: 15%; } /* Emp ID */
-.meta th:nth-child(3) { width: 25%; } /* Date of Conf */
-.meta th:nth-child(4) { width: 25%; } /* Month */
+.meta th:nth-child(1) { width: 35%; }
+.meta th:nth-child(2) { width: 15%; }
+.meta th:nth-child(3) { width: 25%; }
+.meta th:nth-child(4) { width: 25%; }
 
 .duty th { font-weight:bold; background: #f0f0f0; }
-.total-row td { font-weight: bold; border-top: 2px solid #000; font-size: 13px; }
+.total-row td { font-weight: bold; border-top: 2px solid #000; font-size: 12px; }
 
-.cert-section { margin-top: 15px; font-size: 12px; line-height: 1.4; text-align: justify; }
-.cert-title { text-align:center; font-weight:bold; text-decoration:underline; font-size: 13px; margin-bottom: 5px; }
+/* Certificate - Compact Spacing */
+.cert-section { margin-top: 8px; font-size: 11px; line-height: 1.2; text-align: justify; }
+.cert-title { text-align:center; font-weight:bold; text-decoration:underline; font-size: 12px; margin-bottom: 2px; }
 
-.to-sig-row { margin-top: 20px; overflow: hidden; }
+.to-sig-row { margin-top: 10px; overflow: hidden; } /* Reduced from 20px */
 .to-sig-box { float: right; width: 220px; text-align: center; font-weight: bold; }
 
-.manager-row { margin-top: 25px; overflow: hidden; }
+.manager-row { margin-top: 10px; overflow: hidden; } /* Reduced from 25px */
 .sanction-block { float: left; width: 45%; text-align: left; }
-.manager-to-block { float: right; width: 30%; text-align: center; margin-top: 25px; }
-.footer-note { margin-top: 15px; font-weight: bold; font-size: 11px; clear: both; }
+.sanction-block div { margin-bottom: 5px; } /* Reduced inner gap */
+
+.manager-to-block { float: right; width: 30%; text-align: center; margin-top: 15px; } /* Reduced from 25px */
+.footer-note { margin-top: 10px; font-weight: bold; font-size: 11px; clear: both; }
 </style>
 </head>
 <body>
@@ -86,11 +91,11 @@ th, td {
     <div class="cert-title">Certificate</div>
     <p>1. I, certify that the hard duty allowance, as claimed in this bill is correct & due to me, and this claim was not submitted earlier.</p>
     <div class="to-sig-row"><div class="to-sig-box">Signature of Train Operator</div></div>
-    <p style="margin-top:10px;">2. As per sign on and sign off duty record at Crew Control/Duty register at MSOR/CDPE/BICP stations, etc., the above details submitted for the hard duty allowance by the TO is certified & due to him/her.</p>
-    <p style="font-weight:bold; margin-top:8px;">Total Hard Duty Allowance payable to the TO for <span id="totalDutiesCert" style="text-decoration:underline;"></span> SIGN ON is Rs. <span id="totalAmountCert" style="text-decoration:underline;"></span>/-</p>
+    <p style="margin-top:5px;">2. As per sign on and sign off duty record at Crew Control/Duty register at MSOR/CDPE/BICP stations, etc., the above details submitted for the hard duty allowance by the TO is certified & due to him/her.</p>
+    <p style="font-weight:bold; margin-top:5px;">Total Hard Duty Allowance payable to the TO for <span id="totalDutiesCert" style="text-decoration:underline;"></span> SIGN ON is Rs. <span id="totalAmountCert" style="text-decoration:underline;"></span>/-</p>
 
     <div class="manager-row">
-      <div class="sanction-block"><div style="font-weight:bold; margin-bottom:20px;">Sanctioned (As per clause E18 of SOP, JMRC) by:</div><div style="font-weight:bold;">General Manager/Operations<br>(Sign & Seal)</div></div>
+      <div class="sanction-block"><div style="font-weight:bold;">Sanctioned (As per clause E18 of SOP, JMRC) by:</div><div style="font-weight:bold; margin-top:20px;">General Manager/Operations<br>(Sign & Seal)</div></div>
       <div class="manager-to-block"><div style="padding-top:5px; font-weight:bold;">Signature of Manager (TO)</div></div>
     </div>
     <div class="footer-note">Forward to: GM(Finance) JMRC for making payment</div>
