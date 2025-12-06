@@ -5,7 +5,7 @@
 <title>Hard Duty Allowance Bill</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <style>
-/* CENTRE FIT & NO OVERLAP STYLES */
+/* CENTRE FIT, NO OVERLAP, DATE FORMAT UPDATED */
 @page { size: A4 portrait; margin: 10mm 20mm; }
 html, body { margin: 0; padding: 0; background: #fff; }
 
@@ -142,7 +142,12 @@ const DUTY_TABLE={
             count++;
             const info = DUTY_TABLE[dStr] || {};
             const row = document.createElement("tr");
-            row.innerHTML = `<td>${count}</td><td>${new Date(date).toLocaleDateString("en-IN", {day:"numeric", month:"short", year:"numeric"})}</td><td>${(r.trains || []).join(", ")}</td><td>${info.signOn || r.signOnTime || ""}</td><td>${info.signOff || r.signOffTime || ""}</td><td>${info.hours || r.dutyHours || ""}</td><td>115</td><td></td>`;
+            
+            // DATE FORMAT: 5/10/25
+            let dObj = new Date(date);
+            let dateStr = `${dObj.getDate()}/${dObj.getMonth()+1}/${String(dObj.getFullYear()).slice(-2)}`;
+
+            row.innerHTML = `<td>${count}</td><td>${dateStr}</td><td>${(r.trains || []).join(", ")}</td><td>${info.signOn || r.signOnTime || ""}</td><td>${info.signOff || r.signOffTime || ""}</td><td>${info.hours || r.dutyHours || ""}</td><td>115</td><td></td>`;
             tbody.appendChild(row);
         }
     });
