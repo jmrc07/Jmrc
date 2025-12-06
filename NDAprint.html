@@ -5,45 +5,71 @@
 <title>Night Duty Allowance Claim Form</title>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <style>
-/* 1. Aggressive Margins and Scaling */
-@page { size: A4; margin: 5mm; }
+/* CENTRE FIT & NO OVERLAP STYLES */
+@page { size: A4 portrait; margin: 10mm 20mm; }
 html, body { margin: 0; padding: 0; background: #fff; }
+
 body {
-    width: 210mm;
-    transform: scale(0.72); 
-    transform-origin: top center; 
-    margin: 0 auto; 
+    width: 100%;
     font-family: "Times New Roman", serif;
+    color: #000;
 }
-.page { width:760px; margin:0 auto; padding:0; }
 
-/* 2. Tight Header */
+.page { 
+    width: 100%; 
+    margin: 0 auto; /* Ensures horizontal centering */
+}
+
+/* Header */
 .logo { text-align:center; margin-bottom:2px; }
-.logo img { width:65px; height:auto; }
+.logo img { width:60px; height:auto; }
 h1 { text-align:center; font-size:16px; margin:2px 0; font-weight: bold; text-transform: uppercase; }
-.sub { text-align:center; font-size:10px; margin-bottom: 4px; }
+.sub { text-align:center; font-size:11px; margin-bottom: 5px; }
 
-/* 3. Compact Tables */
-table { border-collapse:collapse; width:100%; table-layout:fixed; margin-top: 4px; }
-th, td { border:1px solid #000; padding:2px 3px; font-size:10px; text-align:center; vertical-align: middle; }
-.meta th:nth-child(1), .meta td:nth-child(1) { width:22%; }
-.duty th { font-size:10px; font-weight:bold; background: #f0f0f0; }
-.duty td { height:16px; }
+/* Tables */
+table { 
+    border-collapse:collapse; 
+    width:100%; 
+    table-layout:fixed; 
+    margin: 5px auto; /* Centers the table */
+}
+th, td { 
+    border:1px solid #000; 
+    padding: 3px 1px; 
+    font-size:11px; 
+    text-align:center; 
+    vertical-align: middle; 
+    word-wrap: break-word; 
+}
 
-/* 4. Certificate & Signatures Compacted */
-.cert-title { text-align:center; font-weight:bold; text-decoration:underline; font-size:12px; margin-top:8px; margin-bottom: 2px; }
-.cert-intro { font-size:10px; margin-top:2px; }
-.sig-employee { float:right; width:40%; text-align:center; font-size:10px; margin-top:5px; }
-.sigline { margin-top:4px; border-top:1px solid #000; width:140px; margin:4px auto 0 auto; }
-.cert-points { margin-top:5px; font-size:10px; line-height:1.2; }
+/* --- FIXED META COLUMNS (Prevents Overlap) --- */
+.meta th { font-weight: bold; background: #f0f0f0; font-size: 10px; }
+.meta td { font-size: 11px; }
 
-/* 5. Manager Block Compacted */
-.manager-row { margin-top:8px; font-size:10px; overflow: hidden; }
-.manager-left { float:left; width:48%; }
+/* Sum = 100% */
+.meta th:nth-child(1), .meta td:nth-child(1) { width: 18%; } /* Name */
+.meta th:nth-child(2), .meta td:nth-child(2) { width: 10%; } /* Emp ID */
+.meta th:nth-child(3), .meta td:nth-child(3) { width: 14%; } /* Designation */
+.meta th:nth-child(4), .meta td:nth-child(4) { width: 14%; } /* Confirm Date */
+.meta th:nth-child(5), .meta td:nth-child(5) { width: 12%; } /* Month */
+.meta th:nth-child(6), .meta td:nth-child(6) { width: 32%; } /* Pay (Wide) */
+
+.duty th { font-weight:bold; background: #f0f0f0; }
+
+/* Certificate Section */
+.cert-title { text-align:center; font-weight:bold; text-decoration:underline; font-size:12px; margin-top:10px; margin-bottom: 2px; }
+.cert-intro { font-size:11px; margin-top:2px; text-align: justify; }
+
+.sig-employee { float:right; width:40%; text-align:center; font-size:11px; margin-top:15px; font-weight:bold; }
+.cert-points { clear:both; margin-top:5px; font-size:11px; line-height:1.2; text-align: justify; }
+
+/* Footer/Signatures */
+.manager-row { margin-top:10px; font-size:11px; overflow: hidden; padding-top:5px; }
+.manager-left { float:left; width:48%; text-align: left; }
 .manager-right { float:right; width:48%; text-align:right; }
-.spacer { height:5px; clear:both; }
-.footer-row { margin-top: 5px; font-size: 10px; }
-.total-row td { font-weight:bold; border-top: 2px solid #000; }
+
+.footer-row { margin-top: 8px; font-size: 11px; clear:both; text-align: left; }
+.total-row td { font-weight:bold; border-top: 2px solid #000; background-color: #fafafa; }
 </style>
 </head>
 
@@ -54,8 +80,22 @@ th, td { border:1px solid #000; padding:2px 3px; font-size:10px; text-align:cent
   <div class="sub">(As per Rule 9.2 (f) of JMRC Recruitment Rules) 2012<br>(To be submitted in Duplicate)</div>
 
   <table class="meta">
-    <tr><th>Name of Employee</th><th>Emp. ID</th><th>Designation & Deptt.</th><th>Date of Confirmation</th><th>Month :-</th><th>Pay of One day (Basic+DA)</th></tr>
-    <tr><td id="empName"></td><td id="empId"></td><td>SC/TO</td><td id="confirmDate"></td><td id="month"></td><td id="payOneDay"></td></tr>
+    <tr>
+      <th>Name of Employee</th>
+      <th>Emp. ID</th>
+      <th>Designation & Deptt.</th>
+      <th>Date of Confirmation</th>
+      <th>Month :-</th>
+      <th>Pay of One day (Basic+DA)</th>
+    </tr>
+    <tr>
+      <td id="empName"></td>
+      <td id="empId"></td>
+      <td>SC/TO</td>
+      <td id="confirmDate"></td>
+      <td id="month"></td>
+      <td id="payOneDay"></td>
+    </tr>
   </table>
 
   <table class="duty">
@@ -68,7 +108,10 @@ th, td { border:1px solid #000; padding:2px 3px; font-size:10px; text-align:cent
 
   <div class="cert-title">Certificate</div>
   <div class="cert-intro">It is certify that the Night Duty Allowance, as claimed above is correct &amp; due to me, and this claim has not been submitted earlier.</div>
-  <div style="width:100%; overflow:hidden;"><div class="sig-employee"><b>Signature of the employee</b><div class="sigline"></div></div></div>
+  
+  <div style="width:100%; overflow:hidden; margin-bottom:5px;">
+      <div class="sig-employee"><b>Signature of the employee</b></div>
+  </div>
 
   <div class="cert-points">
     <p>1. As per sign on and sign off duty record of the employee Mr./Mrs. <span id="certName" style="font-weight:bold;"></span><br>SC/TO, Deptt.–OPERATIONS, Duty Place................... the above detail submitted for the Night Duty Allowance is certified and due to the above employee.</p>
@@ -80,9 +123,7 @@ th, td { border:1px solid #000; padding:2px 3px; font-size:10px; text-align:cent
     <div class="manager-right"><b>Name & Signature of Concerned Manager</b></div>
   </div>
   
-  <div class="spacer"></div>
   <div class="footer-row"><b>Concerned ED/General Manager (Sign & Seal):</b></div>
-  <div class="spacer"></div>
   <div class="footer-row"><b>Forward to:</b> GM(Finance), JMRC for making payment</div>
 </div>
 
@@ -126,7 +167,6 @@ function computeNightHours(code, so, sf){
   if(cStr === "26A") return 3;
   if(cStr === "TO Night" || cStr.endsWith("-N")) return 8;
   
-  // Standard Numeric Duties
   const h1 = parseTimeHour(so), h2 = parseTimeHour(sf);
   if((h1 !== -1 && h1 < 6) || (h2 !== -1 && h2 >= 22)) return 1;
   return 0;
@@ -158,7 +198,6 @@ function computeNightHours(code, so, sf){
 
   dates.forEach(date => {
       const entries = Array.isArray(records[date]) ? records[date] : [records[date]];
-      
       entries.forEach(r => {
           const dStr = String(r.duty);
           const info = DUTY_TABLE[dStr] || {};
