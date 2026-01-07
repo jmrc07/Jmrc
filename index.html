@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Duty Tracker v5.2 (Final Polish)</title>
+<title>Duty Tracker v5.3 (Date Picker Added)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <style>
 :root{--bg:#f8fafc;--primary:#2563eb;--primary-dark:#1d4ed8;--surface:#ffffff;--surface-alt:#eef2ff;--border:#e2e8f0;--border-strong:#cbd5e1;--text-primary:#0f172a;--text-muted:#64748b;--special-bg:#ede9fe;--special-bg-active:#ddd6fe;--special-text:#4c1d95;--rest-bg:#e5e7eb;--rest-text:#374151;--alarm:#ef4444;--success:#10b981;--danger:#ef4444}*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;background:var(--bg);color:var(--text-primary)}.app-container{max-width:720px;margin:0 auto;padding:0 .75rem 5.5rem}.screen{display:none}.screen.active{display:block}
@@ -36,17 +36,12 @@
 
 /* Common */
 .card{margin-top:1rem;padding:.9rem;background:var(--surface);border-radius:1rem;border:1px solid var(--border);box-shadow:0 4px 10px rgba(15,23,42,.06)}.card-title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem}.card-title{font-size:.98rem;font-weight:600}.card-sub{font-size:.78rem;color:var(--text-muted)}.home-month-row{display:flex;justify-content:space-between;align-items:center;margin-top:.7rem;padding:0 .1rem}.home-month-hint{font-size:.78rem;color:var(--text-muted)}.home-month-select{font-size:.78rem;padding:.15rem .4rem;border-radius:.6rem;border:1px solid var(--border-strong);background:#fff}
-/* Fix 4: Added padding-bottom to timeline-row to clear Nav Bar */
 .timeline-row{display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem;max-height:calc(100vh - 240px);overflow-y:auto;padding-right:4px; padding-bottom: 80px;}
 
 .timeline-chip{position:relative;flex-shrink:0;width:100%;padding:.6rem .75rem;border-radius:.9rem;background:#fff;box-shadow:0 1px 4px rgba(15,23,42,.1);font-size:.8rem;display:flex;flex-direction:column;gap:.15rem;cursor:pointer;transition:box-shadow .12s ease;-webkit-tap-highlight-color:transparent}.timeline-chip-top{font-size:.8rem;font-weight:600;display:flex;justify-content:space-between;align-items:center}.timeline-chip-bottom{font-size:.76rem;color:var(--text-muted)}.timeline-chip.today-chip{background:#e0edff;box-shadow:0 0 0 2px rgba(37,99,235,.2); z-index: 2;}.today-label-text{display:inline-flex;align-items:center;gap:4px}.today-icon{font-size:.9rem}.timeline-chip.future-chip{background:#fff; opacity: 0.9; border: 1px dashed var(--border);}.timeline-chip.has-duty{background:#dcfce7}.timeline-chip.has-duty .timeline-chip-bottom{color:#166534;font-weight:600}.timeline-chip.rest-chip{background:var(--rest-bg);color:var(--rest-text)}.timeline-chip.active{box-shadow:0 0 0 2px rgba(37,99,235,.35)}.date-expand{margin-top:.4rem}.expand-block{font-size:.8rem;border-top:1px dashed var(--border-strong);padding-top:.35rem;background:#fff!important;border-radius:.65rem;padding:.6rem .7rem;position:relative}
 
 /* Multi-Duty Actions */
-.duty-detail-row {
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 0.5rem;
-  margin-bottom: 0.5rem;
-}
+.duty-detail-row { border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 0.5rem; }
 .duty-detail-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 
 .action-btn-row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px; align-items: center;}
@@ -58,7 +53,7 @@
 .sheet{position:fixed;left:0;right:0;bottom:0;max-width:720px;margin:0 auto;background:#fff;border-radius:16px 16px 0 0;padding:.9rem .9rem 1rem;box-shadow:0 -10px 30px rgba(15,23,42,.5);display:none;z-index:81}
 #logSheet{min-height:65vh;max-height:85vh;overflow-y:auto}
 
-/* Fix 3: Compact Log Sheet Styles Override */
+/* Compact Log Sheet Styles Override */
 #logSheet { padding: 0.6rem 0.8rem 1rem; }
 #logSheet .field { margin-top: 0.4rem; }
 #logSheet .label { font-size: 0.74rem; margin-bottom: 0.2rem; }
@@ -78,13 +73,11 @@
 .profile-item span:last-child { font-weight: 600; }
 .alarm-option { padding: 0.8rem; border-bottom: 1px solid var(--border); cursor: pointer; text-align: center; font-weight: 500; }
 
-/* Split Table Styles */
 .split-header { background: #e0e7ff; color: #3730a3; padding: 8px 10px; font-size: 0.85rem; font-weight: 700; border-radius: 6px; margin: 15px 0 5px 0; display: flex; justify-content: space-between; }
 .split-header:first-child { margin-top: 0; }
 .time-highlight { color: var(--primary); font-weight: 700; background: rgba(37,99,235,0.1); padding: 2px 6px; border-radius: 4px; }
 .current-trip-row { background: #eff6ff; border-left: 3px solid var(--primary); }
 
-/* Updated Trip Filter - Fixed at Bottom */
 .trip-filter-container-bottom { position: fixed; left: 0; right: 0; bottom: 64px; background: #fff; border-top: 1px solid var(--border); box-shadow: 0 -4px 10px rgba(0,0,0,0.05); z-index: 50; padding: 8px 0; display: flex; flex-direction: column; gap: 8px; }
 .trip-filter-row { display: flex; gap: 6px; overflow-x: auto; padding: 0 10px; scrollbar-width: none; }
 .trip-filter-row::-webkit-scrollbar { display: none; }
@@ -93,7 +86,7 @@
   flex-shrink: 0;
   min-width: 42px;
   padding: 0.35rem 0.6rem;
-  border-radius: 999px; /* Capsule shape like log sheet */
+  border-radius: 999px; 
   background: #fff;
   border: none;
   box-shadow: 0 1px 4px rgba(15,23,42,.1);
@@ -105,7 +98,7 @@
   transition: all 0.15s;
 }
 .trip-chip.active {
-  background: #dbeafe; /* Light blue like log sheet active */
+  background: #dbeafe; 
   color: var(--primary-dark);
   box-shadow: 0 1px 6px rgba(37,99,235,.5);
   font-weight: 600;
@@ -127,11 +120,15 @@
             <p class="profile-title" id="profileTitle">Hello</p>
           </div>
         </div>
-        <div style="text-align:right;">
+        
+        <div style="text-align:right; position:relative;">
           <div class="profile-datetime" id="liveDateTime">--:--</div>
           <div class="profile-date-sub" id="liveDate">--</div>
+          <input type="date" id="headerDatePicker" 
+                 style="position:absolute; top:0; right:0; width:100%; height:100%; opacity:0; z-index:10; cursor:pointer;" 
+                 title="Tap to jump to date" />
         </div>
-      </div>
+        </div>
       
       <div class="duty-status-row" id="statusRow">
         <div class="duty-info">
@@ -384,7 +381,7 @@
 </div>
 
 <script>
-// ======= DUTY TRACKER SCRIPT v5.2 (Fixes: R/S Dates, R/C Logic, Scroll Visibility, Compact Layout) =======
+// ======= DUTY TRACKER SCRIPT v5.3 (Date Picker Integration) =======
 
 const $ = id => document.getElementById(id);
 
@@ -413,7 +410,6 @@ const DUTY_TABLE = {
   "25": { signOn:"16:05", onPlace:"MSOR SCR", signOff:"23:20", offPlace:"DEPOT", hours:"07:15" },
   "26": { signOn:"14:00", onPlace:"MSOR SCR", signOff:"23:00", offPlace:"DEPOT", hours:"09:00" },
   
-  // NEW DUTIES
   "26A": { signOn:"16:00", onPlace:"MSOR SCR", signOff:"01:00", offPlace:"DEPOT", hours:"09:00" },
   "TO Night": { signOn:"22:00", onPlace:"MSOR SCR", signOff:"06:00", offPlace:"DEPOT", hours:"08:00" },
 
@@ -481,7 +477,6 @@ function loadData(){
   const json = localStorage.getItem("dutyTrackerData");
   let d = json ? JSON.parse(json) : {records:{},profile:{},manualRestDates:{},pay:{}, printData:{ records:{}, profile:{}, pay:{} }, alarm:{time:null} };
   
-  // Data Migration: Convert single objects to arrays for multi-duty support
   if(d.records){
     for(let date in d.records){
       if(d.records[date] && !Array.isArray(d.records[date])){
@@ -525,8 +520,8 @@ function formatDutyLabel(code, tag, stationCode){
   else if(code==="TRAINING") baseText = "Trng";
   else if(code==="GENERAL") baseText = "Gen";
   else if(shiftName) baseText = stationCode ? `${shiftName} @${stationCode}` : shiftName;
-  if(tag==="R/S") return `R/S ${baseText}`; // UPDATED: "R/S Duty 20"
-  if(tag==="R/C") return `R/C ${baseText}`; // UPDATED: "R/C Duty 20"
+  if(tag==="R/S") return `R/S ${baseText}`; 
+  if(tag==="R/C") return `R/C ${baseText}`; 
   return baseText;
 }
 
@@ -962,7 +957,7 @@ function handleDutySelection(dNo){
 }
 
 function showFabLog(){
-  isFabMode = true; // Enable continuous mode
+  isFabMode = true; 
   openCleanLogSheet(todayISO());
 }
 
@@ -998,13 +993,12 @@ function showLogSheetFor(iso, index, rTag){
 
   if(rTag==="R/S"){
     if(!data.availableCR) data.availableCR=[];
-    // Fix: Only add unique CR date
     if(!data.availableCR.includes(iso)) data.availableCR.push(iso);
     
     saveData();
-    restEditMode="R/S"; // Store the mode
+    restEditMode="R/S"; 
     pendingRestOldDate=null;
-    openCleanLogSheet(iso); // Open sheet for the correct date
+    openCleanLogSheet(iso); 
     return;
   }
   
@@ -1077,17 +1071,15 @@ function attachFabAndSheets(){
     
     data.manualRestDates[val]=true;
 
-    // FIX 1: Removed code that adds automatic "CR" duty on R/C.
     if(restEditMode==="R/C" && pendingRestOldDate){
         if(data.manualRestDates[pendingRestOldDate]) delete data.manualRestDates[pendingRestOldDate];
-        // We do NOT add a CR duty automatically here anymore.
     }
 
     saveData(); 
     $("restSheet").style.display = "none";
     if(restEditMode==="R/C" && pendingRestOldDate) {
          openCleanLogSheet(pendingRestOldDate);
-         restEditMode="R/C"; // Enforce context so user adds the duty manually
+         restEditMode="R/C"; 
     } else {
          hideAllSheets(); renderCalendar(); if(currentTab==="history") renderHistory();
     }
@@ -1115,7 +1107,6 @@ function attachFabAndSheets(){
       st = null;
     } else { st = null; }
 
-    // Use current restEditMode as tag if exists
     const newDutyObj = { duty: code, tag: restEditMode || null, trains: isNumericDuty(code) ? selectedTrains.slice() : [], station: st };
 
     if(!data.records[selectedLogDate]) data.records[selectedLogDate] = [];
@@ -1132,14 +1123,12 @@ function attachFabAndSheets(){
     updateNextTripLogic();
 
     if(isFabMode){
-        // Move to next date
         const d = new Date(selectedLogDate);
         d.setDate(d.getDate() + 1);
         const nextIso = d.toISOString().split("T")[0];
 
         renderCalendar();
         
-        // FIX 2: Scroll new date to TOP so it's visible above sheet
         setTimeout(() => {
            const chip = document.querySelector(`.timeline-chip[data-date="${nextIso}"]`);
            if(chip) chip.scrollIntoView({block: "start", behavior: "smooth"}); 
@@ -1443,7 +1432,6 @@ function renderHistory(){
   
   if(historyFilterMonth!=="all") dates=dates.filter(d=>d.startsWith(historyFilterMonth));
   
-  // Filter logic adapted for array of records
   if(term) dates=dates.filter(d=>{
     return data.records[d].some(r => {
         const dt=DUTY_TABLE[r.duty]||{};
@@ -1464,7 +1452,6 @@ function renderHistory(){
         else if(r.duty==="GH") sum.gh++; 
         else if(r.duty==="RH") sum.rh++;
         
-        // Sum money and hours for ALL duties
         sum.hda+=calculateHDA(r.duty); 
         sum.ice+=calculateICE(r.duty,di.signOn,di.signOff); 
         sum.nh+=computeNightHours(r.duty,di.signOn,di.signOff);
@@ -1582,6 +1569,36 @@ document.addEventListener("DOMContentLoaded", ()=>{
     $("alarmBtn").classList.add("active");
     $("alarmBtnText").textContent = "Alarm Set";
   }
+
+  // --- NEW: Date Picker Handler ---
+  $("headerDatePicker").addEventListener("change", function(){
+      if(!this.value) return;
+      const [y, m, d] = this.value.split("-").map(Number);
+      const iso = this.value;
+
+      if(currentTab !== "home") setActiveTab("home");
+
+      currentMonthYear.year = y;
+      currentMonthYear.month = m - 1;
+
+      const ms = $("monthSelect");
+      if(ms) ms.value = m - 1;
+
+      renderCalendar();
+
+      setTimeout(()=>{
+          const chip = document.querySelector(`.timeline-chip[data-date="${iso}"]`);
+          if(chip) {
+              chip.scrollIntoView({block:"center", behavior:"smooth"});
+              chip.style.transition = "background 0.5s";
+              const oldBg = chip.style.background;
+              chip.style.background = "#bfdbfe"; 
+              setTimeout(()=>chip.style.background = oldBg, 800);
+          }
+      }, 100);
+      
+      this.value = ""; 
+  });
 });
 </script>
 </body>
