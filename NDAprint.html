@@ -5,10 +5,9 @@
 <title>Night Duty Allowance Claim Form</title>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <style>
-/* CENTRE FIT & PRINT STYLES */
 @page { 
     size: A4 portrait; 
-    margin: 8mm 12mm; 
+    margin: 6mm 10mm; 
 }
 
 html, body { 
@@ -33,97 +32,142 @@ body {
 /* Header */
 .logo { text-align:center; margin-bottom:2px; }
 .logo img { width:55px; height:auto; }
-h1 { text-align:center; font-size:15px; margin:2px 0; font-weight: bold; text-transform: uppercase; }
-.sub { text-align:center; font-size:10.5px; margin-bottom: 6px; }
+h1 { text-align:center; font-size:15px; margin:2px 0; font-weight: bold; }
+.sub { text-align:center; font-size:10.5px; margin-bottom: 2px; }
+
+/* Right Aligned Month Header */
+.month-header-row {
+    text-align: right;
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 2px;
+    padding-right: 15px;
+}
+.month-header-row span {
+    font-weight: bold;
+    margin-left: 20px;
+}
 
 /* Tables */
 table { 
     border-collapse: collapse; 
     width: 100%; 
     table-layout: fixed; 
-    margin: 4px auto; 
+    margin: 2px auto; 
 }
 
 th, td { 
     border: 1px solid #000; 
-    padding: 3px 2px; 
-    font-size: 10px; 
+    padding: 2px 2px; 
+    font-size: 9.5px; 
     text-align: center; 
     vertical-align: middle; 
     word-wrap: break-word; 
+    height: 14px;
 }
 
 /* --- META TABLE --- */
-.meta th { font-weight: bold; background: #e6e6e6 !important; font-size: 9.5px; }
+.meta th { font-weight: bold; font-size: 10px; line-height: 1.15; }
 .meta td { font-size: 10px; }
 
-/* Column distribution */
-.meta th:nth-child(1), .meta td:nth-child(1) { width: 22%; } /* Name */
-.meta th:nth-child(2), .meta td:nth-child(2) { width: 10%; } /* Emp ID */
-.meta th:nth-child(3), .meta td:nth-child(3) { width: 15%; } /* Designation */
-.meta th:nth-child(4), .meta td:nth-child(4) { width: 15%; } /* Confirm Date */
-.meta th:nth-child(5), .meta td:nth-child(5) { width: 13%; } /* Month */
-.meta th:nth-child(6), .meta td:nth-child(6) { width: 25%; } /* Pay of One Day */
+.meta th:nth-child(1), .meta td:nth-child(1) { width: 24%; }
+.meta th:nth-child(2), .meta td:nth-child(2) { width: 10%; }
+.meta th:nth-child(3), .meta td:nth-child(3) { width: 15%; }
+.meta th:nth-child(4), .meta td:nth-child(4) { width: 20%; }
+.meta th:nth-child(5), .meta td:nth-child(5) { width: 31%; }
 
 /* --- DUTY TABLE --- */
-.duty th { font-weight: bold; background: #e6e6e6 !important; font-size: 9.5px; }
-.duty td { font-size: 10px; }
+.duty th { font-weight: bold; font-size: 9.5px; line-height: 1.15; }
+.duty td { font-size: 9.5px; }
 
-/* Certificate Section */
+.total-row td { 
+    font-weight: normal; 
+    text-align: left;
+    padding-left: 4px;
+}
+.total-row td.val-col {
+    text-align: center;
+}
+
+/* --- CERTIFICATE & BOTTOM SECTION --- */
 .cert-title { 
     text-align: center; 
     font-weight: bold; 
     text-decoration: underline; 
     font-size: 11px; 
-    margin-top: 8px; 
-    margin-bottom: 2px; 
+    margin-top: 6px; 
+    margin-bottom: 3px; 
 }
 
 .cert-intro { 
     font-size: 10px; 
-    margin-top: 2px; 
-    text-align: justify; 
+    margin-top: 1px; 
+    text-align: center; 
+    line-height: 1.2;
+}
+
+.sig-employee-wrapper {
+    width: 100%;
+    margin-top: 16px;
+    margin-bottom: 12px;
+    overflow: hidden;
 }
 
 .sig-employee { 
     float: right; 
     width: 40%; 
-    text-align: center; 
+    text-align: right; 
     font-size: 10px; 
-    margin-top: 12px; 
-    font-weight: bold; 
+    font-weight: bold;
+    padding-right: 5px;
 }
 
 .cert-points { 
     clear: both; 
-    margin-top: 4px; 
-    font-size: 10px; 
-    line-height: 1.25; 
+    margin-top: 2px; 
+    font-size: 9.5px; 
+    line-height: 1.3; 
     text-align: justify; 
 }
 
-/* Footer & Signatures */
+.cert-point-row {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.cert-num {
+    width: 25px;
+    flex-shrink: 0;
+}
+
+.cert-text {
+    flex-grow: 1;
+}
+
 .manager-row { 
-    margin-top: 10px; 
+    margin-top: 24px; 
     font-size: 10px; 
     overflow: hidden; 
 }
-.manager-left { float: left; width: 50%; text-align: left; }
-.manager-right { float: right; width: 50%; text-align: right; }
+.manager-left { float: left; width: 55%; text-align: left; }
+.manager-right { float: right; width: 45%; text-align: right; font-weight: bold; }
 
-.footer-row { 
-    margin-top: 6px; 
+.footer-row-1 { 
+    margin-top: 22px; 
     font-size: 10px; 
     clear: both; 
     text-align: left; 
+    font-weight: bold;
 }
 
-.total-row td { 
-    font-weight: bold; 
-    background-color: #f5f5f5 !important; 
+.footer-row-2 { 
+    margin-top: 22px; 
+    font-size: 10px; 
+    clear: both; 
+    text-align: left; 
+    font-weight: bold;
 }
 
-/* PRINT SPECIFIC OPTIMIZATIONS */
 @media print {
     body { margin: 0; }
     .page { page-break-inside: avoid; }
@@ -138,21 +182,23 @@ th, td {
   <h1>Night Duty Allowance Claim Form</h1>
   <div class="sub">(As per Rule 9.2 (f) of JMRC Recruitment Rules) 2012<br>(To be submitted in Duplicate)</div>
 
+  <div class="month-header-row">
+    Month :- <span id="monthText"></span>
+  </div>
+
   <table class="meta">
     <tr>
       <th>Name of Employee</th>
       <th>Emp. ID</th>
-      <th>Designation & Deptt.</th>
+      <th>Designation &amp;<br>Deptt.</th>
       <th>Date of Confirmation</th>
-      <th>Month :-</th>
-      <th>Pay of One day for the month (Basic+DA)</th>
+      <th>Pay of One day for the<br>month (Basic+DA)</th>
     </tr>
     <tr>
       <td id="empName"></td>
       <td id="empId"></td>
       <td>SC/TO</td>
       <td id="confirmDate"></td>
-      <td id="month"></td>
       <td id="payOneDay"></td>
     </tr>
   </table>
@@ -162,40 +208,69 @@ th, td {
       <tr>
         <th style="width:7%">S.No.</th>
         <th style="width:14%">Date</th>
-        <th style="width:12%">Sign On Time</th>
-        <th style="width:12%">Sign Off Time</th>
-        <th style="width:15%">Night Duty Hours<br>(2200 to 0600)</th>
-        <th>Duty Place/Station</th>
-        <th style="width:15%">Remarks</th>
+        <th style="width:13%">Sign On Time</th>
+        <th style="width:13%">Sign Off Time</th>
+        <th style="width:16%">Night Duty<br>Hours<br>(2200 to 0600)</th>
+        <th style="width:20%">Duty Place/<br>Station</th>
+        <th style="width:17%">Remarks</th>
       </tr>
     </thead>
     <tbody id="dutyBody"></tbody>
-    <tfoot id="ndaFooter"></tfoot>
+    <tfoot id="ndaFooter">
+      <tr class="total-row">
+        <td>(A)</td>
+        <td colspan="3">TOTAL Night Hours</td>
+        <td class="val-col" id="totHoursVal">0</td>
+        <td colspan="2"></td>
+      </tr>
+      <tr class="total-row">
+        <td>(B)</td>
+        <td colspan="3">Equivalent Night Duty Day = A/24</td>
+        <td class="val-col" id="eqDaysVal">0 / 24</td>
+        <td colspan="2"></td>
+      </tr>
+      <tr class="total-row">
+        <td>(C)</td>
+        <td colspan="3">NDA Claimed (Rs.)= B x Pay of One Day</td>
+        <td class="val-col" id="ndaClaimedVal">0.00</td>
+        <td colspan="2"></td>
+      </tr>
+    </tfoot>
   </table>
 
   <div class="cert-title">Certificate</div>
-  <div class="cert-intro">It is certify that the Night Duty Allowance, as claimed above is correct &amp; due to me, and this claim has not been submitted earlier.</div>
+  <div class="cert-intro">It is certify that the Night Duty Allowance, as claimed above is correct &amp; due to me, and this claim has not been submitted eariler.</div>
   
-  <div style="width:100%; overflow:hidden;">
+  <div class="sig-employee-wrapper">
       <div class="sig-employee">Signature of the employee</div>
   </div>
 
   <div class="cert-points">
-    <p style="margin: 3px 0;">1. As per sign on and sign off duty record of the employee Mr./Mrs. <span id="certName" style="font-weight:bold;"></span> Design. SC/TO, Deptt.–OPERATIONS Duty Place/Station- Trains/Stations, the above detail submitted for the Night Duty Allowance is certified and due to the above employee.</p>
-    <p style="margin: 3px 0;">2. Total Night Duty Allowance payable to him / her is Rs. <b id="totalNDA">0</b>/-</p>
+    <div class="cert-point-row">
+      <div class="cert-num">1</div>
+      <div class="cert-text">
+        As per sign on and sign off duty record of the employee &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mr./Mrs.............. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b id="certName"></b> &nbsp;&nbsp;&nbsp;&nbsp; Design.<br>
+        SC/TO, Deptt.-.......OPERATIONS............ Duty Place/Station- Trains/Stations , the above detail submitted for the Night Duty Allowance is certified and due to the above employee.
+      </div>
+    </div>
+    <div class="cert-point-row">
+      <div class="cert-num">2</div>
+      <div class="cert-text">
+        Total Night Duty Allowance payable to him / her is Rs. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b id="totalNDA">0</b> /-
+      </div>
+    </div>
   </div>
 
   <div class="manager-row">
-    <div class="manager-left"><b>Sanctioned (As per clause E18 of SOP, JMRC) by:</b></div>
-    <div class="manager-right"><b>Name & Signature of Concerned Manager</b></div>
+    <div class="manager-left">Sanctioned (As per clause E18 of SOP, JMRC) by:</div>
+    <div class="manager-right">Name &amp; Signature of Concerned Manager</div>
   </div>
   
-  <div class="footer-row"><b>Concerned ED/General Manager (Sign & Seal):</b></div>
-  <div class="footer-row"><b>Forward to:</b> GM(Finance), JMRC for making payment</div>
+  <div class="footer-row-1">Concerned ED/General Manager (Sign &amp; Seal):</div>
+  <div class="footer-row-2">Forward to: GM(Finance), JMRC for making payment</div>
 </div>
 
 <script>
-// DUTY TABLE CONFIG
 const DUTY_TABLE={
   "1":{signOn:"04:55",onPlace:"MSOR SCR",signOff:"11:55",offPlace:"MSOR SCR",hours:"07:00"},
   "2":{signOn:"04:55",onPlace:"BICP SCR",signOff:"12:25",offPlace:"MSOR SCR",hours:"07:30"},
@@ -251,17 +326,15 @@ function computeNightHours(code, so, sf){
   document.getElementById("empName").textContent = profile.name || "";
   document.getElementById("empId").textContent = profile.empId || "";
   document.getElementById("confirmDate").textContent = profile.confirmDate || "";
-  document.getElementById("month").textContent = selectedMonth;
+  document.getElementById("monthText").textContent = selectedMonth;
   document.getElementById("certName").textContent = profile.name || "";
 
   let oneDayPay = payData[monthKey] ? Number(payData[monthKey]) : 0;
-  document.getElementById("payOneDay").textContent = oneDayPay ? oneDayPay.toFixed(2) : "0.00";
+  document.getElementById("payOneDay").textContent = oneDayPay ? oneDayPay.toFixed(2) : "";
 
   let dates = Object.keys(records).filter(d => d.startsWith(selectedMonth)).sort();
-  const tbody = document.getElementById("dutyBody");
-  let totalHours = 0;
-  let sNo = 0;
-
+  
+  let dutyEntries = [];
   dates.forEach(date => {
       const entries = Array.isArray(records[date]) ? records[date] : [records[date]];
       entries.forEach(r => {
@@ -270,30 +343,64 @@ function computeNightHours(code, so, sf){
           let nh = computeNightHours(dStr, info.signOn, info.signOff);
           
           if(nh > 0){
-              sNo++;
-              totalHours += nh;
               let place = info.onPlace || r.signOnPlace || "";
               if(r.station) place = place.replace("STATION", r.station);
 
               let sOn = info.signOn || r.signOnTime || "";
               let sOff = info.signOff || r.signOffTime || "";
 
-              let tr = document.createElement("tr");
-              tr.innerHTML = `<td>${sNo}</td><td>${new Date(date).toLocaleDateString("en-IN", {day:"numeric", month:"short", year:"numeric"})}</td><td>${sOn}</td><td>${sOff}</td><td>${nh}</td><td>${place}</td><td></td>`;
-              tbody.appendChild(tr);
+              dutyEntries.push({
+                  date: new Date(date).toLocaleDateString("en-IN", {day:"numeric", month:"short", year:"numeric"}),
+                  signOn: sOn,
+                  signOff: sOff,
+                  nightHours: nh,
+                  place: place
+              });
           }
       });
   });
 
+  const tbody = document.getElementById("dutyBody");
+  tbody.innerHTML = "";
+  
+  let totalHours = 0;
+
+  for (let i = 1; i <= 28; i++) {
+      let tr = document.createElement("tr");
+      let item = dutyEntries[i - 1];
+
+      if (item) {
+          totalHours += item.nightHours;
+          tr.innerHTML = `
+            <td>${i}</td>
+            <td>${item.date}</td>
+            <td>${item.signOn}</td>
+            <td>${item.signOff}</td>
+            <td>${item.nightHours}</td>
+            <td>${item.place}</td>
+            <td></td>
+          `;
+      } else {
+          tr.innerHTML = `
+            <td>${i}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          `;
+      }
+      tbody.appendChild(tr);
+  }
+
   let eq = totalHours / 24;
   let nda = eq * oneDayPay;
 
-  document.getElementById("ndaFooter").innerHTML = `
-    <tr class="total-row"><td>(A)</td><td colspan="3" style="text-align:left;">TOTAL Night Hours</td><td>${totalHours}</td><td colspan="2"></td></tr>
-    <tr class="total-row"><td>(B)</td><td colspan="3" style="text-align:left;">Equivalent Night Duty Day = A/24</td><td>${eq.toFixed(2)}</td><td colspan="2"></td></tr>
-    <tr class="total-row"><td>(C)</td><td colspan="3" style="text-align:left;">NDA Claimed (Rs.) = B × One Day Pay</td><td>${nda.toFixed(2)}</td><td colspan="2"></td></tr>
-  `;
-  document.getElementById("totalNDA").textContent = nda.toFixed(2);
+  document.getElementById("totHoursVal").textContent = totalHours;
+  document.getElementById("eqDaysVal").textContent = totalHours + " / 24";
+  document.getElementById("ndaClaimedVal").textContent = nda.toFixed(2);
+  document.getElementById("totalNDA").textContent = nda.toFixed(0);
 
   window.onload = () => setTimeout(() => window.print(), 400);
 })();
