@@ -5,71 +5,130 @@
 <title>Night Duty Allowance Claim Form</title>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <style>
-/* CENTRE FIT & NO OVERLAP STYLES */
-@page { size: A4 portrait; margin: 10mm 20mm; }
-html, body { margin: 0; padding: 0; background: #fff; }
+/* CENTRE FIT & PRINT STYLES */
+@page { 
+    size: A4 portrait; 
+    margin: 8mm 12mm; 
+}
+
+html, body { 
+    margin: 0; 
+    padding: 0; 
+    background: #fff; 
+}
 
 body {
     width: 100%;
-    font-family: "Times New Roman", serif;
+    font-family: "Times New Roman", Times, serif;
     color: #000;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
 }
 
 .page { 
     width: 100%; 
-    margin: 0 auto; /* Ensures horizontal centering */
+    margin: 0 auto; 
 }
 
 /* Header */
 .logo { text-align:center; margin-bottom:2px; }
-.logo img { width:60px; height:auto; }
-h1 { text-align:center; font-size:16px; margin:2px 0; font-weight: bold; text-transform: uppercase; }
-.sub { text-align:center; font-size:11px; margin-bottom: 5px; }
+.logo img { width:55px; height:auto; }
+h1 { text-align:center; font-size:15px; margin:2px 0; font-weight: bold; text-transform: uppercase; }
+.sub { text-align:center; font-size:10.5px; margin-bottom: 6px; }
 
 /* Tables */
 table { 
-    border-collapse:collapse; 
-    width:100%; 
-    table-layout:fixed; 
-    margin: 5px auto; /* Centers the table */
+    border-collapse: collapse; 
+    width: 100%; 
+    table-layout: fixed; 
+    margin: 4px auto; 
 }
+
 th, td { 
-    border:1px solid #000; 
-    padding: 3px 1px; 
-    font-size:11px; 
-    text-align:center; 
+    border: 1px solid #000; 
+    padding: 3px 2px; 
+    font-size: 10px; 
+    text-align: center; 
     vertical-align: middle; 
     word-wrap: break-word; 
 }
 
-/* --- FIXED META COLUMNS (Prevents Overlap) --- */
-.meta th { font-weight: bold; background: #f0f0f0; font-size: 10px; }
-.meta td { font-size: 11px; }
+/* --- META TABLE --- */
+.meta th { font-weight: bold; background: #e6e6e6 !important; font-size: 9.5px; }
+.meta td { font-size: 10px; }
 
-/* Sum = 100% */
-.meta th:nth-child(1), .meta td:nth-child(1) { width: 18%; } /* Name */
+/* Column distribution */
+.meta th:nth-child(1), .meta td:nth-child(1) { width: 22%; } /* Name */
 .meta th:nth-child(2), .meta td:nth-child(2) { width: 10%; } /* Emp ID */
-.meta th:nth-child(3), .meta td:nth-child(3) { width: 14%; } /* Designation */
-.meta th:nth-child(4), .meta td:nth-child(4) { width: 14%; } /* Confirm Date */
-.meta th:nth-child(5), .meta td:nth-child(5) { width: 12%; } /* Month */
-.meta th:nth-child(6), .meta td:nth-child(6) { width: 32%; } /* Pay (Wide) */
+.meta th:nth-child(3), .meta td:nth-child(3) { width: 15%; } /* Designation */
+.meta th:nth-child(4), .meta td:nth-child(4) { width: 15%; } /* Confirm Date */
+.meta th:nth-child(5), .meta td:nth-child(5) { width: 13%; } /* Month */
+.meta th:nth-child(6), .meta td:nth-child(6) { width: 25%; } /* Pay of One Day */
 
-.duty th { font-weight:bold; background: #f0f0f0; }
+/* --- DUTY TABLE --- */
+.duty th { font-weight: bold; background: #e6e6e6 !important; font-size: 9.5px; }
+.duty td { font-size: 10px; }
 
 /* Certificate Section */
-.cert-title { text-align:center; font-weight:bold; text-decoration:underline; font-size:12px; margin-top:10px; margin-bottom: 2px; }
-.cert-intro { font-size:11px; margin-top:2px; text-align: justify; }
+.cert-title { 
+    text-align: center; 
+    font-weight: bold; 
+    text-decoration: underline; 
+    font-size: 11px; 
+    margin-top: 8px; 
+    margin-bottom: 2px; 
+}
 
-.sig-employee { float:right; width:40%; text-align:center; font-size:11px; margin-top:15px; font-weight:bold; }
-.cert-points { clear:both; margin-top:5px; font-size:11px; line-height:1.2; text-align: justify; }
+.cert-intro { 
+    font-size: 10px; 
+    margin-top: 2px; 
+    text-align: justify; 
+}
 
-/* Footer/Signatures */
-.manager-row { margin-top:10px; font-size:11px; overflow: hidden; padding-top:5px; }
-.manager-left { float:left; width:48%; text-align: left; }
-.manager-right { float:right; width:48%; text-align:right; }
+.sig-employee { 
+    float: right; 
+    width: 40%; 
+    text-align: center; 
+    font-size: 10px; 
+    margin-top: 12px; 
+    font-weight: bold; 
+}
 
-.footer-row { margin-top: 8px; font-size: 11px; clear:both; text-align: left; }
-.total-row td { font-weight:bold; border-top: 2px solid #000; background-color: #fafafa; }
+.cert-points { 
+    clear: both; 
+    margin-top: 4px; 
+    font-size: 10px; 
+    line-height: 1.25; 
+    text-align: justify; 
+}
+
+/* Footer & Signatures */
+.manager-row { 
+    margin-top: 10px; 
+    font-size: 10px; 
+    overflow: hidden; 
+}
+.manager-left { float: left; width: 50%; text-align: left; }
+.manager-right { float: right; width: 50%; text-align: right; }
+
+.footer-row { 
+    margin-top: 6px; 
+    font-size: 10px; 
+    clear: both; 
+    text-align: left; 
+}
+
+.total-row td { 
+    font-weight: bold; 
+    background-color: #f5f5f5 !important; 
+}
+
+/* PRINT SPECIFIC OPTIMIZATIONS */
+@media print {
+    body { margin: 0; }
+    .page { page-break-inside: avoid; }
+    th, td { border: 1px solid #000 !important; }
+}
 </style>
 </head>
 
@@ -86,7 +145,7 @@ th, td {
       <th>Designation & Deptt.</th>
       <th>Date of Confirmation</th>
       <th>Month :-</th>
-      <th>Pay of One day (Basic+DA)</th>
+      <th>Pay of One day for the month (Basic+DA)</th>
     </tr>
     <tr>
       <td id="empName"></td>
@@ -100,7 +159,15 @@ th, td {
 
   <table class="duty">
     <thead>
-      <tr><th style="width:8%">S.No.</th><th style="width:16%">Date</th><th style="width:12%">Sign On Time</th><th style="width:12%">Sign Off Time</th><th style="width:12%">Night Duty Hours<br>(2200 to 0600)</th><th>Duty Place/Station</th><th>Remarks</th></tr>
+      <tr>
+        <th style="width:7%">S.No.</th>
+        <th style="width:14%">Date</th>
+        <th style="width:12%">Sign On Time</th>
+        <th style="width:12%">Sign Off Time</th>
+        <th style="width:15%">Night Duty Hours<br>(2200 to 0600)</th>
+        <th>Duty Place/Station</th>
+        <th style="width:15%">Remarks</th>
+      </tr>
     </thead>
     <tbody id="dutyBody"></tbody>
     <tfoot id="ndaFooter"></tfoot>
@@ -109,13 +176,13 @@ th, td {
   <div class="cert-title">Certificate</div>
   <div class="cert-intro">It is certify that the Night Duty Allowance, as claimed above is correct &amp; due to me, and this claim has not been submitted earlier.</div>
   
-  <div style="width:100%; overflow:hidden; margin-bottom:5px;">
-      <div class="sig-employee"><b>Signature of the employee</b></div>
+  <div style="width:100%; overflow:hidden;">
+      <div class="sig-employee">Signature of the employee</div>
   </div>
 
   <div class="cert-points">
-    <p>1. As per sign on and sign off duty record of the employee Mr./Mrs. <span id="certName" style="font-weight:bold;"></span><br>SC/TO, Deptt.–OPERATIONS, Duty Place................... the above detail submitted for the Night Duty Allowance is certified and due to the above employee.</p>
-    <p style="margin-top:2px;">2. Total Night Duty Allowance payable to him / her is Rs. <b id="totalNDA"></b>/-</p>
+    <p style="margin: 3px 0;">1. As per sign on and sign off duty record of the employee Mr./Mrs. <span id="certName" style="font-weight:bold;"></span> Design. SC/TO, Deptt.–OPERATIONS Duty Place/Station- Trains/Stations, the above detail submitted for the Night Duty Allowance is certified and due to the above employee.</p>
+    <p style="margin: 3px 0;">2. Total Night Duty Allowance payable to him / her is Rs. <b id="totalNDA">0</b>/-</p>
   </div>
 
   <div class="manager-row">
@@ -128,7 +195,7 @@ th, td {
 </div>
 
 <script>
-// DUTY TABLE CONFIG (Includes 26A & TO Night)
+// DUTY TABLE CONFIG
 const DUTY_TABLE={
   "1":{signOn:"04:55",onPlace:"MSOR SCR",signOff:"11:55",offPlace:"MSOR SCR",hours:"07:00"},
   "2":{signOn:"04:55",onPlace:"BICP SCR",signOff:"12:25",offPlace:"MSOR SCR",hours:"07:30"},
@@ -159,7 +226,6 @@ const DUTY_TABLE={
   "STN-N":{signOn:"22:00",onPlace:"STATION",signOff:"06:00",offPlace:"STATION",hours:"08:00"}
 };
 
-// NIGHT HOUR CALCULATION
 function parseTimeHour(t){ return (t && t.length===5) ? parseInt(t.substring(0,2),10) : -1; }
 function computeNightHours(code, so, sf){
   if(!code) return 0;
@@ -189,7 +255,7 @@ function computeNightHours(code, so, sf){
   document.getElementById("certName").textContent = profile.name || "";
 
   let oneDayPay = payData[monthKey] ? Number(payData[monthKey]) : 0;
-  document.getElementById("payOneDay").textContent = oneDayPay.toFixed(2);
+  document.getElementById("payOneDay").textContent = oneDayPay ? oneDayPay.toFixed(2) : "0.00";
 
   let dates = Object.keys(records).filter(d => d.startsWith(selectedMonth)).sort();
   const tbody = document.getElementById("dutyBody");
@@ -209,7 +275,6 @@ function computeNightHours(code, so, sf){
               let place = info.onPlace || r.signOnPlace || "";
               if(r.station) place = place.replace("STATION", r.station);
 
-              // Use info times if available (for 26A/TO Night), otherwise fallback to record times
               let sOn = info.signOn || r.signOnTime || "";
               let sOff = info.signOff || r.signOffTime || "";
 
@@ -224,12 +289,13 @@ function computeNightHours(code, so, sf){
   let nda = eq * oneDayPay;
 
   document.getElementById("ndaFooter").innerHTML = `
-    <tr class="total-row"><td>(A)</td><td colspan="5" style="text-align:left;">TOTAL Night Hours</td><td>${totalHours}</td></tr>
-    <tr class="total-row"><td>(B)</td><td colspan="5" style="text-align:left;">Equivalent Night Duty Day = A/24</td><td>${eq.toFixed(2)}</td></tr>
-    <tr class="total-row"><td>(C)</td><td colspan="5" style="text-align:left;">NDA Claimed (Rs.) = B × One Day Pay</td><td>${nda.toFixed(2)}</td></tr>
+    <tr class="total-row"><td>(A)</td><td colspan="3" style="text-align:left;">TOTAL Night Hours</td><td>${totalHours}</td><td colspan="2"></td></tr>
+    <tr class="total-row"><td>(B)</td><td colspan="3" style="text-align:left;">Equivalent Night Duty Day = A/24</td><td>${eq.toFixed(2)}</td><td colspan="2"></td></tr>
+    <tr class="total-row"><td>(C)</td><td colspan="3" style="text-align:left;">NDA Claimed (Rs.) = B × One Day Pay</td><td>${nda.toFixed(2)}</td><td colspan="2"></td></tr>
   `;
   document.getElementById("totalNDA").textContent = nda.toFixed(2);
-  window.onload = () => setTimeout(()=>window.print(), 500);
+
+  window.onload = () => setTimeout(() => window.print(), 400);
 })();
 </script>
 </body>
